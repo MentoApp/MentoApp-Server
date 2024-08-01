@@ -1,2 +1,0 @@
-# MentoApp-Server
-BE Repository
