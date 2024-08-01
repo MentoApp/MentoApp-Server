@@ -75,7 +75,7 @@ jobs:
         if: contains(github.ref, 'main')
         run: |
           docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO}}/mento-app:test .
-          docker push ${{ secrets.DOCKER_REPO}}/mento-app
+          docker push ${{ secrets.DOCKER_REPO}}/mento-app:test
 
       # docker build & push to develop
       - name: Docker build & push to dev
