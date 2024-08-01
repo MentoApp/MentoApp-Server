@@ -74,15 +74,15 @@ jobs:
       - name: Docker build & push to prod
         if: contains(github.ref, 'main')
         run: |
-          docker build -f Dockerfile -t leesunro/mentoApp:test .
-          docker push leesunro/mentoApp
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO}}/mento-app:test .
+          docker push ${{ secrets.DOCKER_REPO}}/mento-app
 
       # docker build & push to develop
       - name: Docker build & push to dev
         if: contains(github.ref, 'develop')
         run: |
-          docker build -f Dockerfile -t leesunro/mentoApp:test .
-          docker push leesunro/mentoApp:test
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO}}/mento-app:test .
+          docker push ${{ secrets.DOCKER_REPO}}/mento-app:test
 
       ## deploy to production
       - name: Deploy to prod
@@ -97,10 +97,10 @@ jobs:
           script: |
             sudo docker ps
             sudo docker rm -f $(docker ps -qa)
-            sudo docker pull leesunro/mentoApp:test
-            sudo docker run -d -p 8080:8080 leesunro/mentoApp:test
+            sudo docker pull ${{ secrets.DOCKER_REPO}}/mento-app:test
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO}}/mento-app:test
             sudo docker image prune -f
-      ## ## sudo docker run -d -p 8080:8080 leesunro/mentoApp:test
+      ## ## sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO}}/mento-app:test
 
       ## deploy to develop
       - name: Deploy to dev
@@ -116,6 +116,6 @@ jobs:
           script: |
             sudo docker ps
             sudo docker rm -f $(docker ps -qa)
-            sudo docker pull leesunro/mentoApp:test
-            sudo docker run -d -p 8080:8080 leesunro/mentoApp:test
+            sudo docker pull ${{ secrets.DOCKER_REPO}}/mento-app:test
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO}}/mento-app:test
             sudo docker image prune -f
