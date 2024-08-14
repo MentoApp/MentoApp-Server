@@ -1,7 +1,9 @@
 package com.mentit.mento.global.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class MentoAppException extends RuntimeException {
 
     private final ExceptionCode exceptionCode;
@@ -14,10 +16,6 @@ public class MentoAppException extends RuntimeException {
     public MentoAppException(ExceptionCode exceptionCode) {
         super(exceptionCode.getMessage());
         this.exceptionCode = exceptionCode;
-    }
-
-    public ExceptionCode getExceptionCode() {
-        return this.exceptionCode;
     }
 
     public HttpStatus getHttpStatus() {
