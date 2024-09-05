@@ -73,7 +73,7 @@ public class OAuthAttributes {
         String nickname = (String) response.get("nickname");
         String gender = (String) response.get("gender");
         String birthday = (String) response.get("birthday");
-        String birthyear = (String) response.get("birthyear");
+
         if (gender != null) {
             if (gender.equals("M")) {
                 gender = "male";
@@ -81,6 +81,8 @@ public class OAuthAttributes {
                 gender = "female";
             }
         }
+        String birthyear = birthday.split("-")[0];
+        birthday = birthday.split("-")[1];
 
         return OAuthAttributes.builder()
                 .email(email)

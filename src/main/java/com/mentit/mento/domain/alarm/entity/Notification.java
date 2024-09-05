@@ -1,13 +1,12 @@
 package com.mentit.mento.domain.alarm.entity;
 
-import com.mentit.mento.domain.auth.entity.Users;
+import com.mentit.mento.domain.users.entity.Users;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "notifications")

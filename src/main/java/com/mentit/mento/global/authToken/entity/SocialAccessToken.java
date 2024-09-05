@@ -1,6 +1,6 @@
 package com.mentit.mento.global.authToken.entity;
 
-import com.mentit.mento.domain.auth.entity.Users;
+import com.mentit.mento.domain.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

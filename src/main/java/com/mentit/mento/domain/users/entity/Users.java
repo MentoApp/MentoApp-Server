@@ -1,8 +1,8 @@
-package com.mentit.mento.domain.auth.entity;
+package com.mentit.mento.domain.users.entity;
 
-import com.mentit.mento.domain.auth.constant.AccountStatus;
-import com.mentit.mento.domain.auth.constant.AuthType;
-import com.mentit.mento.domain.auth.constant.UserGender;
+import com.mentit.mento.domain.users.constant.AccountStatus;
+import com.mentit.mento.domain.users.constant.AuthType;
+import com.mentit.mento.domain.users.constant.UserGender;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -29,31 +30,34 @@ public class Users extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+    private String organization;
+
+    private String job;
+
+    private String preferredJob;
+
     @Enumerated(EnumType.STRING)
     private AuthType authType;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserGender userGender;
+    private UserGender gender;
 
     @Column(nullable = false)
     private int birthyear;
 
     @Column(nullable = false)
     private int birthday;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Role> role;
 
     @Column(nullable = false)
     @Builder.Default

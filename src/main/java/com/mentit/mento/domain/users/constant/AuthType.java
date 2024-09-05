@@ -1,4 +1,4 @@
-package com.mentit.mento.domain.auth.constant;
+package com.mentit.mento.domain.users.constant;
 
 public enum AuthType {
     MEMBER_KAKAO, MEMBER_NAVER;
