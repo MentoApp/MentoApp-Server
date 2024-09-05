@@ -1,7 +1,7 @@
 package com.mentit.mento.global.jwt.service;
 
 
-import com.mentit.mento.domain.auth.repository.UserRepository;
+import com.mentit.mento.domain.users.repository.UserRepository;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.jwt.dto.JwtToken;

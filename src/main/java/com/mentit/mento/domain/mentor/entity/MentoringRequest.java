@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.mentor.entity;
 
-import com.mentit.mento.domain.auth.entity.Users;
+import com.mentit.mento.domain.users.entity.Users;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

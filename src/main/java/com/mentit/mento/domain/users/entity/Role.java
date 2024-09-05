@@ -1,13 +1,12 @@
-package com.mentit.mento.domain.auth.entity;
+package com.mentit.mento.domain.users.entity;
 
+import com.mentit.mento.domain.users.constant.RoleType;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "roles")
@@ -30,7 +29,4 @@ public class Role extends BaseEntity {
     private RoleType roleType;
 
 
-    public enum RoleType {
-        MENTOR, MENTEE
-    }
 }

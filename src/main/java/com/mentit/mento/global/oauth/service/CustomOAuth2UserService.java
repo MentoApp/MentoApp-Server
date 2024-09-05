@@ -1,10 +1,10 @@
 package com.mentit.mento.global.oauth.service;
 
-import com.mentit.mento.domain.auth.constant.AuthType;
-import com.mentit.mento.domain.auth.constant.UserGender;
-import com.mentit.mento.domain.auth.entity.Users;
-import com.mentit.mento.domain.auth.mapper.UserMapper;
-import com.mentit.mento.domain.auth.repository.UserRepository;
+import com.mentit.mento.domain.users.constant.AuthType;
+import com.mentit.mento.domain.users.constant.UserGender;
+import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.mapper.UserMapper;
+import com.mentit.mento.domain.users.repository.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -85,7 +85,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
                 }).orElseGet(() -> {
                     Users mappedUser = userMapper.toEntity(email, name, profileImage, authType, nickname, gender, birthday, birthyear);
-                    String tempPassword = passwordUtil.generateRandomPassword();
+                    String tempPassword = PasswordUtil.generateRandomPassword();
                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(tempPassword);
                     Users newUser = mappedUser.toBuilder()

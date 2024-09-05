@@ -1,6 +1,6 @@
-package com.mentit.mento.domain.auth.repository;
+package com.mentit.mento.domain.users.repository;
 
-import com.mentit.mento.domain.auth.entity.Users;
+import com.mentit.mento.domain.users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

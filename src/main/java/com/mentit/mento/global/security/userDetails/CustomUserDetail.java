@@ -1,6 +1,6 @@
 package com.mentit.mento.global.security.userDetails;
 
-import com.mentit.mento.domain.auth.entity.Users;
+import com.mentit.mento.domain.users.entity.Users;
 import com.mentit.mento.global.security.util.PasswordUtil;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

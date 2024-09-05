@@ -1,7 +1,7 @@
 package com.mentit.mento.global.security.service;
 
-import com.mentit.mento.domain.auth.entity.Users;
-import com.mentit.mento.domain.auth.repository.UserRepository;
+import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.repository.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
