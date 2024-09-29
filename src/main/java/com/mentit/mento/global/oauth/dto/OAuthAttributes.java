@@ -26,6 +26,7 @@ public class OAuthAttributes {
     private String nickname; //닉네임
     private String birthday; //생일
     private String birthyear; //생년
+    private String phoneNumber;
 
     // 각 플랫폼 별로 제공해주는 데이터가 조금씩 다르기 때문에 분기 처리
     public static OAuthAttributes of(String provider, String attributeKey, Map<String, Object> attributes, String socialAccessToken) {
@@ -36,10 +37,12 @@ public class OAuthAttributes {
         };
     }
 
-
     private static OAuthAttributes kakao(String provider, String attributeKey, Map<String, Object> attributes, String socialAccessToken) {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
+
+        log.info("kakao_Account = {}", kakaoAccount);
+        log.info("kakao_Profile = {}", kakaoProfile);
 
         String email = (String) kakaoAccount.get("email");
         String name = (String) kakaoAccount.get("name");
@@ -48,6 +51,7 @@ public class OAuthAttributes {
         String gender = (String) kakaoAccount.get("gender");
         String birthyear = (String) kakaoAccount.get("birthyear");
         String birthday = (String) kakaoAccount.get("birthday");
+        String phoneNumber = (String) kakaoAccount.get("phone_number");
 
         return OAuthAttributes.builder()
                 .email(email)
@@ -61,6 +65,7 @@ public class OAuthAttributes {
                 .socialAccessToken(socialAccessToken)
                 .birthday(birthday)
                 .birthyear(birthyear)
+                .phoneNumber(phoneNumber)
                 .build();
     }
 
@@ -72,7 +77,9 @@ public class OAuthAttributes {
         String picture = (String) response.get("profile_image");
         String nickname = (String) response.get("nickname");
         String gender = (String) response.get("gender");
+        String birthyear = (String) response.get("birthyear");
         String birthday = (String) response.get("birthday");
+        String phoneNumber = (String) response.get("mobile");
 
         if (gender != null) {
             if (gender.equals("M")) {
@@ -81,8 +88,9 @@ public class OAuthAttributes {
                 gender = "female";
             }
         }
-        String birthyear = birthday.split("-")[0];
-        birthday = birthday.split("-")[1];
+
+        String month = birthday.split("-")[0];
+        String day = birthday.split("-")[1];
 
         return OAuthAttributes.builder()
                 .email(email)
@@ -94,8 +102,9 @@ public class OAuthAttributes {
                 .attributeKey(attributeKey)
                 .provider(provider)
                 .socialAccessToken(socialAccessToken)
-                .birthday(birthday)
+                .birthday(month+day)
                 .birthyear(birthyear)
+                .phoneNumber(phoneNumber)
                 .build();
     }
 
@@ -110,8 +119,9 @@ public class OAuthAttributes {
         map.put("socialAccessToken", socialAccessToken);
         map.put("gender", gender);
         map.put("nickname", nickname);
-        map.put("birthday", Integer.valueOf(birthday));
-        map.put("birthyear", Integer.valueOf(birthyear));
+        map.put("birthday", birthday);
+        map.put("birthyear", birthyear);
+        map.put("phoneNumber", phoneNumber);
 
         return map;
     }

@@ -15,16 +15,18 @@ public class CustomUserDetail extends org.springframework.security.core.userdeta
 
     private final Long id; // 회원 id
     private Map<String, Object> attributes;
+    private boolean isNewUser;
 
     public CustomUserDetail(String username, String password, Long id, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
         this.id = id;
+        this.isNewUser = true;
     }
 
     public CustomUserDetail(Users user, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
         this(user.getEmail() != null ? user.getEmail() : UUID.randomUUID().toString().substring(0, 8) + "@social.com",
                 user.getPassword() != null ? user.getPassword() : PasswordUtil.generateRandomPassword(),
-                user.getId(), authorities);
+                user.getUserId(), authorities);
         this.attributes = attributes;
     }
 
@@ -36,5 +38,9 @@ public class CustomUserDetail extends org.springframework.security.core.userdeta
     @Override
     public String getName() {
         return (String) attributes.get("name");
+    }
+
+    public void setIsNewUser(boolean newUser) {
+        this.isNewUser = newUser;
     }
 }

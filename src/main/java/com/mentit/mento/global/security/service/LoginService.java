@@ -26,7 +26,7 @@ public class LoginService implements UserDetailsService {
         return new CustomUserDetail(
                 findUser.getEmail(),
                 findUser.getPassword(),
-                findUser.getId(),
+                findUser.getUserId(),
                 findUser.getAuthorities()
         );
     }

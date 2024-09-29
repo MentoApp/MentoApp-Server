@@ -2,6 +2,7 @@ package com.mentit.mento.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.*;
@@ -57,7 +58,9 @@ public enum ExceptionCode {
     IO_EXCEPTION_ON_IMAGE_UPLOAD(CONFLICT, "IO Exception happened on Image Upload", 403),
     NO_FILE_EXTENTION(CONFLICT, "No file Extention", 403),
     PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception", 403),
-    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403);
+    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403)
+    , INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter" , 403 )
+    , CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus" , 403 );
 
     private final HttpStatus httpStatus;
     private final String message;
