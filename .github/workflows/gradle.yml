@@ -46,15 +46,22 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-        # docker login
+        # docker 로그인
       - name: Docker Hub Login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Docker 빌드 & 푸시
+      - name: Docker build & push to dev
+        if: contains(github.ref, 'develop')
+        run: |
+          docker build --cache-from=type=local,src=/tmp/.build-cache -f Dockerfile -t ${{ secrets.DOCKER_REPO}}/mento-app:test .
+          docker push ${{ secrets.DOCKER_REPO}}/mento-app:test
 
-      ## deploy to develop
+
+      ## 개발환경에 배포
       - name: Deploy to dev
         uses: appleboy/ssh-action@master
         id: deploy-dev
@@ -68,8 +75,8 @@ jobs:
           script: |
             sudo docker ps
             sudo docker rm -f dotorit-server
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/mentoApp:test
-            sudo docker run -d -p 8080:8080 --name dotorit-server ${{ secrets.DOCKER_REPO }}/mentoApp:test
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/mento-app:test
+            sudo docker run -d -p 8080:8080 --name dotorit-server --name dotorit-server ${{ secrets.DOCKER_REPO }}/mento-app:test
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_REPO}}/mento-app:test
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO}}/mento-app:test
