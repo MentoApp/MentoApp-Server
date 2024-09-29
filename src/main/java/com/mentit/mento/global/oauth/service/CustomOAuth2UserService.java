@@ -3,12 +3,9 @@ package com.mentit.mento.global.oauth.service;
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGender;
 import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.mapper.UserMapper;
 import com.mentit.mento.domain.users.repository.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
-import com.mentit.mento.global.exception.ExceptionCode;
-import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.PasswordUtil;
@@ -26,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Slf4j
@@ -35,8 +33,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
-    private final UserMapper userMapper;
-    private final PasswordUtil passwordUtil;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -59,19 +55,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String profileImage = memberAttribute.get("picture") != null ? (String) memberAttribute.get("picture") : null;
         String nickname = memberAttribute.get("nickname") != null ? (String) memberAttribute.get("nickname") : null;
         UserGender gender = memberAttribute.get("gender") != null ? UserGender.valueOf(((String) memberAttribute.get("gender")).toUpperCase()) : null;
-        int birthday = memberAttribute.get("birthday") != null ? (int) memberAttribute.get("birthday") : null;
-        int birthyear = memberAttribute.get("birthyear") != null ? (int) memberAttribute.get("birthyear") : null;
-
-
+        String birthDay = memberAttribute.get("birthday") != null ? (String) memberAttribute.get("birthday") : null;
+        String birthYear = memberAttribute.get("birthyear") != null ? (String) memberAttribute.get("birthyear") : null;
+        String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
         // 로그 추가
         log.debug("Registration ID: {}", registrationId);
         log.debug("Auth Type: {}", authType);
         log.debug("Email: {}", email);
+
+        AtomicBoolean isNewUser = new AtomicBoolean(false);
         Users user = userRepository.findByEmail(email)
                 .map(existingUser -> {
-                    if (existingUser.getAccountStatus().toString().equals("DELETED")) {
-                        throw new MemberException(ExceptionCode.MEMBER_ALREADY_WITHDRAW);
-                    }
                     // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
                     socialAccessTokenRepository.findByUser(existingUser).ifPresentOrElse(
                             existingToken -> {
@@ -84,7 +78,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     return existingUser;
 
                 }).orElseGet(() -> {
-                    Users mappedUser = userMapper.toEntity(email, name, profileImage, authType, nickname, gender, birthday, birthyear);
+                    Users mappedUser = Users.builder()
+                            .email(email)
+                            .name(name)
+                            .nickname(nickname)
+                            .profileImage(profileImage)
+                            .phoneNumber(phoneNumber)
+                            .authType(authType)
+                            .gender(gender)
+                            .birthDay(birthDay)
+                            .birthYear(birthYear)
+                            .build();
                     String tempPassword = PasswordUtil.generateRandomPassword();
                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(tempPassword);
@@ -93,13 +97,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                             .build();
                     userRepository.save(newUser);
                     socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, newUser)); // 새로운 Member에 대한 SocialAccessToken 저장
+                    isNewUser.set(true);
                     return newUser;
                 });
 
-        return new CustomUserDetail(
+        CustomUserDetail customUserDetail = new CustomUserDetail(
                 user,
                 Collections.singleton(new SimpleGrantedAuthority(AuthType.of(registrationId).name())),
                 memberAttribute);
+        customUserDetail.setIsNewUser(isNewUser.get());
+
+        return customUserDetail;
     }
 
 }

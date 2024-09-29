@@ -15,10 +15,10 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         License license = new License();
-        license.setName("mentoApp");
+        license.setName("dotorit");
 
         Info info = new Info()
-                .title("\"mentoApp API Document\"")
+                .title("\"dotorit API Document\"")
                 .description("mentoApp API 문서 입니다.")
                 .version("v0.0.1")
                 .license(license);

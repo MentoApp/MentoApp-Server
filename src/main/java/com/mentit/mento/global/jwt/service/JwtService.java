@@ -137,7 +137,7 @@ public class JwtService {
 
         String refreshToken = Jwts.builder()
                 .setExpiration(refreshTokenExpiresIn)
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // 사용자 ID로 기존 리프레시 토큰이 있는지 확인
@@ -168,7 +168,7 @@ public class JwtService {
 
         // CustomUserDetail 객체 생성
         CustomUserDetail customUserDetail = new CustomUserDetail(user.getEmail(), user.getPassword(),
-                user.getId(), authorities);
+                user.getUserId(), authorities);
 
         // Authentication 객체 생성 및 반환
         return new UsernamePasswordAuthenticationToken(customUserDetail, "", authorities);

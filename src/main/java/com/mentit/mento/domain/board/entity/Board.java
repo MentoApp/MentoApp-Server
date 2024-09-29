@@ -1,5 +1,6 @@
 package com.mentit.mento.domain.board.entity;
 
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.users.entity.Users;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
@@ -7,8 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "posts")
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = " update board set is_deleted = true where user_id = ?")
 public class Board extends BaseEntity {
 
     @Id
@@ -23,12 +24,8 @@ public class Board extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentor_id", nullable = false)
-    private Users mentor;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PostCategory category;
+    @JoinColumn(name = "users_id", nullable = false)
+    private Users writer;
 
     @Column(nullable = false)
     private String title;
@@ -36,10 +33,11 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(name = "time_slot", nullable = false)
-    private LocalDateTime timeSlot;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dotori_token_usage_detail_id")
+    private DotoriTokenUsageDetails dotoriTokenUsageDetail;
 
-    public enum PostCategory {
-        JOB, TIPS, OTHER
-    }
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = Boolean.FALSE;
 }

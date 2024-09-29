@@ -29,7 +29,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     private static final List<String> EXCLUDE_URLS = List.of(
-            "/swagger-ui", "/v3/api-docs", "/swagger-resources", "/webjars", "/login", "/favicon"
+            "/swagger", "/v3/api-docs", "/login", "/favicon"
     );
 
     @Override
@@ -39,7 +39,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        // Bypass JWT authentication for Swagger and /login paths
         if (isExcludedPath(requestURI)) {
             filterChain.doFilter(request, response);
             return;
@@ -57,7 +56,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (JwtException e) {
-            log.info("JWeT Exception", e);
+            log.warn("JWeT Exception", e);
             throw new JwtException(ExceptionCode.INVALID_TOKEN);
         }
 
