@@ -1,0 +1,137 @@
+[2024-09-05 22:27:45.174]  INFO 12432 --- [kground-preinit] o.h.v.i.u.Version                        :
+            HV000001: Hibernate Validator 8.0.1.Final
+[2024-09-05 22:27:45.246]  INFO 12432 --- [  restartedMain] c.m.m.MentoAppApplication                :
+            Starting MentoAppApplication using Java 17.0.11 with PID 12432 (C:\Users\PC\Documents\github\MentoApp-Server\build\classes\java\main started by PC in C:\Users\PC\Documents\github\MentoApp-Server)
+[2024-09-05 22:27:45.253]  INFO 12432 --- [  restartedMain] c.m.m.MentoAppApplication                :
+            No active profile set, falling back to 1 default profile: "default"
+[2024-09-05 22:27:45.381]  INFO 12432 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor :
+            Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+[2024-09-05 22:27:45.382]  INFO 12432 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor :
+            For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+[2024-09-05 22:27:46.182]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Multiple Spring Data modules found, entering strict repository configuration mode
+[2024-09-05 22:27:46.183]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[2024-09-05 22:27:46.212]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Finished Spring Data repository scanning in 3 ms. Found 0 Redis repository interfaces.
+[2024-09-05 22:27:46.610]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Multiple Spring Data modules found, entering strict repository configuration mode
+[2024-09-05 22:27:46.612]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2024-09-05 22:27:46.662]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.chat.repository.ChatMessageRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[2024-09-05 22:27:46.920]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Finished Spring Data repository scanning in 304 ms. Found 4 JPA repository interfaces.
+[2024-09-05 22:27:46.954]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Multiple Spring Data modules found, entering strict repository configuration mode
+[2024-09-05 22:27:46.955]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+[2024-09-05 22:27:46.959]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.chat.repository.ChatRoomRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+[2024-09-05 22:27:46.960]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.users.repository.UserRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+[2024-09-05 22:27:46.961]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface com.mentit.mento.global.authToken.repository.RefreshTokenRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+[2024-09-05 22:27:46.961]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+[2024-09-05 22:27:46.965]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Finished Spring Data repository scanning in 10 ms. Found 1 MongoDB repository interface.
+[2024-09-05 22:27:46.969]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Multiple Spring Data modules found, entering strict repository configuration mode
+[2024-09-05 22:27:46.969]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[2024-09-05 22:27:46.974]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.chat.repository.ChatMessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[2024-09-05 22:27:46.974]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.chat.repository.ChatRoomRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[2024-09-05 22:27:46.974]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.mentit.mento.domain.users.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[2024-09-05 22:27:46.974]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.mentit.mento.global.authToken.repository.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[2024-09-05 22:27:46.975]  INFO 12432 --- [  restartedMain] .RepositoryConfigurationExtensionSupport :
+            Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[2024-09-05 22:27:46.975]  INFO 12432 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate :
+            Finished Spring Data repository scanning in 5 ms. Found 0 Redis repository interfaces.
+[2024-09-05 22:27:48.100]  INFO 12432 --- [  restartedMain] o.s.b.w.e.t.TomcatWebServer              :
+            Tomcat initialized with port 8080 (http)
+[2024-09-05 22:27:48.124]  INFO 12432 --- [  restartedMain] o.a.c.h.Http11NioProtocol                :
+            Initializing ProtocolHandler ["http-nio-8080"]
+[2024-09-05 22:27:48.126]  INFO 12432 --- [  restartedMain] o.a.c.c.StandardService                  :
+            Starting service [Tomcat]
+[2024-09-05 22:27:48.127]  INFO 12432 --- [  restartedMain] o.a.c.c.StandardEngine                   :
+            Starting Servlet engine: [Apache Tomcat/10.1.26]
+[2024-09-05 22:27:48.184]  INFO 12432 --- [  restartedMain] o.a.c.c.C.[.[.[/]                        :
+            Initializing Spring embedded WebApplicationContext
+[2024-09-05 22:27:48.186]  INFO 12432 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext :
+            Root WebApplicationContext: initialization completed in 2804 ms
+[2024-09-05 22:27:48.392]  INFO 12432 --- [  restartedMain] o.h.j.i.u.LogHelper                      :
+            HHH000204: Processing PersistenceUnitInfo [name: default]
+[2024-09-05 22:27:48.430]  INFO 12432 --- [  restartedMain] o.h.Version                              :
+            HHH000412: Hibernate ORM core version 6.5.2.Final
+[2024-09-05 22:27:48.453]  INFO 12432 --- [  restartedMain] o.h.c.i.RegionFactoryInitiator           :
+            HHH000026: Second-level cache disabled
+[2024-09-05 22:27:48.854]  INFO 12432 --- [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      :
+            No LoadTimeWeaver setup: ignoring JPA class transformer
+[2024-09-05 22:27:48.871]  INFO 12432 --- [  restartedMain] c.z.h.HikariDataSource                   :
+            HikariPool-1 - Starting...
+[2024-09-05 22:27:49.017]  INFO 12432 --- [  restartedMain] c.z.h.p.HikariPool                       :
+            HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@461741b2
+[2024-09-05 22:27:49.018]  INFO 12432 --- [  restartedMain] c.z.h.HikariDataSource                   :
+            HikariPool-1 - Start completed.
+[2024-09-05 22:27:49.045]  WARN 12432 --- [  restartedMain] o.h.o.deprecation                        :
+            HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+[2024-09-05 22:27:49.046]  WARN 12432 --- [  restartedMain] o.h.o.deprecation                        :
+            HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+[2024-09-05 22:27:49.945]  INFO 12432 --- [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       :
+            HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2024-09-05 22:27:50.091]  INFO 12432 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean :
+            Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2024-09-05 22:27:50.294]  INFO 12432 --- [  restartedMain] o.m.d.client                             :
+            MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "5.0.1"}, "os": {"type": "Windows", "name": "Windows 10", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/17.0.11+7-LTS-207"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@31f4025b, com.mongodb.Jep395RecordCodecProvider@4bae34da, com.mongodb.KotlinCodecProvider@5c5b7dda]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+[2024-09-05 22:27:50.304]  INFO 12432 --- [localhost:27017] o.m.d.cluster                            :
+            Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=15804900}
+[2024-09-05 22:27:50.431]  WARN 12432 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       :
+            Unable to start LiveReload server
+[2024-09-05 22:27:51.407]  WARN 12432 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration :
+            spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2024-09-05 22:27:51.459]  INFO 12432 --- [  restartedMain] r$InitializeUserDetailsManagerConfigurer :
+            Global AuthenticationManager configured with UserDetailsService bean with name loginService
+[2024-09-05 22:27:51.829]  WARN 12432 --- [  restartedMain] o.s.s.c.a.w.b.WebSecurity                :
+            
+
+********************************************************************
+**********        Security debugging is enabled.       *************
+**********    This may include sensitive information.  *************
+**********      Do not use in a production system!     *************
+********************************************************************
+
+
+[2024-09-05 22:27:52.090]  INFO 12432 --- [  restartedMain] o.a.c.h.Http11NioProtocol                :
+            Starting ProtocolHandler ["http-nio-8080"]
+[2024-09-05 22:27:52.221]  WARN 12432 --- [  restartedMain] ConfigServletWebServerApplicationContext :
+            Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+[2024-09-05 22:27:52.230]  INFO 12432 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean :
+            Closing JPA EntityManagerFactory for persistence unit 'default'
+[2024-09-05 22:27:52.233]  INFO 12432 --- [  restartedMain] c.z.h.HikariDataSource                   :
+            HikariPool-1 - Shutdown initiated...
+[2024-09-05 22:27:52.239]  INFO 12432 --- [  restartedMain] c.z.h.HikariDataSource                   :
+            HikariPool-1 - Shutdown completed.
+[2024-09-05 22:27:52.248]  INFO 12432 --- [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger :
+            
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+[2024-09-05 22:27:52.259] ERROR 12432 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   :
+            
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
