@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
 
-    @Query("select u from Users u where u.email = :email and u.accountStatus = com.mentit.mento.domain.users.constant.AccountStatus.ACTIVE")
+    @Query("select u from Users u where u.email = :email and u.isDeleted=false")
     Optional<Users> findByEmail(String email);
 
 
-    @Query("select u from Users u where u.userId !=:userId And u.nickname=:nickname")
+    @Query("select u from Users u where u.userId !=:userId And u.nickname=:nickname And u.isDeleted=false ")
     Optional<Users> findByNickname(String nickname, Long userId);
 }

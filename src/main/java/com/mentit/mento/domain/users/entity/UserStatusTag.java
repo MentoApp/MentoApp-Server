@@ -24,7 +24,7 @@ public class UserStatusTag {
     private String personalHistory; // 연차 (단일 선택)
 
     @Enumerated(EnumType.STRING)
-    private CoporateForm coporateForm; // 회사형태 (단일 선택)
+    private CorporateForm corporateForm; // 회사형태 (단일 선택)
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_status_tag_id")

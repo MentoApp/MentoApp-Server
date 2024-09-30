@@ -58,10 +58,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String birthDay = memberAttribute.get("birthday") != null ? (String) memberAttribute.get("birthday") : null;
         String birthYear = memberAttribute.get("birthyear") != null ? (String) memberAttribute.get("birthyear") : null;
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
-        // 로그 추가
-        log.debug("Registration ID: {}", registrationId);
-        log.debug("Auth Type: {}", authType);
-        log.debug("Email: {}", email);
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
         Users user = userRepository.findByEmail(email)
@@ -69,6 +65,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
                     socialAccessTokenRepository.findByUser(existingUser).ifPresentOrElse(
                             existingToken -> {
+                                log.info("existingToken: {}", existingToken.getSocialAccessToken());
                                 existingToken.updateSocialAccessToken(socialAccessToken);
                                 socialAccessTokenRepository.save(existingToken);
                             },

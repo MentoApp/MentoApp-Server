@@ -2,10 +2,7 @@ package com.mentit.mento.domain.users.entity;
 
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
-import com.mentit.mento.domain.users.constant.AccountStatus;
-import com.mentit.mento.domain.users.constant.AuthType;
-import com.mentit.mento.domain.users.constant.UserGender;
-import com.mentit.mento.domain.users.constant.UserJob;
+import com.mentit.mento.domain.users.constant.*;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -28,7 +25,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = " update users set is_deleted = true where user_id = ?")
+@SQLDelete(sql = " update Users set is_deleted = true where user_id = ?")
 public class Users extends BaseEntity {
 
     @Id
@@ -93,4 +90,8 @@ public class Users extends BaseEntity {
 
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStatusTag userStatusTag;
+
+    @OneToMany(mappedBy = "users")
+    private List<BoardKeywordEntity> boardKeywords;
+
 }
