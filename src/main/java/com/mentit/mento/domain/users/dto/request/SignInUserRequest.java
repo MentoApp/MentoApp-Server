@@ -17,13 +17,13 @@ public class SignInUserRequest {
     @Size(min = 2, max = 10, message = "닉네임은 2자 이상 10자 이하로 입력해주세요.")
     private String nickname;
 
-    @Schema(description = "사용자의 직무", example = "BACKEND")
+    @Schema(description = "사용자의 직무", example = "백엔드 개발")
     private UserJob job;
 
     @Schema(description = "사용자의 연차 정보", example = "5년차")
     private String personalHistory;
 
-    @Schema(description = "회사의 형태", example = "STARTUP")
+    @Schema(description = "회사의 형태", example = "스타트업")
     private CorporateForm corporateForm;
 
     @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"전공자\", \"비전공자\"]")
