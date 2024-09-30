@@ -19,7 +19,6 @@ import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,19 +45,25 @@ public class UserService {
     private final MyStatusTagsEntityRepository myStatusTagsEntityRepository;
     private final CurrentJobStatusEntityRepository currentJobStatusEntityRepository;
     private final BaseEntityRepository baseEntityRepository;
+    private final BoardKeywordRepository boardKeywordRepository;
 
     public void create(CustomUserDetail userDetail, SignInUserRequest signInUserRequest, MultipartFile profileImage) {
         Users findUserByUserDetail = getUsers(userDetail);
 
-        // 프로필 이미지 업로드
-        String uploadedFile = uploadProfileImage(profileImage);
-
         // 닉네임 중복 검사
         checkNicknameDuplication(signInUserRequest.getNickname(), findUserByUserDetail);
+
+        // 프로필 이미지 업로드
+        //TODO:: 첨부된 이미지가 없을 경우 기본 이미지로 대체하도록 설정하기
+        String uploadedFile = uploadProfileImage(profileImage);
 
         // UserStatusTag 생성 및 저장
         UserStatusTag userStatusTag = createUserStatusTag(signInUserRequest, findUserByUserDetail);
         UserStatusTag savedUserStatus = userStatusTagRepository.save(userStatusTag);
+
+        //BoardKeyword 생성 및 저장
+        createUserBoardKeyword(signInUserRequest, findUserByUserDetail);
+
 
         // DotoriToken 및 관련 상세 정보 생성
         createDotoriToken(findUserByUserDetail);
@@ -67,6 +72,22 @@ public class UserService {
         updateUserInformation(findUserByUserDetail, signInUserRequest, uploadedFile, savedUserStatus);
 
         log.info("UserInformation={}", List.of(findUserByUserDetail.getNickname(), uploadedFile));
+    }
+
+    private void createUserBoardKeyword(SignInUserRequest request, Users findUserByUserDetail) {
+        request.getBoardKeywords().forEach(
+                boardKeyword -> log.info("boardKeyword={}", boardKeyword)
+        );
+        request.getBoardKeywords()
+                .forEach(keyword -> {
+                    BoardKeywordEntity boardKeywordEntity = BoardKeywordEntity.builder()
+                                    .boardKeyword(keyword)
+                            .users(findUserByUserDetail)
+                                    .build();
+                    BoardKeywordEntity savedBoardKeyWordEntity = boardKeywordRepository.save(boardKeywordEntity);
+                    findUserByUserDetail.getBoardKeywords().add(savedBoardKeyWordEntity);
+                        }
+                );
     }
 
     private void checkNicknameDuplication(String nickname, Users findUser) {
@@ -79,7 +100,8 @@ public class UserService {
 
     private UserStatusTag createUserStatusTag(SignInUserRequest request, Users user) {
         List<BaseTagEntity> baseTagEntities = request.getBaseTags().stream()
-                .map(tag -> BaseTagEntity.builder()
+                .map(tag ->
+                        BaseTagEntity.builder()
                         .baseTag(tag)
                         .build())
                 .toList();
@@ -98,7 +120,7 @@ public class UserService {
 
         UserStatusTag userStatusTag = UserStatusTag.builder()
                 .baseTags(new ArrayList<>(baseTagEntities)) // 새로운 ArrayList로 변경
-                .coporateForm(request.getCoporateForm())
+                .corporateForm(request.getCorporateForm())
                 .currentJobStatus(new ArrayList<>(currentJobStatusEntities)) // 새로운 ArrayList로 변경
                 .personalHistory(request.getPersonalHistory())
                 .myStatus(new ArrayList<>(myStatusEntities)) // 새로운 ArrayList로 변경
@@ -155,7 +177,6 @@ public class UserService {
                 .simpleIntroduce(request.getSimpleIntroduce())
                 .build();
 
-        log.info("test={}", updatedUser.getUserStatusTag().getUsers().getUserId());
         userRepository.save(updatedUser);
     }
 
@@ -176,8 +197,15 @@ public class UserService {
         // 새로운 UserStatusTag 생성
         UserStatusTag savedTag = createUserStatusTag(modifyUserRequest, findUserByUserDetail);
 
+        // 기존 게시판 키워드 삭제
+        deleteExistingBoardKeywords(findUserByUserDetail);
+
         // 유저 정보 업데이트
         updateUser(findUserByUserDetail, modifyUserRequest, uploadedFile, savedTag);
+    }
+
+    private void deleteExistingBoardKeywords(Users findUserByUserDetail) {
+
     }
 
     private void deleteExistingProfileImage(Users user) {
@@ -228,7 +256,7 @@ public class UserService {
 
         UserStatusTag userStatusTag = UserStatusTag.builder()
                 .baseTags(new ArrayList<>(baseTagEntities)) // 새로운 ArrayList로 변경
-                .coporateForm(request.getCoporateForm())
+                .corporateForm(request.getCorporateForm())
                 .currentJobStatus(new ArrayList<>(currentJobStatusEntities)) // 새로운 ArrayList로 변경
                 .personalHistory(request.getPersonalHistory())
                 .myStatus(new ArrayList<>(myStatusEntities)) // 새로운 ArrayList로 변경
@@ -272,13 +300,11 @@ public class UserService {
     }
 
     private boolean validateNickname(String nickname, Users findUserByUserDetail) {
-        boolean flag = false;
-        if (findUserByUserDetail.getNickname().equals(nickname)) {
-            flag = true;
-        }
-        if (userRepository.findByNickname(nickname, findUserByUserDetail.getUserId()).isPresent()) {
-            flag = true;
-        }
+        boolean flag;
+        boolean isPresent = userRepository.findByNickname(nickname, findUserByUserDetail.getUserId()).isPresent();
+
+        log.info("isPresent={}",isPresent);
+        flag = isPresent;
 
         return flag;
     }
