@@ -20,7 +20,7 @@ public class ModifyUserRequest {
 
     // UserStatusTag 관련 필드 추가
     private String personalHistory; // 연차 (단일 선택)
-    private CoporateForm coporateForm; // 회사 형태 (단일 선택)
+    private CorporateForm corporateForm; // 회사 형태 (단일 선택)
     private List<BaseTag> baseTags; // 복수 선택 가능한 베이스 태그
     private List<MyStatusTags> myStatus; // 복수 선택 가능한 나의 상태 태그
     private List<CurrentJobStatus> currentJobStatus; // 복수 선택 가능한 현재 직무 상태
