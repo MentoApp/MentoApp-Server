@@ -1,5 +1,9 @@
 package com.mentit.mento.global.oauth.handler;
 
+import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.global.exception.ExceptionCode;
+import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -22,6 +26,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtService jwtTokenProvider;
     private final CookieUtils cookieUtils;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -35,21 +40,21 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         if (userDetail.isNewUser()) {
             // 새로운 사용자라면 /add-information 페이지로 리디렉션
-            targetUrl = "http://localhost:8080/sign-in";
+            targetUrl = "http://localhost:8080/api/v1/test/for-redirect?isNewUser=true";
         } else {
             // 기존 사용자라면 메인 페이지로 리디렉션
-            targetUrl = "http://localhost:8080/main";
+            targetUrl = "http://localhost:8080/api/v1/test/for-redirect?isNewUser=false";
         }
 
         String accessToken = jwtToken.getAccessToken();
-        response.setHeader("Authorization", "Bearer " + accessToken);
 
         String refreshToken = jwtToken.getRefreshToken();
+
         cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
 
         // 토큰을 URL 파라미터로 추가
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("accessToken", accessToken) // accessToken 파라미터 추가
+                .queryParam("accessToken", accessToken)
                 .toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -43,7 +44,7 @@ public class UserController {
     public Response<Void> createUser(
         @AuthenticationPrincipal CustomUserDetail userDetail,
         @Valid @RequestPart(value = "signInRequest") SignInUserRequest signInUserRequest,
-        @RequestPart(value = "profileImage") MultipartFile profileImage
+        @RequestPart(value = "profileImage",required = false) MultipartFile profileImage
             ) {
 
         userService.create(userDetail, signInUserRequest,profileImage);
@@ -57,17 +58,26 @@ public class UserController {
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "정보 수정 실패")
     })
-    @PostMapping( value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping( value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @Valid @RequestPart("modifyUserRequest") ModifyUserRequest modifyUserRequest,
-            @RequestPart("profileImage") MultipartFile profileImage
+            @RequestPart(value = "profileImage",required = false) @Nullable MultipartFile profileImage
     ) {
         userService.modifyUser(customUserDetail,modifyUserRequest,profileImage);
 
         return Response.success(HttpStatus.OK,"회원정보 수정 성공");
 
     }
+
+//    @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "정보 조회 성공",
+//                    content = {@Content(schema = @Schema(implementation = Response.class))}),
+//            @ApiResponse(responseCode = "400", description = "정보 조회 실패")
+//    })
+//    @GetMapping
+//    public Response<FindUserResponse>
 
     @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
     @ApiResponses(value = {
@@ -85,7 +95,6 @@ public class UserController {
 
         String refreshToken = cookieUtils.getRefreshToken(request);
         JwtToken newToken = userService.reissueToken(refreshToken);
-//        App에는 Cookie개념이 없기 때문에 사용하지 않음
         cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
 
         HttpHeaders headers = new HttpHeaders();
