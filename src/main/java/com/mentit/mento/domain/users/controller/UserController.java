@@ -2,6 +2,7 @@ package com.mentit.mento.domain.users.controller;
 
 import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.response.Response;
@@ -70,14 +71,19 @@ public class UserController {
 
     }
 
-//    @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "정보 조회 성공",
-//                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-//            @ApiResponse(responseCode = "400", description = "정보 조회 실패")
-//    })
-//    @GetMapping
-//    public Response<FindUserResponse>
+    @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정보 조회 성공",
+                    content = {@Content(schema = @Schema(implementation = Response.class))}),
+            @ApiResponse(responseCode = "400", description = "정보 조회 실패")
+    })
+    @GetMapping
+    public Response<FindUserResponse> findMyInfo(
+            @AuthenticationPrincipal CustomUserDetail userDetail
+    ){
+        FindUserResponse findUserResponse= userService.findMyInfo(userDetail);
+        return Response.success(HttpStatus.OK,"회원 조회 성공",findUserResponse);
+    }
 
     @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
     @ApiResponses(value = {
