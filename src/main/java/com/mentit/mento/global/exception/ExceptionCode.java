@@ -60,7 +60,8 @@ public enum ExceptionCode {
     PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception", 403),
     IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403)
     , INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter" , 403 )
-    , CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus" , 403 );
+    , CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus" , 403 )
+    , ALREADY_ENROLLED_ACCOUNT(CONFLICT, "Account already enrolled" , 403 );
 
     private final HttpStatus httpStatus;
     private final String message;

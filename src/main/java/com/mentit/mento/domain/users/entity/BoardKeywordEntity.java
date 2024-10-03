@@ -4,12 +4,14 @@ import com.mentit.mento.domain.users.constant.BoardKeyword;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class BoardKeywordEntity {
 
     @Id
