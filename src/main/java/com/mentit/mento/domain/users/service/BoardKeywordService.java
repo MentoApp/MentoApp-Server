@@ -40,9 +40,7 @@ public class BoardKeywordService {
         List<String> boardKeywordList = new ArrayList<>();
 
         findUserByUserDetail.getBoardKeywords().forEach(
-                boardKeyword -> {
-                    boardKeywordList.add(boardKeyword.getBoardKeyword().getKoreanValue());
-                }
+                boardKeyword -> boardKeywordList.add(boardKeyword.getBoardKeyword().getKoreanValue())
         );
         return boardKeywordList;
     }

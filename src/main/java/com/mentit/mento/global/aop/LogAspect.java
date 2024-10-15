@@ -14,6 +14,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class LogAspect {
         Map<String, Object> params = new HashMap<>();
 
         try {
-            String decodedURI = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+            String decodedURI = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
 
             params.put("controller", controllerName);
             params.put("method", methodName);
@@ -72,7 +73,7 @@ public class LogAspect {
 
         if (returnValue == null) return;
 
-        log.info("\t{}", returnValue.toString());
+        log.info("\t{}", returnValue);
     }
 
 }

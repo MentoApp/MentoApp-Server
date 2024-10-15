@@ -59,6 +59,7 @@ public class JwtService {
     }
 
     // 리프레시 토큰을 이용해 액세스 토큰을 재발급
+    @Transactional
     public JwtToken reissueTokenByRefreshToken(String oldRefreshToken) {
 
         validateToken(oldRefreshToken);
@@ -96,6 +97,7 @@ public class JwtService {
         return new UsernamePasswordAuthenticationToken(userDetail, "", authorities);
     }
 
+    @Transactional
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()

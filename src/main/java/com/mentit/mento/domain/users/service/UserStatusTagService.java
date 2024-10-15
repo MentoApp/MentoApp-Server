@@ -173,9 +173,8 @@ public class UserStatusTagService {
         List<String> myStatusTagsList = new ArrayList<>();
 
         userStatusTag.getMyStatus().forEach(
-                myStatus -> {
-                    myStatusTagsList.add(myStatus.getMyStatusTag().getDescription());
-                }
+                myStatus -> myStatusTagsList.add(myStatus.getMyStatusTag().getDescription())
+
         );
         return myStatusTagsList;
     }
