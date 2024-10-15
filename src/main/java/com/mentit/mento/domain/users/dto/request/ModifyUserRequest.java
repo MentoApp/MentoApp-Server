@@ -21,16 +21,16 @@ public class ModifyUserRequest {
     @Schema(description = "사용자의 직무", example = "프론트엔드 개발")
     private UserJob job;
 
-    @Schema(description = "사용자의 연차 정보", example = "1~2년차")
-    private String personalHistory;
+    @Schema(description = "사용자의 연차 정보", example = "신입~2년")
+    private MyCareerTags personalHistory;
 
-    @Schema(description = "회사의 형태", example = "대행사")
+    @Schema(description = "회사의 형태", example = "스타트업")
     private CorporateForm corporateForm;
 
-    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프수료자\", \"비전공자\"]")
+    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
     private List<BaseTag> baseTags;
 
-    @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로젝트중\", \"취준생\"]")
+    @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로이직러\", \"대학생\"]")
     private List<MyStatusTags> myStatus;
 
     @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"헬스케어\", \"모빌리티\"]")
@@ -39,7 +39,7 @@ public class ModifyUserRequest {
     @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 김영한입니다.")
     private String simpleIntroduce;
 
-    @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"투표\", \"회사 생활\"]")
+    @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"트렌드\", \"회사 생활\"]")
     private List<BoardKeyword> boardKeywords;
 
 }

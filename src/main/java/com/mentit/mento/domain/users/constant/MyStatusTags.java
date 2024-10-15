@@ -7,18 +7,18 @@ import lombok.Getter;
 @Getter
 @JsonDeserialize(using = MyStatusTagsDeserializer.class)
 public enum MyStatusTags {
-    PROJECTOR("프로젝트중"),
-    DESIGNER_OR_DEVELOPER("1인 디자이너 or 기획자 or 개발자"),
-    INTERN("인턴 중"),
-    JOB_SEEKER("취준생"),
-    JOB_CONSIDERING("퇴사 고려 중"),
-    GRADUATING("이직 준비 중"),
-    BOOTCAMP_GRADUATE("부트캠프 수료"),
-    BOOTCAMP_STUDENT("부트캠프 수강 중"),
+    PROFESSIONAL_JOB_SEEKER("프로이직러"),
     UNIVERSITY_STUDENT("대학생"),
+    CAREER_SWITCHER("직무 전환"),
+    JOB_SEEKER("구직중"),
+    ENTREPRENEUR("창업가"),
     TEAM_LEADER("팀리더"),
-    SOCIAL_BEGINNER("사회초년생"),
-    FREELANCER("프리랜서");
+    NON_CS_BACKGROUND("비전공자 출신"),
+    FREELANCER("프리랜서"),
+    LECTURE_ENTHUSIAST("강의마니아"),
+    MULTI_JOB_WORKER("N잡러"),
+    CERTIFICATE_COLLECTOR("자격증 수집가"),
+    STUDY_ADDICT("스터디 중독");
 
     private final String description;
 

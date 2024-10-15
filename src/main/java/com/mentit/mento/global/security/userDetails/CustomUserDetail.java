@@ -2,6 +2,7 @@ package com.mentit.mento.global.security.userDetails;
 
 import com.mentit.mento.domain.users.entity.Users;
 import com.mentit.mento.global.security.util.PasswordUtil;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;

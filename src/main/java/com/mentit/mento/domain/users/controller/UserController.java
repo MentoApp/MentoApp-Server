@@ -39,7 +39,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 가입 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "회원 가입 실패")
+            @ApiResponse(responseCode = "400", description = "회원 가입 실패",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
@@ -57,7 +58,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정보 수정 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "정보 수정 실패")
+            @ApiResponse(responseCode = "400", description = "정보 수정 실패",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @PatchMapping( value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
@@ -68,14 +70,14 @@ public class UserController {
         userService.modifyUser(customUserDetail,modifyUserRequest,profileImage);
 
         return Response.success(HttpStatus.OK,"회원정보 수정 성공");
-
     }
 
     @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정보 조회 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "정보 조회 실패")
+            @ApiResponse(responseCode = "400", description = "정보 조회 실패",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping
     public Response<FindUserResponse> findMyInfo(
@@ -85,11 +87,28 @@ public class UserController {
         return Response.success(HttpStatus.OK,"회원 조회 성공",findUserResponse);
     }
 
+    @Operation(summary = "닉네임 중복 검사" , description = "닉네임 제한 조건을 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "닉네임 조회 결과",
+                    content = {@Content(schema = @Schema(implementation = Response.class))}),
+            @ApiResponse(responseCode = "400", description = "정보 조회 실패",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+    })
+    @GetMapping("/validate-nickname/{nickname}")
+    public Response<Boolean> validateNickname(
+            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable String nickname
+    ){
+        boolean flag = userService.validateNickname(nickname,userDetail);
+        return Response.success(HttpStatus.OK,"조회 결과",flag);
+    }
+
     @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "발급 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "발급 실패")
+            @ApiResponse(responseCode = "400", description = "발급 실패",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping("/reissue-token")
     @Transactional
@@ -114,7 +133,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소셜 회원 탈퇴 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "해당 소셜 회원이 존재하지 않습니다.")
+            @ApiResponse(responseCode = "400", description = "해당 소셜 회원이 존재하지 않습니다.",
+            content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @DeleteMapping("/social/me")
     public ResponseEntity<Void> deleteSocialMember(

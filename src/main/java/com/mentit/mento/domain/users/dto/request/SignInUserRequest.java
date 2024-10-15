@@ -20,16 +20,16 @@ public class SignInUserRequest {
     @Schema(description = "사용자의 직무", example = "백엔드 개발")
     private UserJob job;
 
-    @Schema(description = "사용자의 연차 정보", example = "5년차")
-    private String personalHistory;
+    @Schema(description = "사용자의 연차 정보", example = "6~9년")
+    private MyCareerTags personalHistory;
 
-    @Schema(description = "회사의 형태", example = "스타트업")
+    @Schema(description = "회사의 형태", example = "대기업")
     private CorporateForm corporateForm;
 
-    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"전공자\", \"비전공자\"]")
+    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
     private List<BaseTag> baseTags;
 
-    @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로젝트중\", \"취준생\"]")
+    @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"대학생\", \"구직중\"]")
     private List<MyStatusTags> myStatus;
 
     @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"이커머스\", \"금융\"]")
@@ -38,6 +38,6 @@ public class SignInUserRequest {
     @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 홍길동입니다.")
     private String simpleIntroduce;
 
-    @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"멘토 찾아요\", \"이력서\"]")
+    @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"멘토 찾아요\", \"인사이트\"]")
     private List<BoardKeyword> boardKeywords;
 }

@@ -29,7 +29,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class S3FileUtilImpl {
+public class S3FileUtilImpl implements S3FileUtilService{
 
     private final AmazonS3 amazonS3;
 
@@ -38,10 +38,10 @@ public class S3FileUtilImpl {
 
 
     public String upload(MultipartFile image) {
-        if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
+        if (image == null || image.isEmpty()) {
             throw new S3Exception(ExceptionCode.FILE_IS_EMPTY);
         }
-        return this.uploadImage(image);
+        return this.uploadImage(Objects.requireNonNull(image,"이미지가 null 입니다."));
     }
 
     private String uploadImage(MultipartFile image) {

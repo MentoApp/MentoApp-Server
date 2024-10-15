@@ -21,8 +21,6 @@ public class UserStatusTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userStatusTagId;
 
-    private String personalHistory; // 연차 (단일 선택)
-
     @Enumerated(EnumType.STRING)
     private CorporateForm corporateForm; // 회사형태 (단일 선택)
 
@@ -40,6 +38,9 @@ public class UserStatusTag {
     @JoinColumn(name = "user_status_tag_id")
     @Builder.Default
     private List<CurrentJobStatusEntity> currentJobStatus = new ArrayList<>(); // 현재 직업 상태
+
+    @OneToOne(mappedBy = "userStatusTag")
+    private MyCareerTagsEntity myCareerTags; //연차
 
     @OneToOne
     @JoinColumn(name = "users_user_id")
