@@ -188,6 +188,7 @@ public class JwtService {
         }
     }
 
+    @Transactional
     public void deleteRefreshTokenDB(String refreshToken) {
         try {
             refreshTokenRepository.deleteByRefreshToken(refreshToken);

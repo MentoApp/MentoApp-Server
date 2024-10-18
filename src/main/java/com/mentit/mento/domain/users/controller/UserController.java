@@ -5,6 +5,7 @@ import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
 import com.mentit.mento.domain.users.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.global.jwt.dto.JwtToken;
+import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.CookieUtils;
@@ -35,6 +36,7 @@ public class UserController {
 
     private final UserService userService;
     private final CookieUtils cookieUtils;
+    private final RedisService redisService;
 
     @Operation(summary = "회원 정보 추가 기입", description = "회원 정보 추가 기입")
     @ApiResponses(value = {
@@ -101,7 +103,7 @@ public class UserController {
             @PathVariable String nickname
     ){
         boolean flag = userService.validateNickname(nickname,userDetail);
-        return Response.success(HttpStatus.OK,"조회 결과",flag);
+        return Response.success(HttpStatus.OK,"조회 결과",!flag);
     }
 
     @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
@@ -122,7 +124,7 @@ public class UserController {
         String refreshToken = cookieUtils.getRefreshToken(request);
         JwtToken newToken = userService.reissueToken(refreshToken);
         cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
-
+        redisService.saveAccessToken(newToken.getAccessToken(), userDetail.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", newToken.getAccessToken());
         headers.add("refreshToken", newToken.getRefreshToken());

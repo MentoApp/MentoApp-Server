@@ -8,6 +8,7 @@ import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
         if (token == null) {
-            handleJwtException(response, new JwtException(ExceptionCode.NOT_FOUND_TOKEN));
+            handleJwtException(response, new JwtException(ExceptionCode.NOT_FOUND_TOKEN)); // 예외를 handleJwtException 메서드로 처리
+            return;
+        }
+
+        // refreshToken 가져오기
+        String refreshToken = resolveRefreshTokenFromCookie(request);
+        if (refreshToken == null) {
+            handleJwtException(response, new JwtException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN));
             return;
         }
 
@@ -56,8 +64,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (JwtException e) {
-            log.warn("JWeT Exception", e);
-            throw new JwtException(ExceptionCode.INVALID_TOKEN);
+            log.warn("JWT Exception", e);
+            handleJwtException(response, new JwtException(ExceptionCode.INVALID_TOKEN)); // 예외를 handleJwtException 메서드로 처리
+            return;
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -98,5 +107,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
+    }
+
+    // 쿠키에서 refreshToken 가져오기
+    private String resolveRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
