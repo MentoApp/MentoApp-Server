@@ -91,7 +91,7 @@ public class Users extends BaseEntity {
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStatusTag userStatusTag;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardKeywordEntity> boardKeywords;
 
 }

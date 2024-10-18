@@ -16,10 +16,12 @@ import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -185,6 +187,13 @@ public class UserService {
 
     public void logout(String refreshToken, CustomUserDetail userDetail) {
         jwtService.deleteRefreshTokenDB(refreshToken);
+
+        // 쿠키에서 refreshToken 삭제
+        Cookie cookie = new Cookie("refreshToken", null); // 쿠키 값을 null로 설정
+        cookie.setHttpOnly(true);
+        cookie.setPath("/"); // 쿠키의 경로 설정 (일반적으로 루트 경로로 설정)
+        cookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 삭제
+
     }
 
 
@@ -192,6 +201,7 @@ public class UserService {
         return jwtService.reissueTokenByRefreshToken(refreshToken);
     }
 
+    @Transactional
     public FindUserResponse findMyInfo(CustomUserDetail userDetail) {
         Users findUserByUserDetail = getUsers(userDetail);
         UserStatusTag userStatusTag = findUserByUserDetail.getUserStatusTag();

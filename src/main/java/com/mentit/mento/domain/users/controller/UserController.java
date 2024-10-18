@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -137,12 +138,17 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @DeleteMapping("/social/me")
-    public ResponseEntity<Void> deleteSocialMember(
-            @AuthenticationPrincipal CustomUserDetail user
+    public Response<Void> deleteSocialMember(
+            @AuthenticationPrincipal CustomUserDetail user,
+            HttpServletResponse response  // HttpServletResponse 추가
+
     ) {
         userService.deleteSocialMember(user.getId());
+        cookieUtils.deleteCookie(response, "refreshToken");
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+
+        return Response.success(HttpStatus.OK,"탈퇴 성공");
+
     }
 
 
@@ -153,13 +159,18 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "리프레시 토큰이 쿠키에 없습니다.")
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal CustomUserDetail userDetail
+    public Response<Void> logout(
+            @AuthenticationPrincipal CustomUserDetail userDetail,
+            HttpServletResponse response  // HttpServletResponse 추가
     ) {
         String refreshToken = userService.getRefreshToken(userDetail.getId());
 
+        // 로그아웃 처리
         userService.logout(refreshToken, userDetail);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        // 쿠키에서 refreshToken 삭제
+        cookieUtils.deleteCookie(response, "refreshToken");
+
+        return Response.success(HttpStatus.OK, "로그아웃 성공");
     }
 }
