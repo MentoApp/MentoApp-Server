@@ -22,7 +22,6 @@ public class SwaggerConfig {
                 .description("mentoApp API 문서 입니다.")
                 .version("v0.0.1")
                 .license(license);
-        ;
 
         String jwt = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt); // 헤더에 토큰 포함

@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.users.entity;
 
-import com.mentit.mento.domain.users.constant.BoardKeyword;
+import com.mentit.mento.domain.users.constant.MyCareerTags;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class BoardKeywordEntity {
+public class MyCareerTagsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardKeywordId;
+    private Long myCareerTagsId;
 
     @Enumerated(EnumType.STRING)
-    private BoardKeyword boardKeyword;
+    private MyCareerTags myCareerTags; // 상태 태그
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @OneToOne(mappedBy = "myCareerTags") // 주인을 명확히 설정
+    private UserStatusTag userStatusTag; // UserStatusTag 참조
 }

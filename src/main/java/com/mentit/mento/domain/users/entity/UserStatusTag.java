@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -20,8 +19,6 @@ public class UserStatusTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userStatusTagId;
-
-    private String personalHistory; // 연차 (단일 선택)
 
     @Enumerated(EnumType.STRING)
     private CorporateForm corporateForm; // 회사형태 (단일 선택)
@@ -41,8 +38,10 @@ public class UserStatusTag {
     @Builder.Default
     private List<CurrentJobStatusEntity> currentJobStatus = new ArrayList<>(); // 현재 직업 상태
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private MyCareerTagsEntity myCareerTags; // 연차
+
     @OneToOne
     @JoinColumn(name = "users_user_id")
     private Users users;
-
 }
