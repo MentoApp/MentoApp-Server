@@ -55,6 +55,9 @@ public class UserStatusTagService {
 
         CorporateForm corporateForm = request.getCorporateForm();
 
+        // MyCareerTagsEntity를 먼저 저장
+        myCareerTagsEntityRepository.save(myCareerTagsEntities);
+
         UserStatusTag userStatusTag = UserStatusTag.builder()
                 .baseTags(new ArrayList<>(baseTagEntities))
                 .corporateForm(corporateForm)
@@ -64,14 +67,14 @@ public class UserStatusTagService {
                 .users(user)
                 .build();
 
+
         userStatusTagRepository.save(userStatusTag);
 
         // 각각의 엔티티에 UserStatusTag 연결
         baseTagEntities.forEach(baseTag -> baseEntityRepository.save(baseTag.toBuilder().userStatusTag(userStatusTag).build()));
         myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus.toBuilder().userStatusTag(userStatusTag).build()));
         currentJobStatusEntities.forEach(jobStatus -> currentJobStatusEntityRepository.save(jobStatus.toBuilder().userStatusTag(userStatusTag).build()));
-
-        myCareerTagsEntityRepository.save(myCareerTagsEntities);
+        myCareerTagsEntityRepository.save(myCareerTagsEntities.toBuilder().userStatusTag(userStatusTag).build());
 
         return userStatusTag;
     }

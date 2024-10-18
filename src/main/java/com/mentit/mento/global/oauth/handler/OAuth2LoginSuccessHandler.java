@@ -1,11 +1,8 @@
 package com.mentit.mento.global.oauth.handler;
 
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.UserRepository;
-import com.mentit.mento.global.exception.ExceptionCode;
-import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
+import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +23,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtService jwtTokenProvider;
     private final CookieUtils cookieUtils;
-    private final UserRepository userRepository;
+    private final RedisService redisService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -49,6 +46,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String accessToken = jwtToken.getAccessToken();
 
         String refreshToken = jwtToken.getRefreshToken();
+
+        redisService.saveAccessToken(accessToken,userDetail.getId());
 
         cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
 

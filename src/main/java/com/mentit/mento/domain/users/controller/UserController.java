@@ -144,4 +144,22 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
+    @Operation(summary = "로그아웃", description = "DB에 저장된 리프레쉬 토큰을 사용하여 로그아웃")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+                    content = {@Content(schema = @Schema(implementation = ResponseEntity.class))}),
+            @ApiResponse(responseCode = "400", description = "리프레시 토큰이 쿠키에 없습니다.")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal CustomUserDetail userDetail
+    ) {
+        String refreshToken = userService.getRefreshToken(userDetail.getId());
+
+        userService.logout(refreshToken, userDetail);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

@@ -21,7 +21,6 @@ public class MyCareerTagsEntity {
     @Enumerated(EnumType.STRING)
     private MyCareerTags myCareerTags; // 상태 태그
 
-    @OneToOne
-    @JoinColumn(name = "user_status_tag_id")
+    @OneToOne(mappedBy = "myCareerTags") // 주인을 명확히 설정
     private UserStatusTag userStatusTag; // UserStatusTag 참조
 }

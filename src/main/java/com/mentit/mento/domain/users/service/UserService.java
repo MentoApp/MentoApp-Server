@@ -6,6 +6,7 @@ import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.entity.*;
 import com.mentit.mento.domain.users.repository.*;
+import com.mentit.mento.global.authToken.entity.RefreshToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -182,6 +183,11 @@ public class UserService {
                 );
     }
 
+    public void logout(String refreshToken, CustomUserDetail userDetail) {
+        jwtService.deleteRefreshTokenDB(refreshToken);
+    }
+
+
     public JwtToken reissueToken(String refreshToken) {
         return jwtService.reissueTokenByRefreshToken(refreshToken);
     }
@@ -214,5 +220,12 @@ public class UserService {
                 .personalHistory(userStatusTag.getMyCareerTags().getMyCareerTags().getDescription())
                 .userJob(findUserByUserDetail.getJob().getKoreanValue())
                 .build();
+    }
+
+    public String getRefreshToken(Long uuid) {
+        RefreshToken refreshToken = refreshTokenRepository.getRefreshTokenByMemberId(uuid).orElseThrow(
+                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
+        );
+        return refreshToken.getRefreshToken();
     }
 }

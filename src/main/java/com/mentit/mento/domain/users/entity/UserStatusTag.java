@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -39,11 +38,10 @@ public class UserStatusTag {
     @Builder.Default
     private List<CurrentJobStatusEntity> currentJobStatus = new ArrayList<>(); // 현재 직업 상태
 
-    @OneToOne(mappedBy = "userStatusTag")
-    private MyCareerTagsEntity myCareerTags; //연차
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private MyCareerTagsEntity myCareerTags; // 연차
 
     @OneToOne
     @JoinColumn(name = "users_user_id")
     private Users users;
-
 }
