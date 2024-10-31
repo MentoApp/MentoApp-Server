@@ -20,6 +20,7 @@ public class AuthController {
             @RequestParam boolean isNewUser) {
 
         Map<String, Object> response = new HashMap<>();
+
         response.put("accessToken", accessToken);
         response.put("isNewUser", isNewUser);
 
