@@ -23,20 +23,20 @@ public class UserStatusTag {
     @Enumerated(EnumType.STRING)
     private CorporateForm corporateForm; // 회사형태 (단일 선택)
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_status_tag_id")
-    @Builder.Default
-    private List<BaseTagEntity> baseTags = new ArrayList<>(); // 복수 선택 가능한 태그 (베이스)
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "user_status_tag_id")
+//    @Builder.Default
+//    private List<BaseTagEntity> baseTags = new ArrayList<>(); // 복수 선택 가능한 태그 (베이스)
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_status_tag_id")
     @Builder.Default
     private List<MyStatusTagsEntity> myStatus = new ArrayList<>(); // 복수 선택 가능한 태그 카테고리
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_status_tag_id")
-    @Builder.Default
-    private List<CurrentJobStatusEntity> currentJobStatus = new ArrayList<>(); // 현재 직업 상태
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "user_status_tag_id")
+//    @Builder.Default
+//    private List<CurrentJobStatusEntity> currentJobStatus = new ArrayList<>(); // 현재 직업 상태
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private MyCareerTagsEntity myCareerTags; // 연차

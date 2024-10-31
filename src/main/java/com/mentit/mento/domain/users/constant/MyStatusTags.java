@@ -9,13 +9,13 @@ import lombok.Getter;
 public enum MyStatusTags {
     PROFESSIONAL_JOB_SEEKER("프로이직러"),
     UNIVERSITY_STUDENT("대학생"),
-    CAREER_SWITCHER("직무 전환"),
+    CAREER_SWITCHER("직무전환"),
     JOB_SEEKER("구직중"),
     ENTREPRENEUR("창업가"),
     TEAM_LEADER("팀리더"),
     NON_CS_BACKGROUND("비전공자 출신"),
     FREELANCER("프리랜서"),
-    LECTURE_ENTHUSIAST("강의마니아"),
+    LECTURE_ENTHUSIAST("강의 마니아"),
     MULTI_JOB_WORKER("N잡러"),
     CERTIFICATE_COLLECTOR("자격증 수집가"),
     STUDY_ADDICT("스터디 중독");

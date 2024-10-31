@@ -27,19 +27,19 @@ public class ModifyUserRequest {
     @Schema(description = "회사의 형태", example = "스타트업")
     private CorporateForm corporateForm;
 
-    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
-    private List<BaseTag> baseTags;
+//    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
+//    private List<BaseTag> baseTags;
 
     @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로이직러\", \"대학생\"]")
     private List<MyStatusTags> myStatus;
 
-    @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"헬스케어\", \"모빌리티\"]")
-    private List<CurrentJobStatus> currentJobStatus;
+//    @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"헬스케어\", \"모빌리티\"]")
+//    private List<CurrentJobStatus> currentJobStatus;
 
-    @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 김영한입니다.")
-    private String simpleIntroduce;
 
     @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"트렌드\", \"회사 생활\"]")
     private List<BoardKeyword> boardKeywords;
 
+    @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 김영한입니다.")
+    private String simpleIntroduce;
 }

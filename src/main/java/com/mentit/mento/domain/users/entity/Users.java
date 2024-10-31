@@ -1,11 +1,12 @@
 package com.mentit.mento.domain.users.entity;
 
+import com.mentit.mento.domain.board.entity.Board;
+import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.users.constant.*;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +47,8 @@ public class Users extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AuthType authType;
 
+    private boolean isNewUser;
+
     @Enumerated(EnumType.STRING)
     private UserJob job;
 
@@ -69,7 +72,7 @@ public class Users extends BaseEntity {
     private String profileImage;
 
     @Column(nullable = false)
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
@@ -77,7 +80,7 @@ public class Users extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
-    @OneToOne(mappedBy = "users")
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private DotoriToken dotoriToken;
 
     @OneToMany(mappedBy = "presenter")
@@ -91,7 +94,13 @@ public class Users extends BaseEntity {
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStatusTag userStatusTag;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardKeywordEntity> boardKeywords;
+
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comment;
+
+    @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards;
 
 }

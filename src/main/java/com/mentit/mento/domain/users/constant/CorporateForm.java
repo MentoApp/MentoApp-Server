@@ -8,13 +8,10 @@ import lombok.Getter;
 @JsonDeserialize(using = CooperateFormDeserializer.class)
 public enum CorporateForm {
     STARTUP("스타트업"),
-    AGENCY("대행사"),
-    MID_SIZED_FIRM("중소기업"),
-    MAJOR_COMPANY("대기업"),
-    IT_COMPANY("IT 회사"),
+    UNICORN_COMPANY("유니콘 기업"),
     PUBLIC_ENTERPRISE("공기업"),
-    GLOBAL_COMPANY("글로벌 기업"),
-    UNICORN_COMPANY("유니콘 기업");
+    MAJOR_COMPANY("대기업"),
+    FOREIGN_COMPANY("외국계 기업");
 
     private final String koreanValue;
 

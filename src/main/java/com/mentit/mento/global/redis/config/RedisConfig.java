@@ -39,6 +39,19 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
     }
+    @Bean
+    public RedisTemplate<String, Long> redisTemplateForLike(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Long> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        // Key 직렬화는 String으로
+        template.setKeySerializer(new StringRedisSerializer());
+
+        // Value 직렬화는 Long으로 설정
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        return template;
+    }
 
 
     @Bean

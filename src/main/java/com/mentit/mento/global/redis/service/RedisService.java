@@ -21,4 +21,6 @@ public class RedisService {
     public String getAccessToken(String userId) {
         return redisTemplate.opsForValue().get("userId: " + userId);
     }
+
+
 }

@@ -3,6 +3,7 @@ package com.mentit.mento.global.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.query.Page;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -20,6 +21,7 @@ public class Response<T> {
     public static Response<Void> success(HttpStatus code, String message) {
         return new Response<>(code.value(), message, null);
     }
+
 
     // 응답 성공 (응답 데이터가 있는 경우)
     public static <T> Response<T> success(HttpStatus code, String message, T data) {

@@ -1,8 +1,10 @@
 package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenService;
+import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
 import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
+import com.mentit.mento.domain.users.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.entity.*;
 import com.mentit.mento.domain.users.repository.*;
@@ -78,6 +80,7 @@ public class UserService {
                 .userStatusTag(userStatusTag)
                 .profileImage(uploadedFile)
                 .simpleIntroduce(request.getSimpleIntroduce())
+                .isNewUser(false)
                 .build();
 
         userRepository.save(updatedUser);
@@ -118,8 +121,6 @@ public class UserService {
         updateUser(findUserByUserDetail, modifyUserRequest, uploadedFile, savedTag);
     }
 
-
-
     private void deleteExistingProfileImage(Users user) {
         if (user.getProfileImage() != null && !user.getProfileImage().isBlank()) {
             s3FileUtilImpl.deleteImageFromS3(user.getProfileImage());
@@ -128,6 +129,7 @@ public class UserService {
 
     private void updateUser(Users user, ModifyUserRequest modifyUserRequest, String uploadedFile, UserStatusTag savedTag) {
         Users updatedUser = user.toBuilder()
+                .job(modifyUserRequest.getJob())
                 .nickname(modifyUserRequest.getNickname())
                 .profileImage(uploadedFile)
                 .simpleIntroduce(modifyUserRequest.getSimpleIntroduce())
@@ -185,7 +187,7 @@ public class UserService {
                 );
     }
 
-    public void logout(String refreshToken, CustomUserDetail userDetail) {
+    public void logout(String refreshToken) {
         jwtService.deleteRefreshTokenDB(refreshToken);
 
         // 쿠키에서 refreshToken 삭제
@@ -208,9 +210,9 @@ public class UserService {
 
         List<String> boardKeywordList = boardKeywordService.getBoardKeywords(findUserByUserDetail);
 
-        List<String> baseTagList = userStatusTagService.getBaseTags(userStatusTag);
+//        List<String> baseTagList = userStatusTagService.getBaseTags(userStatusTag);
 
-        List<String> currentJobStatusList = userStatusTagService.getCurrentJobStatuses(userStatusTag);
+//        List<String> currentJobStatusList = userStatusTagService.getCurrentJobStatuses(userStatusTag);
 
         List<String> myStatusTagsList = userStatusTagService.getMyStatusTags(userStatusTag);
 
@@ -223,8 +225,8 @@ public class UserService {
                 .profileImage(findUserByUserDetail.getProfileImage())
                 .dotoriTokenAmount(findUserByUserDetail.getDotoriToken().getCount())
                 .boardKeywordList(boardKeywordList)
-                .currentJobStatus(currentJobStatusList)
-                .baseTags(baseTagList)
+//                .currentJobStatus(currentJobStatusList)
+//                .baseTags(baseTagList)
                 .corporateForm(userStatusTag.getCorporateForm().getKoreanValue())
                 .myStatus(myStatusTagsList)
                 .personalHistory(userStatusTag.getMyCareerTags().getMyCareerTags().getDescription())
@@ -237,5 +239,16 @@ public class UserService {
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
         return refreshToken.getRefreshToken();
+    }
+
+    public FindUserAccountResponse findMyAccountInfo(CustomUserDetail userDetail) {
+        Users findUserByUserDetail = getUsers(userDetail);
+
+        return FindUserAccountResponse.builder()
+                .name(findUserByUserDetail.getName())
+                .email(findUserByUserDetail.getEmail())
+                .phoneNumber(findUserByUserDetail.getPhoneNumber())
+                .platform(AuthType.fromEnumValue(findUserByUserDetail.getAuthType()))
+                .build();
     }
 }

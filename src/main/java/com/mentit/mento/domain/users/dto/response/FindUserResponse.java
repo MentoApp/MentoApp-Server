@@ -21,11 +21,11 @@ public class FindUserResponse {
 
     private String personalHistory;
 
-    private List<String> baseTags;
+//    private List<String> baseTags;
 
     private List<String> myStatus;
 
-    private List<String> currentJobStatus;
+//    private List<String> currentJobStatus;
 
     private String corporateForm;
 

@@ -1,7 +1,6 @@
 package com.mentit.mento.domain.dotoriToken.service;
 
 import com.mentit.mento.domain.dotoriToken.constant.TradeType;
-import com.mentit.mento.domain.dotoriToken.dto.request.DotoriUsageResponse;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.users.entity.Users;

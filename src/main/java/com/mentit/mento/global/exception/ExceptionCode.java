@@ -36,7 +36,7 @@ public enum ExceptionCode {
     MALFORMED_TOKEN(UNAUTHORIZED, "Malformed token.", 401),
     EXPIRED_TOKEN(UNAUTHORIZED, "Expired token.", 401),
 
-    DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login" , 999 ),
+    DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login", 999),
 
     // 403
     DUPLICATE_RESOURCE(CONFLICT, "Resource already exists.", 403),
@@ -61,11 +61,16 @@ public enum ExceptionCode {
     IO_EXCEPTION_ON_IMAGE_UPLOAD(CONFLICT, "IO Exception happened on Image Upload", 403),
     NO_FILE_EXTENTION(CONFLICT, "No file Extention", 403),
     PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception", 403),
-    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403)
-    , INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter" , 403 )
-    , CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus" , 403 ),
-    ALREADY_ENROLLED_ACCOUNT(CONFLICT,"Already Enrolled Account" , 403 )
-    , ACCESS_DENIED(CONFLICT, "Access Denied" , 403 ),;
+    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403),
+    INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter", 403),
+    CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus", 403),
+    ALREADY_ENROLLED_ACCOUNT(CONFLICT, "Already Enrolled Account", 403),
+    ACCESS_DENIED(CONFLICT, "Access Denied", 403),
+    NICKNAME_NOT_MATCH(CONFLICT, "NickName Not Matched", 403),
+    NOT_FOUND_COMMENT(CONFLICT, "Can't Find Comment", 403),
+    NOT_FOUND_BOARD_LIKE(CONFLICT,"Can't Find Board Like" , 403 ),
+    ALREADY_LIKED(CONFLICT, "Already Liked" , 403 ),
+    NOT_FOUND_MORE_THAN_3_BOARDS(CONFLICT, "Can't find more than 3 Boards" , 403 );
 
     private final HttpStatus httpStatus;
     private final String message;

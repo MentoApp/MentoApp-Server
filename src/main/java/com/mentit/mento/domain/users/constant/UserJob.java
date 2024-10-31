@@ -12,7 +12,7 @@ public enum UserJob {
     BRAND_DESIGN("브랜드 디자인"),
     BACKEND("백엔드 개발"),
     FRONTEND("프론트엔드 개발"),
-    AI_DEVELOPER("AI 개발");
+    AI_DEVELOPER("AI/데이터");
 
     private final String koreanValue;
 

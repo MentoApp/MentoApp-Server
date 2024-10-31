@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.dotoriToken.controller;
 
-import com.mentit.mento.domain.dotoriToken.dto.request.DotoriUsageResponse;
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;

@@ -10,7 +10,7 @@ public enum BoardKeyword {
     TREND("트렌드"),
     JOB_OR_JOB_CHANGE("취업/이직"),
     PRACTICAL_KNOWLEDGE("실무 노하우"),
-    COMPANY_INFO("기업정보"),
+    COMPANY_INFO("기업 정보"),
     CAREER_GROWTH("커리어 성장"),
     LOOKING_FOR_MENTOR("멘토 찾아요"),
     INSIGHT("인사이트"),

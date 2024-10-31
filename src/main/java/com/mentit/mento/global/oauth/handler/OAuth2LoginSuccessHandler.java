@@ -1,5 +1,9 @@
 package com.mentit.mento.global.oauth.handler;
 
+import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.global.exception.ExceptionCode;
+import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.redis.service.RedisService;
@@ -24,6 +28,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final JwtService jwtTokenProvider;
     private final CookieUtils cookieUtils;
     private final RedisService redisService;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -33,9 +38,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
 
+        Users findUser = userRepository.findById(userDetail.getId()).orElseThrow(
+                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
+        );
+
         String targetUrl;
 
-        if (userDetail.isNewUser()) {
+        if (findUser.isNewUser()) {
             // 새로운 사용자라면 /add-information 페이지로 리디렉션
             targetUrl = "http://localhost:8080/api/v1/test/for-redirect?isNewUser=true";
         } else {

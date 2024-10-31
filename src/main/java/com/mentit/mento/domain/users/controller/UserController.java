@@ -2,6 +2,7 @@ package com.mentit.mento.domain.users.controller;
 
 import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.global.jwt.dto.JwtToken;
@@ -82,7 +83,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "정보 조회 실패",
             content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
-    @GetMapping
+    @GetMapping("/myInfo")
     public Response<FindUserResponse> findMyInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
     ){
@@ -90,13 +91,20 @@ public class UserController {
         return Response.success(HttpStatus.OK,"회원 조회 성공",findUserResponse);
     }
 
-    @Operation(summary = "닉네임 중복 검사" , description = "닉네임 제한 조건을 확인합니다.")
+    @Operation(summary = "계정 정보 조회" , description = "계정 정보 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 조회 결과",
+            @ApiResponse(responseCode = "200", description = "계정정보 조회 결과",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "정보 조회 실패",
+            @ApiResponse(responseCode = "400", description = "계정정보 조회 실패",
             content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
+    @GetMapping("/myAccountInfo")
+    public Response<FindUserAccountResponse> findMyAccountInfo(
+            @AuthenticationPrincipal CustomUserDetail userDetail
+    ){
+        FindUserAccountResponse findUserAccountResponse = userService.findMyAccountInfo(userDetail);
+        return Response.success(HttpStatus.OK, "계정 정보 조회 성공", findUserAccountResponse);
+    }
     @GetMapping("/validate-nickname/{nickname}")
     public Response<Boolean> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
@@ -163,12 +171,12 @@ public class UserController {
     @PostMapping("/logout")
     public Response<Void> logout(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            HttpServletResponse response  // HttpServletResponse 추가
+            HttpServletResponse response
     ) {
         String refreshToken = userService.getRefreshToken(userDetail.getId());
 
         // 로그아웃 처리
-        userService.logout(refreshToken, userDetail);
+        userService.logout(refreshToken);
 
         // 쿠키에서 refreshToken 삭제
         cookieUtils.deleteCookie(response, "refreshToken");
