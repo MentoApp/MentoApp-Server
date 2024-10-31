@@ -42,6 +42,16 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
 
+        String targetUrl;
+
+        if (findUser.isNewUser()) {
+            // 새로운 사용자라면 /add-information 페이지로 리디렉션
+            targetUrl = "http://15.165.4.143:8080/api/v1/auth/intermediate?isNewUser=true";
+        } else {
+            // 기존 사용자라면 메인 페이지로 리디렉션
+            targetUrl = "http://15.165.4.143:8080/api/v1/auth/intermediate?isNewUser=false";
+        }
+
         String accessToken = jwtToken.getAccessToken();
 
         String refreshToken = jwtToken.getRefreshToken();
@@ -50,8 +60,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
 
+        // 토큰을 URL 파라미터로 추가
+        targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
+                .queryParam("accessToken", accessToken)
+                .toUriString();
 
-        response.addHeader("isNewUser", String.valueOf(findUser.isNewUser()));
-        response.addHeader("accessToken", accessToken);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
