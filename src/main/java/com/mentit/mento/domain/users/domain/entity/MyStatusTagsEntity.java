@@ -27,7 +27,7 @@ public class MyStatusTagsEntity {
     public MyStatusTags to() {
         return MyStatusTags.builder()
                 .myStatusTagId(myStatusTagId)
-                .userStatusTag(UserStatusTag.to(userStatusTagEntity))
+                .userStatusTag(userStatusTagEntity)
                 .myStatusTag(myStatusTag)
                 .build();
     }

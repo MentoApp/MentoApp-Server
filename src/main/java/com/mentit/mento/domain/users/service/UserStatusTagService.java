@@ -9,7 +9,6 @@ import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
 import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
-import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.MyCareerTagsEntityRepository;
 import com.mentit.mento.domain.users.service.port.MyStatusTagsEntityRepository;
@@ -38,7 +37,7 @@ public class UserStatusTagService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserStatusTag updateUserStatusTag(SignInUser request, UsersEntity user) {
+    public UserStatusTag create(SignInUser request, Users user) {
 
         //Domain객체 MyStatusTags생성
         List<MyStatusTags> myStatusEntities = request.getMyStatus().stream()
@@ -76,7 +75,7 @@ public class UserStatusTagService {
         return userStatusTag;
     }
 
-    public void deleteExistingUserStatusTag(Users user) {
+    public void delete(Users user) {
         //유저의 모든 태그 조회
         UserStatusTag findUserStatusTag = userStatusTagRepository.findByUsers(user).orElseThrow(
                 () -> new MemberException(ExceptionCode.CANT_FIND_USERSTATUS)
@@ -96,7 +95,7 @@ public class UserStatusTagService {
     }
 
     @Transactional
-    public UserStatusTag updateUserStatusTag(@Valid ModifyUser request, Users user) {
+    public UserStatusTag update(@Valid ModifyUser request, Users user) {
         //내 상태 태그 생성
         List<MyStatusTags> myStatus = request.getMyStatus().stream()
                 .map(status -> MyStatusTags.builder()
@@ -137,10 +136,10 @@ public class UserStatusTagService {
     }
 
 
-    public List<String> getMyStatusTags(UserStatusTagEntity userStatusTagEntity) {
+    public List<String> find(UserStatusTag userStatusTag) {
         List<String> myStatusTagsList = new ArrayList<>();
 
-        userStatusTagEntity.getMyStatus().forEach(
+        userStatusTag.getMyStatus().forEach(
                 myStatus -> myStatusTagsList.add(myStatus.getMyStatusTag().getDescription())
 
         );

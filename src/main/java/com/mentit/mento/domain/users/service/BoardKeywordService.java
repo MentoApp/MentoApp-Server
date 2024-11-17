@@ -2,6 +2,7 @@ package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
 import com.mentit.mento.domain.users.domain.BoardKeyword;
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.BoardKeywordRepository;
@@ -21,11 +22,11 @@ public class BoardKeywordService {
     private final BoardKeywordRepository boardKeywordRepository;
 
     @Transactional
-    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity user) {
+    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, Users user) {
         boardKeywordEnums.forEach(keyword -> {
             BoardKeyword boardKeyword = BoardKeyword.builder()
                     .boardKeyword(keyword)
-                    .usersEntity(user)
+                    .usersEntity(UsersEntity.from(user))
                     .build();
 
             boardKeyword = boardKeywordRepository.save(boardKeyword);

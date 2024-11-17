@@ -17,22 +17,32 @@ public class UserRepositoryImpl implements UserRepository {
 
 
     @Override
-    public Optional<UsersEntity> findByEmail(String email) {
-        return userJPARepository.findByEmail(email);
+    public Optional<Users> findByEmail(String email) {
+        return userJPARepository.findByEmail(email).map(UsersEntity::to);
     }
 
     @Override
-    public Optional<UsersEntity> findByNickname(String nickname, Long userId) {
-        return userJPARepository.findByNickname(nickname,userId);
+    public Optional<Users> findByNickname(String nickname, Long userId) {
+        return userJPARepository.findByNickname(nickname,userId).map(UsersEntity::to);
     }
 
     @Override
-    public UsersEntity findByBoard(Long userId) {
-        return userJPARepository.findByBoard(userId);
+    public Users findByBoard(Long userId) {
+        return userJPARepository.findByBoard(userId).to();
     }
 
     @Override
     public Users save(Users modifiedUser) {
         return userJPARepository.save(UsersEntity.from(modifiedUser)).to();
+    }
+
+    @Override
+    public Optional<Users> findById(Long id) {
+        return userJPARepository.findById(id).map(UsersEntity::to);
+    }
+
+    @Override
+    public void delete(Users findUser) {
+        userJPARepository.delete(UsersEntity.from(findUser));
     }
 }

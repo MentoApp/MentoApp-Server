@@ -174,10 +174,9 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetail userDetail,
             HttpServletResponse response
     ) {
-        String refreshToken = userService.getRefreshToken(userDetail.getId());
 
         // 로그아웃 처리
-        userService.logout(refreshToken);
+        userService.logout(userDetail.getId());
 
         // 쿠키에서 refreshToken 삭제
         cookieUtils.deleteCookie(response, "refreshToken");

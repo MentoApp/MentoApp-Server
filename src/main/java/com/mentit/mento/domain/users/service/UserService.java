@@ -2,13 +2,16 @@ package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenService;
 import com.mentit.mento.domain.users.constant.AuthType;
+import com.mentit.mento.domain.users.domain.UserStatusTag;
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.infrastructure.*;
+import com.mentit.mento.domain.users.service.port.UserRepository;
+import com.mentit.mento.domain.users.service.port.UserStatusTagRepository;
 import com.mentit.mento.global.authToken.entity.RefreshToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
@@ -34,19 +37,19 @@ import java.util.List;
 @Slf4j
 public class UserService {
 
-    private final UserRepositoryImpl userRepositoryImpl;
+    private final UserRepository userRepository;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2RevokeService oAuth2RevokeService;
     private final JwtService jwtService;
-    private final UserStatusTagRepositoryImpl userStatusTagRepositoryImpl;
+    private final UserStatusTagRepository userStatusTagRepository;
     private final S3FileUtilImpl s3FileUtilImpl;
     private final DotoriTokenService dotoriTokenService;
     private final UserStatusTagService userStatusTagService;
     private final BoardKeywordService boardKeywordService;
 
     public void create(CustomUserDetail userDetail, SignInUser signInUser, MultipartFile profileImage) {
-        UsersEntity findUserByUserDetail = getUsers(userDetail);
+        Users findUserByUserDetail = getUsers(userDetail);
 
         if(findUserByUserDetail.getUserStatusTagEntity()!=null){
             throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT);
@@ -60,37 +63,37 @@ public class UserService {
         }
 
         // 유저 상태 태그 생성 및 저장 (서비스로 위임)
-        UserStatusTagEntity userStatusTagEntity = userStatusTagService.updateUserStatusTag(signInUser, findUserByUserDetail);
-        userStatusTagEntity = userStatusTagRepositoryImpl.save(userStatusTagEntity);
+        UserStatusTag userStatusTag = userStatusTagService.create(signInUser, findUserByUserDetail);
+        userStatusTag = userStatusTagRepository.save(userStatusTag);
 
         //BoardKeyword 생성 및 저장
         boardKeywordService.createUserBoardKeyword(signInUser.getBoardKeywordEnums(), findUserByUserDetail);
 
         // DotoriToken 및 관련 상세 정보 생성 (토큰 서비스로 위임)
-        dotoriTokenService.createDotoriToken(findUserByUserDetail);
+        dotoriTokenService.createDotoriToken(UsersEntity.from(findUserByUserDetail));
 
         // 유저 정보 업데이트
-        updateUserInformation(findUserByUserDetail, signInUser, uploadedFile, userStatusTagEntity);
+        updateUserInformation(UsersEntity.from(findUserByUserDetail), signInUser, uploadedFile, userStatusTag);
 
     }
 
-    private void updateUserInformation(UsersEntity user, SignInUser request, String uploadedFile, UserStatusTagEntity userStatusTagEntity) {
-        UsersEntity updatedUser = user.toBuilder()
+    private void updateUserInformation(UsersEntity user, SignInUser request, String uploadedFile, UserStatusTag userStatusTag) {
+        Users updatedUser = user.toBuilder()
                 .job(request.getJob())
                 .nickname(request.getNickname())
-                .userStatusTagEntity(userStatusTagEntity)
+                .userStatusTagEntity(UserStatusTagEntity.from(userStatusTag))
                 .profileImage(uploadedFile)
                 .simpleIntroduce(request.getSimpleIntroduce())
                 .isNewUser(false)
-                .build();
+                .build().to();
 
-        userRepositoryImpl.save(updatedUser);
+        userRepository.save(updatedUser);
     }
 
     public void modifyUser(CustomUserDetail customUserDetail,
                            @Valid ModifyUser modifyUser,
                            MultipartFile profileImage) {
-        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+        Users findUserByUserDetail = getUsers(customUserDetail);
 
         if (findUserByUserDetail.getProfileImage()!=null) {
             deleteExistingProfileImage(findUserByUserDetail);
@@ -106,14 +109,14 @@ public class UserService {
 
         // 기존 태그 삭제
         if(findUserByUserDetail.getUserStatusTagEntity()!=null){
-            userStatusTagService.deleteExistingUserStatusTag(findUserByUserDetail);
+            userStatusTagService.delete(findUserByUserDetail);
         }
 
         // 새로운 UserStatusTag 생성
-        UserStatusTagEntity savedTag = userStatusTagService.createUserStatusTag(modifyUser, findUserByUserDetail);
+        UserStatusTag savedTag = userStatusTagService.update(modifyUser, findUserByUserDetail);
 
         // 기존 게시판 키워드 삭제
-        boardKeywordService.deleteExistingBoardKeywords(findUserByUserDetail);
+        boardKeywordService.deleteExistingBoardKeywords(UsersEntity.from(findUserByUserDetail));
 
         //새로운 게시판 키워드 생성
         boardKeywordService.createUserBoardKeyword(modifyUser.getBoardKeywordEnums(), findUserByUserDetail);
@@ -122,28 +125,28 @@ public class UserService {
         updateUser(findUserByUserDetail, modifyUser, uploadedFile, savedTag);
     }
 
-    private void deleteExistingProfileImage(UsersEntity user) {
+    private void deleteExistingProfileImage(Users user) {
         if (user.getProfileImage() != null && !user.getProfileImage().isBlank()) {
             s3FileUtilImpl.deleteImageFromS3(user.getProfileImage());
         }
     }
 
-    private void updateUser(UsersEntity user, ModifyUser modifyUser, String uploadedFile, UserStatusTagEntity savedTag) {
-        UsersEntity updatedUser = user.toBuilder()
+    private void updateUser(Users user, ModifyUser modifyUser, String uploadedFile, UserStatusTag savedTag) {
+        Users updatedUser = user.toBuilder()
                 .job(modifyUser.getJob())
                 .nickname(modifyUser.getNickname())
                 .profileImage(uploadedFile)
                 .simpleIntroduce(modifyUser.getSimpleIntroduce())
-                .userStatusTagEntity(savedTag)
+                .userStatusTagEntity(UserStatusTagEntity.from(savedTag))
                 .build();
 
-        userRepositoryImpl.save(updatedUser);
+        userRepository.save(updatedUser);
     }
 
     public boolean validateNickname(String nickname, CustomUserDetail userDetail) {
-        UsersEntity findUserByUserDetail = getUsers(userDetail);
+        Users findUserByUserDetail = getUsers(userDetail);
 
-        boolean isPresent = userRepositoryImpl.findByNickname(nickname, findUserByUserDetail.getUserId()).isPresent();
+        boolean isPresent = userRepository.findByNickname(nickname, findUserByUserDetail.getUserId()).isPresent();
 
         log.info("닉네임 존재 여부 ={}", isPresent);
 
@@ -162,24 +165,24 @@ public class UserService {
         return !isPresent;
     }
 
-    private UsersEntity getUsers(CustomUserDetail userDetail) {
-        return userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
+    private Users getUsers(CustomUserDetail userDetail) {
+        return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public void deleteSocialMember(Long uuid) {
-        UsersEntity findUser = getUserById(uuid);
+        Users findUser = getUserById(uuid);
 
-        socialAccessTokenRepository.findByUser(findUser).ifPresent(
+        socialAccessTokenRepository.findByUser(UsersEntity.from(findUser)).ifPresent(
                 accessToken -> {
                     String socialAccessToken = accessToken.getSocialAccessToken();
-                    revokeSocialAccessToken(findUser, socialAccessToken);
+                    revokeSocialAccessToken(UsersEntity.from(findUser), socialAccessToken);
                     socialAccessTokenRepository.delete(accessToken);
                 }
         );
 
-        userRepositoryImpl.delete(findUser);
+        userRepository.delete(findUser);
     }
 
     private void revokeSocialAccessToken(UsersEntity findUser, String socialAccessToken) {
@@ -189,17 +192,20 @@ public class UserService {
         }
     }
 
-    private UsersEntity getUserById(Long id) {
+    private Users getUserById(Long id) {
         refreshTokenRepository.getRefreshTokenByMemberId(id).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN)
         );
-        return userRepositoryImpl.findById(id).
+        return userRepository.findById(id).
                 orElseThrow(
                         () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
                 );
     }
 
-    public void logout(String refreshToken) {
+    public void logout(Long userId) {
+
+        String refreshToken = getRefreshToken(userId);
+
         jwtService.deleteRefreshTokenDB(refreshToken);
 
         // 쿠키에서 refreshToken 삭제
@@ -217,16 +223,12 @@ public class UserService {
 
     @Transactional
     public FindUserResponse findMyInfo(CustomUserDetail userDetail) {
-        UsersEntity findUserByUserDetail = getUsers(userDetail);
-        UserStatusTagEntity userStatusTagEntity = findUserByUserDetail.getUserStatusTagEntity();
+        Users findUserByUserDetail = getUsers(userDetail);
+        UserStatusTag userStatusTag = findUserByUserDetail.getUserStatusTagEntity().to();
 
-        List<String> boardKeywordList = boardKeywordService.getBoardKeywords(findUserByUserDetail);
+        List<String> boardKeywordList = boardKeywordService.getBoardKeywords(UsersEntity.from(findUserByUserDetail));
 
-//        List<String> baseTagList = userStatusTagService.getBaseTags(userStatusTag);
-
-//        List<String> currentJobStatusList = userStatusTagService.getCurrentJobStatuses(userStatusTag);
-
-        List<String> myStatusTagsList = userStatusTagService.getMyStatusTags(userStatusTagEntity);
+        List<String> myStatusTagsList = userStatusTagService.find(userStatusTag);
 
         return FindUserResponse.builder()
                 .id(userDetail.getId())
@@ -237,11 +239,9 @@ public class UserService {
                 .profileImage(findUserByUserDetail.getProfileImage())
                 .dotoriTokenAmount(findUserByUserDetail.getDotoriToken().getCount())
                 .boardKeywordList(boardKeywordList)
-//                .currentJobStatus(currentJobStatusList)
-//                .baseTags(baseTagList)
-                .corporateForm(userStatusTagEntity.getCorporateFormEnum().getKoreanValue())
+                .corporateForm(userStatusTag.getCorporateFormEnum().getKoreanValue())
                 .myStatus(myStatusTagsList)
-                .personalHistory(userStatusTagEntity.getMyCareerTags().getMyCareerTagsEnum().getDescription())
+                .personalHistory(userStatusTag.getMyCareerTags().getMyCareerTagsEnum().getDescription())
                 .userJob(findUserByUserDetail.getJob().getKoreanValue())
                 .build();
     }
@@ -254,7 +254,7 @@ public class UserService {
     }
 
     public FindUserAccountResponse findMyAccountInfo(CustomUserDetail userDetail) {
-        UsersEntity findUserByUserDetail = getUsers(userDetail);
+        Users findUserByUserDetail = getUsers(userDetail);
 
         return FindUserAccountResponse.builder()
                 .name(findUserByUserDetail.getName())
