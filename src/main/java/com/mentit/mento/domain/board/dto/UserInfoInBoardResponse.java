@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.board.dto;
 
-import com.mentit.mento.domain.users.constant.BoardKeyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

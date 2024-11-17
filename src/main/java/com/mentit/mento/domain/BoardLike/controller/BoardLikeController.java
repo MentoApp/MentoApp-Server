@@ -18,14 +18,14 @@ public class BoardLikeController {
 
     private final BoardLikeService boardLikeService;
 
-    @GetMapping("/like/{boardId}")
-    public Response<Void> like(
+    @GetMapping("/{boardId}")
+    public Response<Long> like(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @PathVariable Long boardId
     ) {
-        boardLikeService.like(customUserDetail,boardId);
+        Long likeCount = boardLikeService.like(customUserDetail, boardId);
 
-        return Response.success(HttpStatus.OK,"좋아요 요청 성공");
+        return Response.success(HttpStatus.OK,"좋아요 요청 성공",likeCount);
     }
 
 

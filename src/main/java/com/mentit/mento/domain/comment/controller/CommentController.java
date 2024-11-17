@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -61,8 +60,8 @@ public class CommentController {
     @GetMapping("/{boardId}")
     public Response<Page<CommentsResponse>> getComment(
             @PathVariable Long boardId,
-            @RequestParam int page,
-            @RequestParam int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "3") int size) {
     {
             Pageable pageable = PageRequest.of(page, size);
             Page<CommentsResponse> comments = commentService.getCommentsByBoardId(boardId, pageable);

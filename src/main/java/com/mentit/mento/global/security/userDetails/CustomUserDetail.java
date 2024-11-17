@@ -1,8 +1,7 @@
 package com.mentit.mento.global.security.userDetails;
 
-import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.security.util.PasswordUtil;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -24,7 +23,7 @@ public class CustomUserDetail extends org.springframework.security.core.userdeta
         this.isNewUser = true;
     }
 
-    public CustomUserDetail(Users user, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
+    public CustomUserDetail(UsersEntity user, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
         this(user.getEmail() != null ? user.getEmail() : UUID.randomUUID().toString().substring(0, 8) + "@social.com",
                 user.getPassword() != null ? user.getPassword() : PasswordUtil.generateRandomPassword(),
                 user.getUserId(), authorities);

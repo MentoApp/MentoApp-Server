@@ -1,9 +1,10 @@
 package com.mentit.mento.domain.users.service;
 
-import com.mentit.mento.domain.users.constant.BoardKeyword;
-import com.mentit.mento.domain.users.entity.BoardKeywordEntity;
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.BoardKeywordRepository;
+import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
+import com.mentit.mento.domain.users.domain.BoardKeyword;
+import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.service.port.BoardKeywordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,27 +21,29 @@ public class BoardKeywordService {
     private final BoardKeywordRepository boardKeywordRepository;
 
     @Transactional
-    public void createUserBoardKeyword(List<BoardKeyword> boardKeywords, Users user) {
-        boardKeywords.forEach(keyword -> {
-            BoardKeywordEntity boardKeywordEntity = BoardKeywordEntity.builder()
+    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity user) {
+        boardKeywordEnums.forEach(keyword -> {
+            BoardKeyword boardKeyword = BoardKeyword.builder()
                     .boardKeyword(keyword)
-                    .users(user)
+                    .usersEntity(user)
                     .build();
-            BoardKeywordEntity savedBoardKeyWordEntity = boardKeywordRepository.save(boardKeywordEntity);
-            user.getBoardKeywords().add(savedBoardKeyWordEntity);
+
+            boardKeyword = boardKeywordRepository.save(boardKeyword);
+
+            user.getBoardKeywords().add(BoardKeywordEntity.from(boardKeyword));
         });
     }
 
     @Transactional
-    public void deleteExistingBoardKeywords(Users user) {
+    public void deleteExistingBoardKeywords(UsersEntity user) {
         boardKeywordRepository.deleteAllByUsers(user);
     }
 
-    public List<String> getBoardKeywords(Users findUserByUserDetail) {
+    public List<String> getBoardKeywords(UsersEntity findUserByUserDetail) {
         List<String> boardKeywordList = new ArrayList<>();
 
         findUserByUserDetail.getBoardKeywords().forEach(
-                boardKeyword -> boardKeywordList.add(boardKeyword.getBoardKeyword().getKoreanValue())
+                boardKeyword -> boardKeywordList.add(boardKeyword.getBoardKeywordEnum().getKoreanValue())
         );
         return boardKeywordList;
     }

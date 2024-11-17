@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.alarm.entity;
 
-import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class Notification extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Users user;
+    private UsersEntity user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

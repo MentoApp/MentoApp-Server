@@ -1,6 +1,6 @@
 package com.mentit.mento.global.authToken.entity;
 
-import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +21,9 @@ public class SocialAccessToken {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Users user;
+    private UsersEntity user;
 
-    public static SocialAccessToken of(String socialAccessToken, Users user) {
+    public static SocialAccessToken of(String socialAccessToken, UsersEntity user) {
         return SocialAccessToken.builder()
                 .socialAccessToken(socialAccessToken)
                 .user(user)

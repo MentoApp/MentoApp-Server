@@ -1,6 +1,6 @@
 package com.mentit.mento.global.security.filter;
 
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.exception.customException.MemberException;
@@ -27,7 +27,7 @@ import java.util.List;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     private static final List<String> EXCLUDE_URLS = List.of(
            "/css", "/swagger", "/v3/api-docs", "/login", "/favicon","api/v1/auth"
@@ -71,7 +71,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof CustomUserDetail userDetail) {
-            userRepository.findById(userDetail.getId()).orElseThrow(
+            userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
                     () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
             );
         }

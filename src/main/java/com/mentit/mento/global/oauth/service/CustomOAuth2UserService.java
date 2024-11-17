@@ -1,9 +1,9 @@
 package com.mentit.mento.global.oauth.service;
 
 import com.mentit.mento.domain.users.constant.AuthType;
-import com.mentit.mento.domain.users.constant.UserGender;
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.constant.UserGenderEnum;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Transactional
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
 
     @Override
@@ -54,13 +54,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String name = (String) memberAttribute.get("name");
         String profileImage = memberAttribute.get("picture") != null ? (String) memberAttribute.get("picture") : null;
         String nickname = memberAttribute.get("nickname") != null ? (String) memberAttribute.get("nickname") : null;
-        UserGender gender = memberAttribute.get("gender") != null ? UserGender.valueOf(((String) memberAttribute.get("gender")).toUpperCase()) : null;
+        UserGenderEnum gender = memberAttribute.get("gender") != null ? UserGenderEnum.valueOf(((String) memberAttribute.get("gender")).toUpperCase()) : null;
         String birthDay = memberAttribute.get("birthday") != null ? (String) memberAttribute.get("birthday") : null;
         String birthYear = memberAttribute.get("birthyear") != null ? (String) memberAttribute.get("birthyear") : null;
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
-        Users user = userRepository.findByEmail(email)
+        UsersEntity user = userRepositoryImpl.findByEmail(email)
                 .map(existingUser -> {
                     // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
                     socialAccessTokenRepository.findByUser(existingUser).ifPresentOrElse(
@@ -75,7 +75,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     return existingUser;
 
                 }).orElseGet(() -> {
-                    Users mappedUser = Users.builder()
+                    UsersEntity mappedUser = UsersEntity.builder()
                             .email(email)
                             .name(name)
                             .nickname(nickname)
@@ -89,10 +89,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     String tempPassword = PasswordUtil.generateRandomPassword();
                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(tempPassword);
-                    Users newUser = mappedUser.toBuilder()
+                    UsersEntity newUser = mappedUser.toBuilder()
                             .password(encodedPassword)
                             .build();
-                    userRepository.save(newUser);
+                    userRepositoryImpl.save(newUser);
                     socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, newUser)); // 새로운 Member에 대한 SocialAccessToken 저장
                     isNewUser.set(true);
                     return newUser;
