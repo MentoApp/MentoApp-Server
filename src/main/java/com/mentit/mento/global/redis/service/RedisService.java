@@ -1,6 +1,6 @@
 package com.mentit.mento.global.redis.service;
 
-import com.mentit.mento.domain.board.constant.BoardKeywordForCreating;
+import com.mentit.mento.domain.board.constant.BoardKeywordForCreatingEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class RedisService {
     }
 
     // Save keywords for a specific board
-    public void saveBoardKeywords(Long boardId, List<BoardKeywordForCreating> keywords) {
+    public void saveBoardKeywords(Long boardId, List<BoardKeywordForCreatingEnum> keywords) {
         String key = "boardKeywords:" + boardId;
         String[] keywordsArr = new String[keywords.size()];
         for (int i = 0; i < keywords.size(); i++) {

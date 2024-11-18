@@ -36,8 +36,8 @@ public class BoardKeywordService {
     }
 
     @Transactional
-    public void deleteExistingBoardKeywords(UsersEntity user) {
-        boardKeywordRepository.deleteAllByUsers(user);
+    public void deleteExistingBoardKeywords(Users user) {
+        boardKeywordRepository.deleteAllByUsers(UsersEntity.from(user));
     }
 
     public List<String> getBoardKeywords(UsersEntity findUserByUserDetail) {

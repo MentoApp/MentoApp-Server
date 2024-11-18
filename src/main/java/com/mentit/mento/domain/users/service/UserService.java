@@ -116,7 +116,7 @@ public class UserService {
         UserStatusTag savedTag = userStatusTagService.update(modifyUser, findUserByUserDetail);
 
         // 기존 게시판 키워드 삭제
-        boardKeywordService.deleteExistingBoardKeywords(UsersEntity.from(findUserByUserDetail));
+        boardKeywordService.deleteExistingBoardKeywords(findUserByUserDetail);
 
         //새로운 게시판 키워드 생성
         boardKeywordService.createUserBoardKeyword(modifyUser.getBoardKeywordEnums(), findUserByUserDetail);
@@ -189,6 +189,7 @@ public class UserService {
         switch (findUser.getAuthType()) {
             case MEMBER_KAKAO -> oAuth2RevokeService.revokeKakao(socialAccessToken);
             case MEMBER_NAVER -> oAuth2RevokeService.revokeNaver(socialAccessToken);
+            default -> {} // 다른 타입의 회원은 소셜 토큰 철회가 필요 없음
         }
     }
 

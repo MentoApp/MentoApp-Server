@@ -1,4 +1,4 @@
-package com.mentit.mento.domain.board.dto;
+package com.mentit.mento.domain.board.domain.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class FindBoardResponse {
+public class FindSimilarBoardResponse {
 
     private String title;
 
@@ -16,18 +16,17 @@ public class FindBoardResponse {
 
     private String content;
 
-    private Long viewCount;
-
-    private Long likeCount;
-
     private LocalDateTime createdTime;
 
     private List<String> boardKeywords;
 
-    private List<String> imageList;
-
     private UserInfoInBoardResponse userInfo;
 
-    private Long commentCount;
+    private String imageList;
 
+    private Long viewCount;
+
+    private Long likeCount;
+
+    private Long commentCount;
 }

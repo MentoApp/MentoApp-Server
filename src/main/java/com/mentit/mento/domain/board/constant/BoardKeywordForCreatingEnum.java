@@ -1,13 +1,12 @@
 package com.mentit.mento.domain.board.constant;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.mentit.mento.global.deserializer.BoardKeywordDeserializer;
 import com.mentit.mento.global.deserializer.BoardKeywordForCreatingDeserializer;
 import lombok.Getter;
 
 @Getter
 @JsonDeserialize(using = BoardKeywordForCreatingDeserializer.class)
-public enum BoardKeywordForCreating {
+public enum BoardKeywordForCreatingEnum {
     PLAN_OR_PM("기획/PM"),
     UI_UX_DESIGN("UI/UX 디자인"),
     BRAND_DESIGN("브랜드 디자인"),
@@ -29,12 +28,12 @@ public enum BoardKeywordForCreating {
 
     private final String koreanValue;
 
-    BoardKeywordForCreating(String koreanValue) {
+    BoardKeywordForCreatingEnum(String koreanValue) {
         this.koreanValue = koreanValue;
     }
 
-    public static BoardKeywordForCreating fromKoreanValue(String koreanValue) {
-        for (BoardKeywordForCreating keyword : values()) {
+    public static BoardKeywordForCreatingEnum fromKoreanValue(String koreanValue) {
+        for (BoardKeywordForCreatingEnum keyword : values()) {
             if (keyword.koreanValue.equals(koreanValue)) {
                 return keyword;
             }

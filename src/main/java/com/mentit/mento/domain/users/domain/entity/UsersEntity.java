@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.users.domain.entity;
 
-import com.mentit.mento.domain.board.entity.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
@@ -76,7 +76,6 @@ public class UsersEntity extends BaseEntity {
 
     public static UsersEntity from(Users user) {
         return UsersEntity.builder()
-                .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -143,6 +142,6 @@ public class UsersEntity extends BaseEntity {
     private List<Comment> comment;
 
     @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Board> boards;
+    private List<BoardEntity> boardEntities;
 
 }

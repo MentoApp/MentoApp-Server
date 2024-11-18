@@ -28,7 +28,6 @@ public class BoardKeywordEntity {
 
     public static BoardKeywordEntity from(BoardKeyword boardKeyword) {
         return BoardKeywordEntity.builder()
-                .boardKeywordId(boardKeyword.getBoardKeywordId())
                 .boardKeywordEnum(boardKeyword.getBoardKeyword())
                 .usersEntity(boardKeyword.getUsersEntity())
                 .build();

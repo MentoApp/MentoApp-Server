@@ -1,4 +1,4 @@
-package com.mentit.mento.domain.board.dto;
+package com.mentit.mento.domain.board.domain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

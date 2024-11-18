@@ -1,5 +1,6 @@
 package com.mentit.mento.global.jwt.service;
 
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.authToken.entity.RefreshToken;
@@ -162,7 +163,7 @@ public class JwtService {
 
     private Authentication getAuthenticationFromMemberId(Long memberId) {
         // 회원 ID로 사용자 정보 조회
-        UsersEntity user = userRepositoryImpl.findById(memberId)
+        Users user = userRepositoryImpl.findById(memberId)
                 .orElseThrow(() -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER));
         GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuthType().name());
 

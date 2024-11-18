@@ -2,8 +2,10 @@ package com.mentit.mento.global.oauth.service;
 
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGenderEnum;
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
+import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
@@ -31,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Transactional
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final UserRepositoryImpl userRepositoryImpl;
+    private final UserRepository userRepositoryImpl;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
 
     @Override
@@ -60,16 +62,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
-        UsersEntity user = userRepositoryImpl.findByEmail(email)
+        Users user = userRepositoryImpl.findByEmail(email)
                 .map(existingUser -> {
                     // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
-                    socialAccessTokenRepository.findByUser(existingUser).ifPresentOrElse(
+                    socialAccessTokenRepository.findByUser(UsersEntity.from(existingUser)).ifPresentOrElse(
                             existingToken -> {
                                 log.info("existingToken: {}", existingToken.getSocialAccessToken());
                                 existingToken.updateSocialAccessToken(socialAccessToken);
                                 socialAccessTokenRepository.save(existingToken);
                             },
-                            () -> socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, existingUser)
+                            () -> socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, UsersEntity.from(existingUser))
                             )
                     );
                     return existingUser;
@@ -89,13 +91,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     String tempPassword = PasswordUtil.generateRandomPassword();
                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(tempPassword);
-                    UsersEntity newUser = mappedUser.toBuilder()
+                    mappedUser = mappedUser.toBuilder()
                             .password(encodedPassword)
                             .build();
-                    userRepositoryImpl.save(newUser);
-                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, newUser)); // 새로운 Member에 대한 SocialAccessToken 저장
+                    Users users = mappedUser.to();
+                    userRepositoryImpl.save(users);
+                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, mappedUser));
                     isNewUser.set(true);
-                    return newUser;
+
+                    return users;
                 });
 
         CustomUserDetail customUserDetail = new CustomUserDetail(

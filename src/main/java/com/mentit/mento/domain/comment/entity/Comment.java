@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.comment.entity;
 
-import com.mentit.mento.domain.board.entity.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    private Board board;
+    private BoardEntity boardEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

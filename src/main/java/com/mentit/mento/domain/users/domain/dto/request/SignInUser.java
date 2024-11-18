@@ -26,14 +26,9 @@ public class SignInUser {
     @Schema(description = "회사의 형태", example = "대기업")
     private CorporateFormEnum corporateFormEnum;
 
-//    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
-//    private List<BaseTag> baseTags;
-
     @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"대학생\", \"구직중\"]")
     private List<MyStatusTagsEnum> myStatus;
 
-//    @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"이커머스\", \"금융\"]")
-//    private List<CurrentJobStatus> currentJobStatus;
 
     @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 홍길동입니다.")
     private String simpleIntroduce;

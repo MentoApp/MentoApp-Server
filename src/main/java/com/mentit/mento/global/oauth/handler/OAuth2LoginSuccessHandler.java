@@ -1,5 +1,6 @@
 package com.mentit.mento.global.oauth.handler;
 
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -38,7 +39,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
 
-        UsersEntity findUser = userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
+        Users findUser = userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
 

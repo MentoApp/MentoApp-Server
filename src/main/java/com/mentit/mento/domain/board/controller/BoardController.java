@@ -1,10 +1,9 @@
 package com.mentit.mento.domain.board.controller;
 
-import com.mentit.mento.domain.board.dto.BoardCreateRequest;
-import com.mentit.mento.domain.board.dto.BoardUpdateRequest;
-import com.mentit.mento.domain.board.dto.FindBoardResponse;
-import com.mentit.mento.domain.board.dto.FindSimilarBoardResponse;
-import com.mentit.mento.domain.board.entity.Board;
+import com.mentit.mento.domain.board.domain.dto.request.BoardCreate;
+import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
+import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
+import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;
 import com.mentit.mento.domain.board.service.BoardService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -28,10 +27,10 @@ public class BoardController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<FindBoardResponse> createBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @RequestPart BoardCreateRequest boardCreateRequest,
+            @RequestPart BoardCreate boardCreate,
             @RequestPart(required = false) List<MultipartFile> images
             ){
-        FindBoardResponse findBoardResponse = boardService.createBoard(customUserDetail, boardCreateRequest, images);
+        FindBoardResponse findBoardResponse = boardService.createBoard(customUserDetail, boardCreate, images);
 
         return Response.success(HttpStatus.OK,"게시판 작성 성공",findBoardResponse);
     }
@@ -39,10 +38,10 @@ public class BoardController {
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<FindBoardResponse> updateBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @RequestPart BoardUpdateRequest boardUpdateRequest,
+            @RequestPart BoardUpdate boardUpdate,
             @RequestPart(required = false) List<MultipartFile> images
     ){
-        FindBoardResponse findBoardResponse = boardService.updateBoard(customUserDetail, boardUpdateRequest, images);
+        FindBoardResponse findBoardResponse = boardService.updateBoard(customUserDetail, boardUpdate, images);
 
         return Response.success(HttpStatus.OK,"게시판 수정 성공",findBoardResponse);
 

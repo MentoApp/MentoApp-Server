@@ -6,6 +6,7 @@ import com.mentit.mento.domain.dotoriToken.dto.response.DotoriGiveResponse;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriUsageResponse;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -49,14 +50,14 @@ public class DotoriTokenService {
         dotoriTokenUsageDetailsRepository.save(dotoriTokenUsageDetails);
     }
 
-    private UsersEntity getUsers(CustomUserDetail userDetail) {
+    private Users getUsers(CustomUserDetail userDetail) {
         return userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public Page<DotoriUsageResponse> findUsage(Pageable pageable, CustomUserDetail customUserDetail) {
-        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+        Users findUserByUserDetail = getUsers(customUserDetail);
 
         DotoriToken dotoriToken = findUserByUserDetail.getDotoriToken();
 
@@ -71,8 +72,8 @@ public class DotoriTokenService {
                     if(dotoriTokenUsageDetails.getTradeType() == TradeType.BOARD_EARN) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
-                                .boardId(dotoriTokenUsageDetails.getBoard().getBoardId())
-                                .boardTitle(dotoriTokenUsageDetails.getBoard().getTitle())
+                                .boardId(dotoriTokenUsageDetails.getBoardEntity().getBoardId())
+                                .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
                                 .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
@@ -83,8 +84,8 @@ public class DotoriTokenService {
                     } else if (dotoriTokenUsageDetails.getTradeType() == TradeType.BOARD_CREATE) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
-                                .boardId(dotoriTokenUsageDetails.getBoard().getBoardId())
-                                .boardTitle(dotoriTokenUsageDetails.getBoard().getTitle())
+                                .boardId(dotoriTokenUsageDetails.getBoardEntity().getBoardId())
+                                .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
                                 .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
@@ -115,8 +116,8 @@ public class DotoriTokenService {
                         //게시물에 선물
                         DotoriGiveResponse dotoriGiveResponse = DotoriGiveResponse.builder()
                                 .usageCount("-"+dotoriTokenUsageDetails.getTradeAmount()+"개")
-                                .boardId(dotoriTokenUsageDetails.getBoard().getBoardId())
-                                .boardTitle(dotoriTokenUsageDetails.getBoard().getTitle())
+                                .boardId(dotoriTokenUsageDetails.getBoardEntity().getBoardId())
+                                .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .receiverId(dotoriTokenUsageDetails.getReceiver().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
                                 .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())

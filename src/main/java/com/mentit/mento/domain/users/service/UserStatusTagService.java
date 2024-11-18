@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,45 +33,52 @@ import java.util.List;
 public class UserStatusTagService {
 
     private final UserStatusTagRepository userStatusTagRepository;
+    private final UserRepository userRepository;
     private final MyStatusTagsEntityRepository myStatusTagsEntityRepository;
     private final MyCareerTagsEntityRepository myCareerTagsEntityRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public UserStatusTag create(SignInUser request, Users user) {
 
-        //Domain객체 MyStatusTags생성
-        List<MyStatusTags> myStatusEntities = request.getMyStatus().stream()
+
+        // MyStatusTags 생성 및 null 체크
+        List<MyStatusTags> myStatusEntities = request.getMyStatus() != null 
+            ? request.getMyStatus().stream()
+                .filter(Objects::nonNull)
                 .map(status -> MyStatusTags.builder()
-                        .myStatusTag(status)
-                        .build())
-                .toList();
+                    .myStatusTag(status)
+                    .build())
+                .toList()
+            : new ArrayList<>();
 
-        //Domain객체 myCareerTags생성
-        MyCareerTags myCareerTags = MyCareerTags.builder()
+        // MyCareerTags 생성 및 null 체크
+        MyCareerTags myCareerTags = request.getPersonalHistory() != null 
+            ? MyCareerTags.builder()
                 .myCareerTagsEnum(request.getPersonalHistory())
-                .build();
+                .build()
+            : null;
 
-        //Enum객체 corporateFormEnum생성
-        CorporateFormEnum corporateFormEnum = request.getCorporateFormEnum();
+        if (myCareerTags != null) {
+            myCareerTagsEntityRepository.save(myCareerTags);
+        }
 
-        // MyCareerTagsEntity를 먼저 저장
-        myCareerTagsEntityRepository.save(myCareerTags);
-
-        //UserStatusTag 생성
+        // UserStatusTag 생성
         UserStatusTag userStatusTag = UserStatusTag.builder()
-                .corporateFormEnum(corporateFormEnum)
-                .myCareerTags(MyCareerTagsEntity.from(myCareerTags))
-                .myStatus(myStatusEntities.stream().map(myStatusTags -> MyStatusTagsEntity.from(myStatusTags)).toList())
-                .usersEntity(user)
-                .build();
+            .corporateFormEnum(request.getCorporateFormEnum())
+            .myCareerTags(myCareerTags != null ? MyCareerTagsEntity.from(myCareerTags) : null)
+            .myStatus(myStatusEntities.stream().map(MyStatusTagsEntity::from).toList())
+            .usersEntity(UsersEntity.from(user))
+            .build();
 
-        //저장
         userStatusTagRepository.save(userStatusTag);
 
-        // 각각의 엔티티에 UserStatusTag 연결
-        myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus,userStatusTag));
-        myCareerTagsEntityRepository.save(myCareerTags,userStatusTag);
+        // 연관 관계 설정
+        if (!myStatusEntities.isEmpty()) {
+            myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus, userStatusTag));
+        }
+        if (myCareerTags != null) {
+            myCareerTagsEntityRepository.save(myCareerTags, userStatusTag);
+        }
 
         return userStatusTag;
     }

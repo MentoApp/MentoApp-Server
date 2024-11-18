@@ -6,25 +6,25 @@ import lombok.Getter;
 
 @Getter
 @JsonDeserialize(using = BoardTypeDeserializer.class)
-public enum BoardType {
+public enum BoardTypeEnum {
     DAILY_IT("IT 일상"), ARTICLE("아티클");
 
     private final String koreanValue;
 
-    BoardType(String koreanValue) {
+    BoardTypeEnum(String koreanValue) {
         this.koreanValue = koreanValue;
     }
 
-    public static String fromEnumValue(BoardType authType) {
-        for (BoardType form : values()) {
+    public static String fromEnumValue(BoardTypeEnum authType) {
+        for (BoardTypeEnum form : values()) {
             if (form.equals(authType)) {
                 return form.koreanValue;
             }
         }
         throw new IllegalArgumentException("잘못된 게시판 종류: " + authType);
     }
-    public static BoardType fromKoreanValue(String koreanValue) {
-        for (BoardType keyword : values()) {
+    public static BoardTypeEnum fromKoreanValue(String koreanValue) {
+        for (BoardTypeEnum keyword : values()) {
             if (keyword.koreanValue.equals(koreanValue)) {
                 return keyword;
             }
