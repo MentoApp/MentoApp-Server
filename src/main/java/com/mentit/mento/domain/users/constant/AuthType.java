@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.users.constant;
 
 public enum AuthType {
-    MEMBER_KAKAO("카카오"), MEMBER_NAVER("네이버");
+    MEMBER_KAKAO("카카오"), MEMBER_NAVER("네이버"), MEMBER_ADMIN("관리자");
 
     private final String koreanValue;
 

@@ -1,9 +1,9 @@
 package com.mentit.mento.domain.users.controller;
 
-import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
-import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
-import com.mentit.mento.domain.users.dto.response.FindUserAccountResponse;
-import com.mentit.mento.domain.users.dto.response.FindUserResponse;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
+import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
+import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.redis.service.RedisService;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,18 +43,18 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "회원 가입 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "회원 가입 실패",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
-        @AuthenticationPrincipal CustomUserDetail userDetail,
-        @Valid @RequestPart(value = "signInRequest") SignInUserRequest signInUserRequest,
-        @RequestPart(value = "profileImage",required = false) MultipartFile profileImage
-            ) {
+            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @Valid @RequestPart(value = "signInRequest") SignInUser signInUser,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    ) {
 
-        userService.create(userDetail, signInUserRequest,profileImage);
+        userService.create(userDetail, signInUser, profileImage);
 
-        return Response.success(HttpStatus.OK,"회원가입 성공");
+        return Response.success(HttpStatus.OK, "회원가입 성공");
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 기입")
@@ -63,17 +62,17 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "정보 수정 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "정보 수정 실패",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
-    @PatchMapping( value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @Valid @RequestPart("modifyUserRequest") ModifyUserRequest modifyUserRequest,
-            @RequestPart(value = "profileImage",required = false) @Nullable MultipartFile profileImage
+            @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUser,
+            @RequestPart(value = "profileImage", required = false) @Nullable MultipartFile profileImage
     ) {
-        userService.modifyUser(customUserDetail,modifyUserRequest,profileImage);
+        userService.modifyUser(customUserDetail, modifyUser, profileImage);
 
-        return Response.success(HttpStatus.OK,"회원정보 수정 성공");
+        return Response.success(HttpStatus.OK, "회원정보 수정 성공");
     }
 
     @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
@@ -81,37 +80,40 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "정보 조회 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "정보 조회 실패",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping("/myInfo")
     public Response<FindUserResponse> findMyInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
-    ){
-        FindUserResponse findUserResponse= userService.findMyInfo(userDetail);
-        return Response.success(HttpStatus.OK,"회원 조회 성공",findUserResponse);
+    ) {
+        FindUserResponse findUserResponse = userService.findMyInfo(userDetail);
+        return Response.success(HttpStatus.OK, "회원 조회 성공", findUserResponse);
     }
 
-    @Operation(summary = "계정 정보 조회" , description = "계정 정보 조회")
+    @Operation(summary = "계정 정보 조회", description = "계정 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "계정정보 조회 결과",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "계정정보 조회 실패",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping("/myAccountInfo")
     public Response<FindUserAccountResponse> findMyAccountInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
-    ){
+    ) {
         FindUserAccountResponse findUserAccountResponse = userService.findMyAccountInfo(userDetail);
         return Response.success(HttpStatus.OK, "계정 정보 조회 성공", findUserAccountResponse);
     }
+
+    @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
     @GetMapping("/validate-nickname/{nickname}")
-    public Response<Boolean> validateNickname(
+    public Response<String> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable String nickname
-    ){
-        boolean flag = userService.validateNickname(nickname,userDetail);
-        return Response.success(HttpStatus.OK,"조회 결과",!flag);
+    ) {
+        boolean flag = userService.validateNickname(nickname, userDetail);
+
+        return Response.success(HttpStatus.OK, "조회 결과", flag + "");
     }
 
     @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
@@ -119,7 +121,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "발급 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "발급 실패",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping("/reissue-token")
     @Transactional
@@ -145,7 +147,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "소셜 회원 탈퇴 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
             @ApiResponse(responseCode = "400", description = "해당 소셜 회원이 존재하지 않습니다.",
-            content = {@Content(schema = @Schema(implementation = Exception.class))}),
+                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @DeleteMapping("/social/me")
     public Response<Void> deleteSocialMember(
@@ -157,10 +159,9 @@ public class UserController {
         cookieUtils.deleteCookie(response, "refreshToken");
 
 
-        return Response.success(HttpStatus.OK,"탈퇴 성공");
+        return Response.success(HttpStatus.OK, "탈퇴 성공");
 
     }
-
 
     @Operation(summary = "로그아웃", description = "DB에 저장된 리프레쉬 토큰을 사용하여 로그아웃")
     @ApiResponses(value = {
@@ -173,10 +174,9 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetail userDetail,
             HttpServletResponse response
     ) {
-        String refreshToken = userService.getRefreshToken(userDetail.getId());
 
         // 로그아웃 처리
-        userService.logout(refreshToken);
+        userService.logout(userDetail.getId());
 
         // 쿠키에서 refreshToken 삭제
         cookieUtils.deleteCookie(response, "refreshToken");

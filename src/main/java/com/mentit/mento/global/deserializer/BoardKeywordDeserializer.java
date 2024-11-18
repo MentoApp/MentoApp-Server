@@ -3,14 +3,14 @@ package com.mentit.mento.global.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mentit.mento.domain.users.constant.BoardKeyword;
+import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
 
 import java.io.IOException;
 
-public class BoardKeywordDeserializer extends JsonDeserializer<BoardKeyword> {
+public class BoardKeywordDeserializer extends JsonDeserializer<BoardKeywordEnum> {
     @Override
-    public BoardKeyword deserialize(JsonParser p, DeserializationContext text) throws IOException {
+    public BoardKeywordEnum deserialize(JsonParser p, DeserializationContext text) throws IOException {
         String name = p.getText();
-        return BoardKeyword.fromKoreanValue(name);
+        return BoardKeywordEnum.fromKoreanValue(name);
     }
 }

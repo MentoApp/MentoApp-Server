@@ -1,7 +1,7 @@
 package com.mentit.mento.global.jwt.service;
 
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.authToken.entity.RefreshToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -38,14 +38,14 @@ public class JwtService {
     private final long accessTokenExpirationTime;
     private final long refreshTokenExpirationTime;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     public JwtService(@Value("${jwt.secret}") String secretKey,
                       @Value("${jwt.token.access-token-expiration-time}") long accessTokenExpirationTime,
                       @Value("${jwt.token.refresh-token-expiration-time}") long refreshTokenExpirationTime,
-                      RefreshTokenRepository refreshTokenRepository, UserRepository memberRepository) {
+                      RefreshTokenRepository refreshTokenRepository, UserRepositoryImpl memberRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.userRepository = memberRepository;
+        this.userRepositoryImpl = memberRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpirationTime = accessTokenExpirationTime;
@@ -162,7 +162,7 @@ public class JwtService {
 
     private Authentication getAuthenticationFromMemberId(Long memberId) {
         // 회원 ID로 사용자 정보 조회
-        Users user = userRepository.findById(memberId)
+        UsersEntity user = userRepositoryImpl.findById(memberId)
                 .orElseThrow(() -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER));
         GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuthType().name());
 

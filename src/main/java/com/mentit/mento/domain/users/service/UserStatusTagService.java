@@ -1,10 +1,19 @@
 package com.mentit.mento.domain.users.service;
 
-import com.mentit.mento.domain.users.constant.CorporateForm;
-import com.mentit.mento.domain.users.dto.request.ModifyUserRequest;
-import com.mentit.mento.domain.users.dto.request.SignInUserRequest;
-import com.mentit.mento.domain.users.entity.*;
-import com.mentit.mento.domain.users.repository.*;
+import com.mentit.mento.domain.users.constant.CorporateFormEnum;
+import com.mentit.mento.domain.users.domain.MyCareerTags;
+import com.mentit.mento.domain.users.domain.MyStatusTags;
+import com.mentit.mento.domain.users.domain.UserStatusTag;
+import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
+import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.service.port.MyCareerTagsEntityRepository;
+import com.mentit.mento.domain.users.service.port.MyStatusTagsEntityRepository;
+import com.mentit.mento.domain.users.service.port.UserRepository;
+import com.mentit.mento.domain.users.service.port.UserStatusTagRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
 import jakarta.transaction.Transactional;
@@ -23,158 +32,111 @@ import java.util.List;
 public class UserStatusTagService {
 
     private final UserStatusTagRepository userStatusTagRepository;
-    private final BaseEntityRepository baseEntityRepository;
     private final MyStatusTagsEntityRepository myStatusTagsEntityRepository;
-    private final CurrentJobStatusEntityRepository currentJobStatusEntityRepository;
     private final MyCareerTagsEntityRepository myCareerTagsEntityRepository;
     private final UserRepository userRepository;
 
-    //TODO:: 사용하지 않기로 결정한 키워드들 최종결정되면 정리하기
-
     @Transactional
-    public UserStatusTag createUserStatusTag(SignInUserRequest request, Users user) {
-//        List<BaseTagEntity> baseTagEntities = request.getBaseTags().stream()
-//                .map(tag -> BaseTagEntity.builder()
-//                        .baseTag(tag)
-//                        .build())
-//                .toList();
+    public UserStatusTag create(SignInUser request, Users user) {
 
-        List<MyStatusTagsEntity> myStatusEntities = request.getMyStatus().stream()
-                .map(status -> MyStatusTagsEntity.builder()
+        //Domain객체 MyStatusTags생성
+        List<MyStatusTags> myStatusEntities = request.getMyStatus().stream()
+                .map(status -> MyStatusTags.builder()
                         .myStatusTag(status)
                         .build())
                 .toList();
 
-//        List<CurrentJobStatusEntity> currentJobStatusEntities = request.getCurrentJobStatus().stream()
-//                .map(status -> CurrentJobStatusEntity.builder()
-//                        .currentJobStatus(status)
-//                        .build())
-//                .toList();
-
-        MyCareerTagsEntity myCareerTagsEntities = MyCareerTagsEntity.builder()
-                .myCareerTags(request.getPersonalHistory())
+        //Domain객체 myCareerTags생성
+        MyCareerTags myCareerTags = MyCareerTags.builder()
+                .myCareerTagsEnum(request.getPersonalHistory())
                 .build();
 
-        CorporateForm corporateForm = request.getCorporateForm();
+        //Enum객체 corporateFormEnum생성
+        CorporateFormEnum corporateFormEnum = request.getCorporateFormEnum();
 
         // MyCareerTagsEntity를 먼저 저장
-        myCareerTagsEntityRepository.save(myCareerTagsEntities);
+        myCareerTagsEntityRepository.save(myCareerTags);
 
+        //UserStatusTag 생성
         UserStatusTag userStatusTag = UserStatusTag.builder()
-//                .baseTags(new ArrayList<>(baseTagEntities))
-                .corporateForm(corporateForm)
-//                .currentJobStatus(new ArrayList<>(currentJobStatusEntities))
-                .myCareerTags(myCareerTagsEntities)
-                .myStatus(new ArrayList<>(myStatusEntities))
-                .users(user)
+                .corporateFormEnum(corporateFormEnum)
+                .myCareerTags(MyCareerTagsEntity.from(myCareerTags))
+                .myStatus(myStatusEntities.stream().map(myStatusTags -> MyStatusTagsEntity.from(myStatusTags)).toList())
+                .usersEntity(user)
                 .build();
 
-
+        //저장
         userStatusTagRepository.save(userStatusTag);
 
         // 각각의 엔티티에 UserStatusTag 연결
-//        baseTagEntities.forEach(baseTag -> baseEntityRepository.save(baseTag.toBuilder().userStatusTag(userStatusTag).build()));
-        myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus.toBuilder().userStatusTag(userStatusTag).build()));
-//        currentJobStatusEntities.forEach(jobStatus -> currentJobStatusEntityRepository.save(jobStatus.toBuilder().userStatusTag(userStatusTag).build()));
-        myCareerTagsEntityRepository.save(myCareerTagsEntities.toBuilder().userStatusTag(userStatusTag).build());
+        myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus,userStatusTag));
+        myCareerTagsEntityRepository.save(myCareerTags,userStatusTag);
 
         return userStatusTag;
     }
 
-    public void deleteExistingUserStatusTag(Users user) {
+    public void delete(Users user) {
+        //유저의 모든 태그 조회
         UserStatusTag findUserStatusTag = userStatusTagRepository.findByUsers(user).orElseThrow(
                 () -> new MemberException(ExceptionCode.CANT_FIND_USERSTATUS)
         );
 
+        //유저의 태그는 없는것으로 설정
         Users modifiedUser = user.toBuilder()
-                .userStatusTag(null)
+                .userStatusTagEntity(null)
                 .build();
+
         userRepository.save(modifiedUser);
 
         log.info("userStatusTag = {}", findUserStatusTag.getUserStatusTagId());
 
+        //유저태그모두 삭제
         userStatusTagRepository.delete(findUserStatusTag);
     }
 
     @Transactional
-    public UserStatusTag createUserStatusTag(@Valid ModifyUserRequest request, Users user) {
-//        List<BaseTagEntity> baseTagEntities = request.getBaseTags().stream()
-//                .map(tag -> BaseTagEntity.builder()
-//                        .baseTag(tag)
-//                        .build())
-//                .toList();
-
-        List<MyStatusTagsEntity> myStatusEntities = request.getMyStatus().stream()
-                .map(status -> MyStatusTagsEntity.builder()
+    public UserStatusTag update(@Valid ModifyUser request, Users user) {
+        //내 상태 태그 생성
+        List<MyStatusTags> myStatus = request.getMyStatus().stream()
+                .map(status -> MyStatusTags.builder()
                         .myStatusTag(status)
                         .build())
                 .toList();
 
-//        List<CurrentJobStatusEntity> currentJobStatusEntities = request.getCurrentJobStatus().stream()
-//                .map(status -> CurrentJobStatusEntity.builder()
-//                        .currentJobStatus(status)
-//                        .build())
-//                .toList();
-
-        MyCareerTagsEntity myCareerTagsEntities = MyCareerTagsEntity.builder()
-                .myCareerTags(request.getPersonalHistory())
+        //내직업 엔티티 생성
+        MyCareerTags myCareerTags = MyCareerTags.builder()
+                .myCareerTagsEnum(request.getPersonalHistory())
                 .build();
 
-        CorporateForm corporateForm = request.getCorporateForm() == null ?null:request.getCorporateForm();
+        CorporateFormEnum corporateFormEnum = request.getCorporateFormEnum() == null ? null : request.getCorporateFormEnum();
 
-        UserStatusTag userStatusTag = UserStatusTag.builder()
-//                .baseTags(new ArrayList<>(baseTagEntities)) // 새로운 ArrayList로 변경
-                .corporateForm(corporateForm)
-//                .currentJobStatus(new ArrayList<>(currentJobStatusEntities)) // 새로운 ArrayList로 변경
-                .myCareerTags(myCareerTagsEntities)
-                .myStatus(new ArrayList<>(myStatusEntities)) // 새로운 ArrayList로 변경
-                .users(user)
+        UserStatusTag userStatusTagEntity = UserStatusTag.builder()
+                .corporateFormEnum(corporateFormEnum)
+                .myCareerTags(MyCareerTagsEntity.from(myCareerTags))
+                .myStatus(myStatus.stream().map(myStatusTags -> MyStatusTagsEntity.from(myStatusTags)).toList()) // 새로운 ArrayList로 변경
+                .usersEntity(UsersEntity.from(user))
                 .build();
 
-        userStatusTagRepository.save(userStatusTag);
+        userStatusTagRepository.save(userStatusTagEntity);
 
-//        // 각 엔티티에 UserStatusTag 설정
-//        baseTagEntities.forEach(baseTag -> {
-//            baseTag = baseTag.toBuilder().userStatusTag(userStatusTag).build(); // toBuilder() 사용
-//            // 태그 엔티티 저장
-//            baseEntityRepository.save(baseTag); // 적절한 repository 사용
-//        });
 
-        myStatusEntities.forEach(myStatus -> {
-            myStatus = myStatus.toBuilder().userStatusTag(userStatusTag).build(); // toBuilder() 사용
+        myStatus.forEach(item -> {
+            item = MyStatusTags.builder()
+                    .myStatusTag(item.getMyStatusTag())
+                    .userStatusTag(item.getUserStatusTag())
+                    .build(); // toBuilder() 사용
             // 태그 엔티티 저장
-            myStatusTagsEntityRepository.save(myStatus); // 적절한 repository 사용
+            myStatusTagsEntityRepository.save(item); // 적절한 repository 사용
         });
 
-//        currentJobStatusEntities.forEach(jobStatus -> {
-//            jobStatus = jobStatus.toBuilder().userStatusTag(userStatusTag).build(); // toBuilder() 사용
-//            // 태그 엔티티 저장
-//            currentJobStatusEntityRepository.save(jobStatus); // 적절한 repository 사용
-//        });
 
-        myCareerTagsEntityRepository.save(myCareerTagsEntities);
+        myCareerTagsEntityRepository.save(myCareerTags);
 
-        return userStatusTag;
+        return userStatusTagEntity;
     }
 
-//    public List<String> getBaseTags(UserStatusTag userStatusTag) {
-//        List<String> baseTagList = new ArrayList<>();
-//        userStatusTag.getBaseTags().forEach(
-//                i -> baseTagList.add(i.getBaseTag().getDescription())
-//        );
-//        return baseTagList;
-//    }
 
-//    public  List<String> getCurrentJobStatuses(UserStatusTag userStatusTag) {
-//        List<String> currentJobStatusList = new ArrayList<>();
-//
-//        userStatusTag.getCurrentJobStatus().forEach(
-//                currentJobStatus -> currentJobStatusList.add(currentJobStatus.getCurrentJobStatus().getDescription())
-//        );
-//        return currentJobStatusList;
-//    }
-
-    public List<String> getMyStatusTags(UserStatusTag userStatusTag) {
+    public List<String> find(UserStatusTag userStatusTag) {
         List<String> myStatusTagsList = new ArrayList<>();
 
         userStatusTag.getMyStatus().forEach(

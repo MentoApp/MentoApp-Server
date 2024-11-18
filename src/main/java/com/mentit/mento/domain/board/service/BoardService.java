@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.board.service;
 
-import com.mentit.mento.domain.BoardLike.service.BoardLikeService;
 import com.mentit.mento.domain.board.dto.*;
 import com.mentit.mento.domain.board.entity.Board;
 import com.mentit.mento.domain.board.entity.BoardFiles;
@@ -8,36 +7,35 @@ import com.mentit.mento.domain.board.entity.BoardKeywordForCreatingEntity;
 import com.mentit.mento.domain.board.repository.BoardFileRepository;
 import com.mentit.mento.domain.board.repository.BoardKeywordForCreatingEntityRepository;
 import com.mentit.mento.domain.board.repository.BoardRepository;
-import com.mentit.mento.domain.comment.dto.CommentsResponse;
-import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.repository.CommentRepository;
 import com.mentit.mento.domain.comment.service.CommentService;
-import com.mentit.mento.domain.users.entity.BoardKeywordEntity;
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.BoardKeywordRepository;
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
+import com.mentit.mento.domain.dotoriToken.service.DotoriTokenRepository;
+import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.redis.service.RedisLikeService;
+import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BoardService {
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
     private final S3FileUtilImpl s3FileUtilImpl;
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
@@ -45,10 +43,13 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final RedisLikeService redisLikeService;
     private final CommentService commentService;
+    private final DotoriTokenRepository dotoriTokenRepository;
+    private final RedisService redisService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public void createBoard(CustomUserDetail customUserDetail, BoardCreateRequest boardCreateRequest, List<MultipartFile> images) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
+    public FindBoardResponse createBoard(CustomUserDetail customUserDetail, BoardCreateRequest boardCreateRequest, List<MultipartFile> images) {
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(boardCreateRequest.getWriter())) {
             throw new MemberException(ExceptionCode.NICKNAME_NOT_MATCH);
@@ -60,21 +61,38 @@ public class BoardService {
 
         List<BoardFiles> boardFiles = getBoardFiles(images, savedboard);
 
-        mappingBoardFileAndBoardKeywordInSavedBoard(savedboard, boardFiles, boardKeywordForCreatingEntityList);
+        Board createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(savedboard, boardFiles, boardKeywordForCreatingEntityList);
+
+        DotoriToken dotoriToken = findUserByUserDetail.getDotoriToken();
+        DotoriToken updatedDotoriToken = dotoriToken
+                .toBuilder()
+                .count(boardCreateRequest
+                        .getBoardType()
+                        .getKoreanValue()
+                        .equals("IT 일상") ? dotoriToken.getCount() : dotoriToken.getCount() + 5)
+                .build();
+
+        dotoriTokenRepository.save(updatedDotoriToken);
+
+        redisService.saveBoardKeywords(savedboard.getBoardId(), boardCreateRequest.getKeywords());
+
+        return findBoard(customUserDetail, createdBoard.getBoardId());
 
     }
 
     @Transactional
-    public void updateBoard(CustomUserDetail customUserDetail, BoardUpdateRequest boardUpdateRequest, List<MultipartFile> images) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
+    public FindBoardResponse updateBoard(CustomUserDetail customUserDetail, BoardUpdateRequest boardUpdateRequest, List<MultipartFile> images) {
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(boardUpdateRequest.getWriter())) {
             throw new MemberException(ExceptionCode.NICKNAME_NOT_MATCH);
         }
+
         Board findBoard = boardRepository.findByBoardId(boardUpdateRequest.getBoardId()).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
 
+        redisService.deleteBoardKeywords(findBoard.getBoardId());
         boardKeywordForCreatingEntityRepository.deleteAllByBoard(findBoard);
 
         List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList = getBoardKeywordForCreatingEntities(boardUpdateRequest, findBoard);
@@ -89,8 +107,9 @@ public class BoardService {
 
         List<BoardFiles> boardFiles = getBoardFiles(images, savedboard);
 
-        mappingBoardFileAndBoardKeywordInSavedBoard(findBoard, boardFiles, boardKeywordForCreatingEntityList);
+        Board createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(findBoard, boardFiles, boardKeywordForCreatingEntityList);
 
+        return findBoard(customUserDetail, createdBoard.getBoardId());
     }
 
     @Transactional
@@ -106,6 +125,8 @@ public class BoardService {
                 }
         );
 
+        redisService.deleteBoardKeywords(findBoard.getBoardId());
+
         commentRepository.deleteAllByBoard(findBoard);
 
         boardFileRepository.deleteAllByBoard(findBoard);
@@ -116,16 +137,16 @@ public class BoardService {
 
     }
 
-    private void mappingBoardFileAndBoardKeywordInSavedBoard(Board savedboard, List<BoardFiles> boardFiles, List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList) {
+    private Board mappingBoardFileAndBoardKeywordInSavedBoard(Board savedboard, List<BoardFiles> boardFiles, List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList) {
         Board updatedSavedBoard = savedboard.toBuilder()
                 .boardFiles(boardFiles)
                 .boardKeywordForCreatings(boardKeywordForCreatingEntityList)
                 .build();
 
-        boardRepository.save(updatedSavedBoard);
+        return boardRepository.save(updatedSavedBoard);
     }
 
-    private Board createBoard(BoardCreateRequest boardCreateRequest, Users findUserByUserDetail) {
+    private Board createBoard(BoardCreateRequest boardCreateRequest, UsersEntity findUserByUserDetail) {
         Board createdBoard = Board.builder()
                 .title(boardCreateRequest.getTitle())
                 .content(boardCreateRequest.getContent())
@@ -205,8 +226,8 @@ public class BoardService {
     }
 
 
-    private Users getUsers(CustomUserDetail userDetail) {
-        return userRepository.findById(userDetail.getId()).orElseThrow(
+    private UsersEntity getUsers(CustomUserDetail userDetail) {
+        return userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
@@ -248,14 +269,14 @@ public class BoardService {
 
     //TODO:: 게시판별 키워드를 레디스에 저장해서 조회하는것이 더 빠를듯
     private UserInfoInBoardResponse getUserInfoInBoardResponse(Board findBoardByBoardId) {
-        Users findUserByBoard = userRepository.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
+        UsersEntity findUserByBoard = userRepositoryImpl.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
         return UserInfoInBoardResponse.builder()
                 .nickname(findUserByBoard.getNickname())
                 .profileImage(findUserByBoard.getProfileImage())
                 .keyword(findUserByBoard.getBoardKeywords().stream().map(
-                        boardKeywords-> boardKeywords.getBoardKeyword().getKoreanValue()
+                        boardKeywords -> boardKeywords.getBoardKeywordEnum().getKoreanValue()
                 ).toList())
                 .simpleIntroduce(findUserByBoard.getSimpleIntroduce())
                 .build();
@@ -278,17 +299,112 @@ public class BoardService {
                 .toList();
     }
 
+    //조건 맞추기, 레디스에 키워드 저장하는 서비스 먼저 생성
+    // 1. 해당 게시물과 겹치는 키워드 수가 많은 순서대로 상단 노출
+    // 2. 겹치는 키워드 수가 같다면 최신순 상단 노출
+    // 3. 겹치는 키워드가 없다면 해당 게시판 게시물 최신순 상단 노출
     public List<FindSimilarBoardResponse> findBoardContainsKeywords(CustomUserDetail customUserDetail) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
-        List<FindSimilarBoardResponse> responseList = new ArrayList<>();
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
-        List<BoardKeywordEntity> boardKeywords = findUserByUserDetail.getBoardKeywords();
-        if(boardKeywords == null || boardKeywords.isEmpty()) {
-            List<Board> find3Boards = boardRepository.findTop3ByOrderByCreatedAtDesc().orElseThrow(
-                    () -> new MemberException(ExceptionCode.NOT_FOUND_MORE_THAN_3_BOARDS)
-            );
+        // 키워드별로 게시물 매핑을 위한 구조 준비
+        List<String> keywords = findUserByUserDetail.getBoardKeywords().stream()
+                .map(BoardKeywordEntity::getBoardKeywordEnum)
+                .map(Enum::name)
+                .toList();
+
+        Set<String> allBoardKeys = redisTemplate.keys("boardKeywords:*");
+        if (allBoardKeys == null && allBoardKeys.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return null;
+        //게시판 ID 별로 키워드 일치 개수 계산
+        List<BoardMatchCount> boardMatchCounts = allBoardKeys.stream()
+                .map(key -> {
+                    Long boardId = Long.parseLong(key.split(":")[1]);
+                    long matchCount = redisService.countMatchingKeywords(boardId, keywords);
+                    return new BoardMatchCount(boardId, matchCount);
+                })
+                .sorted((b1, b2) -> {
+                    if (b1.matchCount != b2.matchCount) {
+                        return Long.compare(b2.matchCount, b1.matchCount);
+                    }
+                    Board board1 = boardRepository.findById(b1.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
+                    Board board2 = boardRepository.findByBoardId(b2.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
+                    return board2.getCreatedAt().compareTo(board1.getCreatedAt());
+                })
+                .limit(3)
+                .collect(Collectors.toList());
+
+
+        List<Board> matchedBoards = boardMatchCounts.stream().map(
+                boardMatchCount -> boardRepository.findById(boardMatchCount.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD))
+        ).collect(Collectors.toList());
+
+        return mapBoardsToResponse(matchedBoards);
+
+    }
+
+    private List<FindSimilarBoardResponse> mapBoardsToResponse(List<Board> boards) {
+        return boards.stream()
+                .map(board -> {
+                    List<String> boardKeywords = getBoardKeywords(board);
+                    List<String> imageList = getImageList(board);
+                    Long likeCount = redisLikeService.getLikeCount(board.getBoardId());
+                    Long commentCount = commentService.getCommentCount(board.getBoardId());
+                    UserInfoInBoardResponse userInfo = getUserInfoInBoardResponse(board);
+
+                    return FindSimilarBoardResponse.builder()
+                            .title(board.getTitle())
+                            .writer(userInfo.getNickname())
+                            .content(board.getContent())
+                            .createdTime(board.getCreatedAt())
+                            .boardKeywords(boardKeywords)
+                            .userInfo(userInfo)
+                            .imageList(!imageList.isEmpty() ? imageList.get(0) : null) // 이미지 리스트를 ','로 연결
+                            .viewCount(board.getViewCount())
+                            .likeCount(likeCount)
+                            .commentCount(commentCount)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<FindBoardResponse> findTop3Boards(CustomUserDetail customUserDetail) {
+
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+
+        return boardRepository.findTop3ByOrderByViewCountDesc()
+                .map(boards -> boards.stream().map(
+                        board -> {
+                            List<String> imageList = getImageList(board);
+
+                            return FindBoardResponse.builder()
+                                    .title(board.getTitle())
+                                    .content(board.getContent())
+                                    .createdTime(board.getCreatedAt())
+                                    .viewCount(board.getViewCount())
+                                    .imageList(imageList)
+                                    .boardKeywords(getBoardKeywords(board))
+                                    .userInfo(getUserInfoInBoardResponse(board))
+                                    .imageList(imageList)
+                                    .writer(findUserByUserDetail.getNickname())
+                                    .commentCount(commentService.getCommentCount(board.getBoardId()))
+                                    .build();
+
+                        }
+                ).collect(Collectors.toList())).orElse(Collections.emptyList());
+
+    }
+
+    // Board ID와 일치 개수를 담는 클래스
+    private static class BoardMatchCount {
+        Long boardId;
+        long matchCount;
+
+        public BoardMatchCount(Long boardId, long matchCount) {
+            this.boardId = boardId;
+            this.matchCount = matchCount;
+        }
     }
 }
+

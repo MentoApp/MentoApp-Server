@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.dotoriToken.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -28,7 +28,7 @@ public class DotoriToken extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private Users users;
+    private UsersEntity usersEntity;
 
     @Column(nullable = false)
     @Builder.Default

@@ -4,8 +4,8 @@ import com.mentit.mento.domain.BoardLike.entity.BoardLike;
 import com.mentit.mento.domain.BoardLike.repository.BoardLikeRepository;
 import com.mentit.mento.domain.board.entity.Board;
 import com.mentit.mento.domain.board.repository.BoardRepository;
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
 import com.mentit.mento.global.exception.customException.MemberException;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class BoardLikeService {
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
     private final BoardLikeRepository boardLikeRepository;
     private final BoardRepository boardRepository;
     private final RedisLikeService redisLikeService;
@@ -41,8 +41,8 @@ public class BoardLikeService {
         }
     }
 
-    public void like(CustomUserDetail customUserDetail, Long boardId) {
-        Users findUserByUserDetail = getUser(customUserDetail);
+    public Long like(CustomUserDetail customUserDetail, Long boardId) {
+        UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
         Board findBoardByBoardId = boardRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
@@ -53,7 +53,7 @@ public class BoardLikeService {
             BoardLike findBoardLike = existingBoardLike.get();
             BoardLike updatedBoardLike = findBoardLike.toBuilder().liked(!findBoardLike.getLiked()).build();
             boardLikeRepository.save(updatedBoardLike);
-            return;
+            return boardId;
         }
 
         BoardLike createdBoardLike = BoardLike.builder()
@@ -69,6 +69,8 @@ public class BoardLikeService {
         }else{
             redisLikeService.decrementLikeCount(boardId);
         }
+
+        return redisLikeService.getLikeCount(boardId);
 
     }
 
@@ -90,9 +92,9 @@ public class BoardLikeService {
 //        boardLikeRepository.save(updatedBoardLike);
 //    }
 
-    private Users getUser(CustomUserDetail customUserDetail) {
+    private UsersEntity getUser(CustomUserDetail customUserDetail) {
 
-        return userRepository.findById(customUserDetail.getId()).orElseThrow(
+        return userRepositoryImpl.findById(customUserDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }

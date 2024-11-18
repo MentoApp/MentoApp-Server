@@ -23,6 +23,9 @@ public enum ExceptionCode {
     NOT_FOUND_REFRESH_TOKEN_IN_COOKIE(BAD_REQUEST, "Refresh token not found in cookie.", 400),
     INVALID_PARAMETER(BAD_REQUEST, "Invalid request parameter.", 400),
     INVALID_FILE_EXTENTION(BAD_REQUEST, "Invalid File Extention", 400),
+    TOO_SHORT_NICKNAME(BAD_REQUEST, "닉네임은 2자 이상 적어주세요" , 400 ),
+    TOO_LONG_NICKNAME(BAD_REQUEST, "닉네임은 10자 이하 적어주세요" , 400 ),
+    NICKNAME_PATTERN_INVALIDATION(BAD_REQUEST,"닉네임은 띄어쓰기 없이 한글,영문, 숫자만 가능합니다." , 400),
 
 
     // 401
@@ -38,7 +41,7 @@ public enum ExceptionCode {
 
     DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login", 999),
 
-    // 403
+    // 403,
     DUPLICATE_RESOURCE(CONFLICT, "Resource already exists.", 403),
     NOT_FOUND_MEMBER(CONFLICT, "Member not found.", 403),
     NOT_FOUND_OWNER(CONFLICT, "Owner not found.", 403),
@@ -71,6 +74,7 @@ public enum ExceptionCode {
     NOT_FOUND_BOARD_LIKE(CONFLICT,"Can't Find Board Like" , 403 ),
     ALREADY_LIKED(CONFLICT, "Already Liked" , 403 ),
     NOT_FOUND_MORE_THAN_3_BOARDS(CONFLICT, "Can't find more than 3 Boards" , 403 );
+
 
     private final HttpStatus httpStatus;
     private final String message;

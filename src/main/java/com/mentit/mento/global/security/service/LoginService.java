@@ -1,7 +1,7 @@
 package com.mentit.mento.global.security.service;
 
-import com.mentit.mento.domain.users.entity.Users;
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users findUser = userRepository.findByEmail(username).orElseThrow(
+        UsersEntity findUser = userRepositoryImpl.findByEmail(username).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
 

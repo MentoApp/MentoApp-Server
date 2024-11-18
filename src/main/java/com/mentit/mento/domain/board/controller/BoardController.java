@@ -26,25 +26,25 @@ public class BoardController {
 
     //생성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Response<Void> createBoard(
+    public Response<FindBoardResponse> createBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @RequestPart BoardCreateRequest boardCreateRequest,
             @RequestPart(required = false) List<MultipartFile> images
             ){
-        boardService.createBoard(customUserDetail,boardCreateRequest,images);
+        FindBoardResponse findBoardResponse = boardService.createBoard(customUserDetail, boardCreateRequest, images);
 
-        return Response.success(HttpStatus.OK,"게시판 작성 성공");
+        return Response.success(HttpStatus.OK,"게시판 작성 성공",findBoardResponse);
     }
     //수정
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Response<Void> updateBoard(
+    public Response<FindBoardResponse> updateBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @RequestPart BoardUpdateRequest boardUpdateRequest,
             @RequestPart(required = false) List<MultipartFile> images
     ){
-        boardService.updateBoard(customUserDetail,boardUpdateRequest,images);
+        FindBoardResponse findBoardResponse = boardService.updateBoard(customUserDetail, boardUpdateRequest, images);
 
-        return Response.success(HttpStatus.OK,"게시판 수정 성공");
+        return Response.success(HttpStatus.OK,"게시판 수정 성공",findBoardResponse);
 
     }
     //삭제
@@ -61,7 +61,7 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public Response<FindBoardResponse> getBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-        @PathVariable Long boardId
+            @PathVariable Long boardId
     ){
         FindBoardResponse findBoardResponse= boardService.findBoard(customUserDetail,boardId);
 
@@ -75,7 +75,16 @@ public class BoardController {
     ){
         List<FindSimilarBoardResponse> findBoardResponses = boardService.findBoardContainsKeywords(customUserDetail);
         return Response.success(HttpStatus.OK,"키워드 유사 게시글 조회 성공",findBoardResponses);
+    }
 
+    //인기있는 게시물 노출
+    @GetMapping("/top3board")
+    public Response<List<FindBoardResponse>> findTop3Boards(
+            @AuthenticationPrincipal CustomUserDetail customUserDetail
+    ){
+        List<FindBoardResponse> findList = boardService.findTop3Boards(customUserDetail);
+
+        return Response.success(HttpStatus.OK,"인기 게시글 조회 성공",findList);
     }
 
 }

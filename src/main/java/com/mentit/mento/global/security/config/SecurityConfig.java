@@ -1,6 +1,6 @@
 package com.mentit.mento.global.security.config;
 
-import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.handler.OAuth2LoginSuccessHandler;
 import com.mentit.mento.global.oauth.service.CustomOAuth2UserService;
@@ -42,7 +42,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository, RedisService redisService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserRepositoryImpl userRepositoryImpl, RedisService redisService) throws Exception {
         http
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(login -> login.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler))
-                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, userRepositoryImpl), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new DuplicateLoginFilter(jwtService, redisService), JwtAuthenticationProcessingFilter.class);
 
         return http.build();

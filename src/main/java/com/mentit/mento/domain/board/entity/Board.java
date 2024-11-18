@@ -3,7 +3,7 @@ package com.mentit.mento.domain.board.entity;
 import com.mentit.mento.domain.board.constant.BoardType;
 import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
-import com.mentit.mento.domain.users.entity.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class Board extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
-    private Users writer;
+    private UsersEntity writer;
 
     @Column(nullable = false)
     private String content;
@@ -44,7 +44,7 @@ public class Board extends BaseEntity {
     @Column
     private Long viewCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dotori_token_usage_detail_id")
     private DotoriTokenUsageDetails dotoriTokenUsageDetail;
 

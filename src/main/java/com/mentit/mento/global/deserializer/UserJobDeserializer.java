@@ -3,15 +3,14 @@ package com.mentit.mento.global.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mentit.mento.domain.users.constant.UserGender;
-import com.mentit.mento.domain.users.constant.UserJob;
+import com.mentit.mento.domain.users.constant.UserJobEnum;
 
 import java.io.IOException;
 
-public class UserJobDeserializer extends JsonDeserializer<UserJob> {
+public class UserJobDeserializer extends JsonDeserializer<UserJobEnum> {
     @Override
-    public UserJob deserialize(JsonParser p, DeserializationContext text) throws IOException {
+    public UserJobEnum deserialize(JsonParser p, DeserializationContext text) throws IOException {
         String name = p.getText();
-        return UserJob.fromKoreanValue(name);
+        return UserJobEnum.fromKoreanValue(name);
     }
 }
