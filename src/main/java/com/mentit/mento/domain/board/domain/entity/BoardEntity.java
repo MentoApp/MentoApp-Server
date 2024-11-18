@@ -2,9 +2,8 @@ package com.mentit.mento.domain.board.domain.entity;
 
 import com.mentit.mento.domain.board.constant.BoardTypeEnum;
 import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.comment.entity.Comment;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
-import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
@@ -64,7 +63,7 @@ public class BoardEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "board")
     @Builder.Default
-    private List<Comment> comments = new ArrayList<>();
+    private List<CommentEntity> commentEntities = new ArrayList<>();
 
 
     public static BoardEntity from(Board createdBoard) {
@@ -77,8 +76,8 @@ public class BoardEntity extends BaseEntity {
                 .isDeleted(createdBoard.isDeleted())
                 .dotoriTokenUsageDetail(createdBoard.getDotoriTokenUsageDetail())
                 .boardKeywordForCreatings(createdBoard.getBoardKeywordForCreatings().stream().map(BoardKeywordForCreatingEntity::from).toList())
-                .boardFileEntities(createdBoard.getBoardFileEntities().stream().map(BoardFilesEntity::from).toList())
-                .comments(createdBoard.getComments())
+                .boardFileEntities(createdBoard.getBoardFiles().stream().map(BoardFilesEntity::from).toList())
+                .commentEntities(createdBoard.getComments())
                 .build();
     }
 
@@ -93,8 +92,8 @@ public class BoardEntity extends BaseEntity {
                 .isDeleted(isDeleted)
                 .dotoriTokenUsageDetail(dotoriTokenUsageDetail)
                 .boardKeywordForCreatings(boardKeywordForCreatings.stream().map(BoardKeywordForCreatingEntity::to).toList())
-                .boardFileEntities(boardFileEntities.stream().map(BoardFilesEntity::to).toList())
-                .comments(comments)
+                .boardFiles(boardFileEntities.stream().map(BoardFilesEntity::to).toList())
+                .comments(commentEntities)
                 .build();
     }
 }

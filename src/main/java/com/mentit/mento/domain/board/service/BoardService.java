@@ -4,7 +4,6 @@ import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.BoardFiles;
 import com.mentit.mento.domain.board.domain.BoardKeywordForCreating;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardKeywordForCreatingEntity;
 import com.mentit.mento.domain.board.domain.dto.request.BoardCreate;
 import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
@@ -14,7 +13,7 @@ import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse
 import com.mentit.mento.domain.board.service.port.BoardFileRepository;
 import com.mentit.mento.domain.board.service.port.BoardKeywordForCreatingRepository;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
-import com.mentit.mento.domain.comment.repository.CommentRepository;
+import com.mentit.mento.domain.comment.repository.CommentJPARepository;
 import com.mentit.mento.domain.comment.service.CommentService;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenRepository;
@@ -49,7 +48,7 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
     private final BoardKeywordForCreatingRepository boardKeywordForCreatingRepository;
     private final S3FileUtilImpl s3FileUtilImpl;
-    private final CommentRepository commentRepository;
+    private final CommentJPARepository commentJPARepository;
     private final RedisLikeService redisLikeService;
     private final CommentService commentService;
     private final DotoriTokenRepository dotoriTokenRepository;
@@ -112,7 +111,7 @@ public class BoardService {
 
         Board updatedBoard = updateBoard(boardUpdate, findBoard);
 
-        List<BoardFiles> boardList = findBoard.getBoardFileEntities();
+        List<BoardFiles> boardList = findBoard.getBoardFiles();
 
         if (boardList != null && !boardList.isEmpty()) {
             boardFileRepository.deleteAllByBoard(findBoard);
@@ -140,7 +139,7 @@ public class BoardService {
 
         redisService.deleteBoardKeywords(findBoard.getBoardId());
 
-        commentRepository.deleteAllByBoard(BoardEntity.from(findBoard));
+        commentJPARepository.deleteAllByBoard(BoardEntity.from(findBoard));
 
         boardFileRepository.deleteAllByBoard(findBoard);
 
@@ -152,7 +151,7 @@ public class BoardService {
 
     private Board mappingBoardFileAndBoardKeywordInSavedBoard(Board savedboard, List<BoardFiles> boardFiles, List<BoardKeywordForCreating> boardKeywordForCreatingList) {
         Board updatedSavedBoard = savedboard.toBuilder()
-                .boardFileEntities(boardFiles)
+                .boardFiles(boardFiles)
                 .boardKeywordForCreatings(boardKeywordForCreatingList)
                 .build();
 
@@ -297,7 +296,7 @@ public class BoardService {
     }
 
     private static List<String> getImageList(Board findBoardByBoardId) {
-        return Optional.ofNullable(findBoardByBoardId.getBoardFileEntities())
+        return Optional.ofNullable(findBoardByBoardId.getBoardFiles())
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(BoardFiles::getBoardFileName)

@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.users.domain;
 
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.comment.entity.Comment;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.users.constant.AccountStatus;
@@ -49,7 +49,7 @@ public class Users {
     private List<DotoriTokenUsageDetails> receivedDotoriTokens = new ArrayList<>();
     private UserStatusTagEntity userStatusTagEntity;
     private List<BoardKeywordEntity> boardKeywords;
-    private List<Comment> comment;
+    private List<CommentEntity> commentEntity;
     private List<BoardEntity> boardEntities;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,10 +1,10 @@
-package com.mentit.mento.domain.comment.dto;
+package com.mentit.mento.domain.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class CommentUpdateRequest {
+public class CommentUpdate {
     @Schema(description = "작성자")
     private String writer;
     @Schema(description = "작성 내용", example = "좋은 내용이네요!")

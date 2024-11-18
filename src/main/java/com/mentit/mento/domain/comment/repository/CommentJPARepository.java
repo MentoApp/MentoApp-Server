@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.comment.repository;
 
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.comment.entity.Comment;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -10,14 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentJPARepository extends JpaRepository<CommentEntity, Long> {
     void deleteAllByBoard(BoardEntity findBoardEntity);
 
     @EntityGraph(attributePaths = {"writer"})
-    Optional<Comment> findById(Long id);
+    Optional<CommentEntity> findById(Long id);
 
-    @Query("SELECT c FROM Comment c WHERE c.board.boardId = :boardId")
-    Page<Comment> findAllByBoard(Long boardId, Pageable pageable);
+    @Query("SELECT c FROM CommentEntity c WHERE c.boardEntity.boardId = :boardId")
+    Page<CommentEntity> findAllByBoard(Long boardId, Pageable pageable);
 
     Long countByBoard(BoardEntity boardEntity);
 }

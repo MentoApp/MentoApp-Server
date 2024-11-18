@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.users.domain.entity;
 
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.comment.entity.Comment;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.users.constant.*;
@@ -139,7 +139,7 @@ public class UsersEntity extends BaseEntity {
     private List<BoardKeywordEntity> boardKeywords;
 
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comment;
+    private List<CommentEntity> commentEntity;
 
     @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardEntity> boardEntities;
