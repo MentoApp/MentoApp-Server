@@ -16,6 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "dotoriToken")
 @SQLDelete(sql = " update dotori_token set is_deleted = true where user_id = ?")
 public class DotoriTokenEntity extends BaseEntity {
 

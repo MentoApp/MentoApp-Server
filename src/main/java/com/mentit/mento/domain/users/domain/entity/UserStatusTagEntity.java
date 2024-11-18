@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(name = "UserStatusTag")
 public class UserStatusTagEntity {
 
     @Id

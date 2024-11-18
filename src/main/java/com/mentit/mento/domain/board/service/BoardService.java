@@ -114,7 +114,7 @@ public class BoardService {
         List<BoardFiles> boardList = findBoard.getBoardFiles();
 
         if (boardList != null && !boardList.isEmpty()) {
-            boardFileRepository.deleteAllByBoard(findBoard);
+            boardFileRepository.deleteAllByBoardEntity(findBoard);
         }
 
         List<BoardFiles> boardFileEntities = getBoardFiles(images, updatedBoard);
@@ -130,7 +130,7 @@ public class BoardService {
                 () -> new MemberException(ExceptionCode.NOT_FOUND_BOARD)
         );
 
-        List<BoardFiles> boardFile = boardFileRepository.findAllByBoard(findBoard);
+        List<BoardFiles> boardFile = boardFileRepository.findAllByBoardEntity(findBoard);
         boardFile.forEach(
                 files -> {
                     s3FileUtilImpl.deleteImageFromS3(files.getBoardFileName());
@@ -141,7 +141,7 @@ public class BoardService {
 
         commentRepository.deleteAllByBoard(findBoard);
 
-        boardFileRepository.deleteAllByBoard(findBoard);
+        boardFileRepository.deleteAllByBoardEntity(findBoard);
 
         boardKeywordForCreatingRepository.deleteAllByBoard(findBoard);
 

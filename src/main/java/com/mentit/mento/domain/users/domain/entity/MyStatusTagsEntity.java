@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(name = "myStatusTags")
 public class MyStatusTagsEntity {
 
     @Id

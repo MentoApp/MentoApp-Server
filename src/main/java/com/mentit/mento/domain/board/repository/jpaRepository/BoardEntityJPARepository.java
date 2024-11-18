@@ -10,9 +10,5 @@ import java.util.Set;
 public interface BoardEntityJPARepository extends JpaRepository<BoardEntity,Long> {
     Optional<BoardEntity> findByBoardId(Long boardId);
 
-    Optional<List<BoardEntity>> findTop3ByOrderByCreatedAtDesc();
-
-    List<BoardEntity> findByBoardIdIn(Set<Long> matchedBoardIds);
-
     Optional<List<BoardEntity>> findTop3ByOrderByViewCountDesc();
 }

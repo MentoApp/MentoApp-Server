@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "boardLike")
 public class BoardLikeEntity extends BaseEntity {
 
     @Id

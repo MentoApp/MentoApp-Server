@@ -5,7 +5,6 @@ import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public Optional<Comment> findById(Long commentId) {
-        return commentJPARepository.findById(commentId).map(CommentEntity::to);
+        return commentJPARepository.findByCommentId(commentId).map(CommentEntity::to);
     }
 
     @Override
@@ -40,11 +39,11 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public Long countByBoard(Board board) {
-        return commentJPARepository.countByBoard(BoardEntity.from(board));
+        return commentJPARepository.countByBoardEntity(BoardEntity.from(board));
     }
 
     @Override
     public void deleteAllByBoard(Board board) {
-        commentJPARepository.deleteAllByBoard(BoardEntity.from(board));
+        commentJPARepository.deleteAllByBoardEntity(BoardEntity.from(board));
     }
 }

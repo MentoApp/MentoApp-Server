@@ -22,12 +22,12 @@ public class BoardFileRepositoryImpl implements BoardFileRepository {
     }
 
     @Override
-    public void deleteAllByBoard(Board findBoard) {
-        boardFileJPARepository.deleteAllByBoard(BoardEntity.from(findBoard));
+    public void deleteAllByBoardEntity(Board findBoard) {
+        boardFileJPARepository.deleteAllByBoardEntity(BoardEntity.from(findBoard));
     }
 
     @Override
-    public List<BoardFiles> findAllByBoard(Board findBoard) {
-        return boardFileJPARepository.findAllByBoard(BoardEntity.from(findBoard)).stream().map(BoardFilesEntity::to).toList();
+    public List<BoardFiles> findAllByBoardEntity(Board findBoard) {
+        return boardFileJPARepository.findAllByBoardEntity(BoardEntity.from(findBoard)).stream().map(BoardFilesEntity::to).toList();
     }
 }

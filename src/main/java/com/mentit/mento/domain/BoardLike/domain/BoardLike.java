@@ -5,11 +5,13 @@ import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder(toBuilder = true)
 @Getter
+@Table(name = "BoardLike")
 public class BoardLike extends BaseEntity {
     private Long boardLikeId;
 

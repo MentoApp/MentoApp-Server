@@ -21,6 +21,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "board")
 @SQLDelete(sql = " update board set is_deleted = true where board_id = ?")
 public class BoardEntity extends BaseEntity {
 
@@ -49,7 +50,7 @@ public class BoardEntity extends BaseEntity {
     @JoinColumn(name = "dotori_token_usage_detail_id")
     private DotoriTokenUsageDetailsEntity dotoriTokenUsageDetail;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<BoardKeywordForCreatingEntity> boardKeywordForCreatings = new ArrayList<>();
 
@@ -57,11 +58,11 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "board",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardEntity",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<BoardFilesEntity> boardFileEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "boardEntity")
     @Builder.Default
     private List<CommentEntity> commentEntities = new ArrayList<>();
 

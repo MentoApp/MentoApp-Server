@@ -11,13 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface CommentJPARepository extends JpaRepository<CommentEntity, Long> {
-    void deleteAllByBoard(BoardEntity findBoardEntity);
+    void deleteAllByBoardEntity(BoardEntity findBoardEntity);
 
     @EntityGraph(attributePaths = {"writer"})
-    Optional<CommentEntity> findById(Long id);
+    Optional<CommentEntity> findByCommentId(Long id);
 
     @Query("SELECT c FROM CommentEntity c WHERE c.boardEntity.boardId = :boardId")
     Page<CommentEntity> findAllByBoard(Long boardId, Pageable pageable);
 
-    Long countByBoard(BoardEntity boardEntity);
+    Long countByBoardEntity(BoardEntity boardEntity);
 }

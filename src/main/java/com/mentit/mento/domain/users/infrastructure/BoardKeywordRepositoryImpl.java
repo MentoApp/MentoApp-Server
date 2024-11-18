@@ -15,7 +15,7 @@ public class BoardKeywordRepositoryImpl implements BoardKeywordRepository {
     private final BoardKeywordJPARepository boardKeywordJPARepository;
 
     public void deleteAllByUsers(UsersEntity findUserByUserDetail) {
-        boardKeywordJPARepository.deleteAllByUsers(findUserByUserDetail);
+        boardKeywordJPARepository.deleteAllByUsersEntity(findUserByUserDetail);
     }
 
     @Override

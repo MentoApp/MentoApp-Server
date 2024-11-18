@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserStatusTagJPARepository extends JpaRepository<UserStatusTagEntity, Long> {
-    void deleteAllByUsers(UsersEntity findUserByUserDetail);
+    void deleteAllByUsersEntity(UsersEntity findUserByUserDetail);
 
-    Optional<UserStatusTag> findByUsers(UsersEntity user);
+    Optional<UserStatusTagEntity> findByUsersEntity(UsersEntity user);
 }

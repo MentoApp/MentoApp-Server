@@ -2,14 +2,14 @@ package com.mentit.mento.domain.BoardLike.service.port;
 
 import com.mentit.mento.domain.BoardLike.domain.BoardLike;
 import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.domain.Users;
 
 import java.util.Optional;
 
 public interface BoardLikeRepository {
-    long countByBoard(Board boardEntity);
+    long countByBoard(Board board);
 
-    Optional<BoardLike> findBoardLikeByBoardAndUser(Board findBoardByBoardEntityId, UsersEntity from);
+    Optional<BoardLike> findBoardLikeByBoardAndUsersEntity(Board findBoardByBoardEntityId, Users from);
 
     BoardLike save(BoardLike updatedBoardLike);
 }

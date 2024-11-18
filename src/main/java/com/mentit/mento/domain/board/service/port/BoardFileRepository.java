@@ -8,7 +8,7 @@ import java.util.List;
 public interface BoardFileRepository {
     BoardFiles save(BoardFiles createdFile);
 
-    void deleteAllByBoard(Board findBoard);
+    void deleteAllByBoardEntity(Board findBoard);
 
-    List<BoardFiles> findAllByBoard(Board findBoard);
+    List<BoardFiles> findAllByBoardEntity(Board findBoard);
 }

@@ -1,13 +1,10 @@
 package com.mentit.mento.domain.BoardLike.service;
 
 import com.mentit.mento.domain.BoardLike.domain.BoardLike;
-import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
 import com.mentit.mento.domain.BoardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
 import com.mentit.mento.domain.users.domain.Users;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
@@ -50,7 +47,7 @@ public class BoardLikeService {
         Board findBoardByBoardEntityId = boardEntityRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
-        Optional<BoardLike> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUser(findBoardByBoardEntityId, UsersEntity.from(findUserByUserDetail));
+        Optional<BoardLike> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail);
 
         if (existingBoardLike.isPresent()) {
             BoardLike findBoardLikeEntity = existingBoardLike.get();

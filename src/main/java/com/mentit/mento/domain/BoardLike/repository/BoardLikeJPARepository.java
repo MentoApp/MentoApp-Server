@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface BoardLikeJPARepository extends JpaRepository<BoardLikeEntity,Long> {
 
-    Optional<BoardLikeEntity> findBoardLikeByBoardAndUser(BoardEntity boardEntity, UsersEntity user);
+    Optional<BoardLikeEntity> findBoardLikeByBoardEntityAndUser(BoardEntity boardEntity, UsersEntity user);
 
-    long countByBoard(BoardEntity boardEntity);
+    long countByBoardEntity(BoardEntity boardEntity);
 }

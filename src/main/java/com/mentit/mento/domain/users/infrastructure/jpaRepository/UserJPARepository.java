@@ -16,5 +16,5 @@ public interface UserJPARepository extends JpaRepository<UsersEntity, Long> {
     Optional<UsersEntity> findByNickname(String nickname, Long userId);
 
     @Query("select u from UsersEntity u where u.userId= :userId")
-    UsersEntity findByBoard(Long userId);
+    UsersEntity findByBoardEntities(Long userId);
 }

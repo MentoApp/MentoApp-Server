@@ -10,6 +10,7 @@ import lombok.*;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "boardKeywordForCreating")
 public class BoardKeywordForCreatingEntity {
 
     @Id

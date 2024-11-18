@@ -121,7 +121,7 @@ public class UsersEntity extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private DotoriTokenEntity dotoriTokenEntity;
 
     @OneToMany(mappedBy = "presenter")
@@ -132,10 +132,10 @@ public class UsersEntity extends BaseEntity {
     @Builder.Default
     private List<DotoriTokenUsageDetailsEntity> receivedDotoriTokens = new ArrayList<>();
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStatusTagEntity userStatusTagEntity;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardKeywordEntity> boardKeywords;
 
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)

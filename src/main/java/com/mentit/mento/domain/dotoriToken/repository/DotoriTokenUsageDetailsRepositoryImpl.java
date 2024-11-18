@@ -22,6 +22,6 @@ public class DotoriTokenUsageDetailsRepositoryImpl implements DotoriTokenUsageDe
 
     @Override
     public Page<DotoriTokenUsageDetailsEntity> findByDotoriToken(DotoriToken dotoriToken, Pageable pageable) {
-        return dotoriTokenUsageDetailsJPARepository.findByDotoriToken(DotoriTokenEntity.from(dotoriToken), pageable);
+        return dotoriTokenUsageDetailsJPARepository.findByDotoriTokenEntity(DotoriTokenEntity.from(dotoriToken), pageable);
     }
 }
