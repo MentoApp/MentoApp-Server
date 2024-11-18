@@ -17,25 +17,25 @@ public class UserStatusTag {
     private Long userStatusTagId;
     private CorporateFormEnum corporateFormEnum; // 회사형태 (단일 선택)
     @Builder.Default
-    private List<MyStatusTagsEntity> myStatus = new ArrayList<>(); // 복수 선택 가능한 태그 카테고리
-    private MyCareerTagsEntity myCareerTags; // 연차
-    private UsersEntity usersEntity;
+    private List<MyStatusTags> myStatus = new ArrayList<>(); // 복수 선택 가능한 태그 카테고리
+    private MyCareerTags myCareerTags; // 연차
+    private Users usersEntity;
 
 
     public static UserStatusTagEntity from(UserStatusTag userStatusTag) {
         return UserStatusTagEntity.builder()
-                .usersEntity(userStatusTag.getUsersEntity())
+                .usersEntity(UsersEntity.from(userStatusTag.getUsersEntity()))
                 .corporateFormEnum(userStatusTag.getCorporateFormEnum())
-                .myStatus(userStatusTag.getMyStatus())
-                .myCareerTags(userStatusTag.getMyCareerTags())
+                .myStatus(userStatusTag.getMyStatus().stream().map(MyStatusTagsEntity::from).toList())
+                .myCareerTags(MyCareerTagsEntity.from(userStatusTag.getMyCareerTags()))
                 .build();
     }
 
     public static UserStatusTag to(UserStatusTagEntity userStatusTagEntity) {
         return UserStatusTag.builder()
                 .corporateFormEnum(userStatusTagEntity.getCorporateFormEnum())
-                .myStatus(userStatusTagEntity.getMyStatus())
-                .myCareerTags(userStatusTagEntity.getMyCareerTags())
+                .myStatus(userStatusTagEntity.getMyStatus().stream().map(MyStatusTagsEntity::to).toList())
+                .myCareerTags(userStatusTagEntity.getMyCareerTags().to())
                 .build();
     }
 }

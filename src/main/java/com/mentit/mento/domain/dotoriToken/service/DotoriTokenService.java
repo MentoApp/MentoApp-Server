@@ -1,14 +1,19 @@
 package com.mentit.mento.domain.dotoriToken.service;
 
-import com.mentit.mento.domain.dotoriToken.constant.TradeType;
+import com.mentit.mento.domain.dotoriToken.constant.TradeTypeEnum;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriEarnRseponse;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriGiveResponse;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriUsageResponse;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
+import com.mentit.mento.domain.dotoriToken.repository.DotoriTokenJPARepository;
+import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
+import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenUsageDetailsRepository;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
+import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -30,10 +35,10 @@ public class DotoriTokenService {
 
     private final DotoriTokenRepository dotoriTokenRepository;
     private final DotoriTokenUsageDetailsRepository dotoriTokenUsageDetailsRepository;
-    private final UserRepositoryImpl userRepositoryImpl;
+    private final UserRepository userRepository;
 
     @Transactional
-    public void createDotoriToken(UsersEntity findUserByUserDetail) {
+    public void createDotoriToken(Users findUserByUserDetail) {
         DotoriToken dotoriToken = DotoriToken.builder()
                 .usersEntity(findUserByUserDetail)
                 .count(5)
@@ -44,14 +49,14 @@ public class DotoriTokenService {
         DotoriTokenUsageDetails dotoriTokenUsageDetails = DotoriTokenUsageDetails.builder()
                 .receiver(findUserByUserDetail)
                 .tradeAmount(5)
-                .tradeType(TradeType.BOARD_EARN)
-                .dotoriToken(dotoriToken)
+                .tradeTypeEnum(TradeTypeEnum.BOARD_EARN)
+                .dotoriTokenEntity(dotoriToken)
                 .build();
         dotoriTokenUsageDetailsRepository.save(dotoriTokenUsageDetails);
     }
 
     private Users getUsers(CustomUserDetail userDetail) {
-        return userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
+        return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
@@ -59,9 +64,9 @@ public class DotoriTokenService {
     public Page<DotoriUsageResponse> findUsage(Pageable pageable, CustomUserDetail customUserDetail) {
         Users findUserByUserDetail = getUsers(customUserDetail);
 
-        DotoriToken dotoriToken = findUserByUserDetail.getDotoriToken();
+        DotoriToken dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
 
-        Page<DotoriTokenUsageDetails> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken,pageable);
+        Page<DotoriTokenUsageDetailsEntity> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken,pageable);
 
 
         List<DotoriUsageResponse> DotoriUsageResponseList = usageList.stream().map(
@@ -69,46 +74,46 @@ public class DotoriTokenService {
                     List<DotoriGiveResponse> giveResponseList = new ArrayList<>();
                     List<DotoriEarnRseponse> earnRseponseList = new ArrayList<>();
                     //게시물에 도토리 선물
-                    if(dotoriTokenUsageDetails.getTradeType() == TradeType.BOARD_EARN) {
+                    if(dotoriTokenUsageDetails.getTradeTypeEnum() == TradeTypeEnum.BOARD_EARN) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
                                 .boardId(dotoriTokenUsageDetails.getBoardEntity().getBoardId())
                                 .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
-                                .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
+                                .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
                                 .message(dotoriTokenUsageDetails.getPresenter().getNickname()+"에게 선물을 받았습니다.")
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
                     //게시물 생성시
-                    } else if (dotoriTokenUsageDetails.getTradeType() == TradeType.BOARD_CREATE) {
+                    } else if (dotoriTokenUsageDetails.getTradeTypeEnum() == TradeTypeEnum.BOARD_CREATE) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
                                 .boardId(dotoriTokenUsageDetails.getBoardEntity().getBoardId())
                                 .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
-                                .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
+                                .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
                                 .message("게시물 작성 적립")
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
                     //충전
-                    } else if (dotoriTokenUsageDetails.getTradeType() == TradeType.CHARGING) {
+                    } else if (dotoriTokenUsageDetails.getTradeTypeEnum() == TradeTypeEnum.CHARGING) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
-                                .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
+                                .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
                                 .message("원 결제")//TODO 교환 환율에 맞춰 적기 만약 1000:20이고 40개 충전했다면 40*100적기
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
                     // 가입
-                    } else if (dotoriTokenUsageDetails.getTradeType() == TradeType.ENROLLMENT) {
+                    } else if (dotoriTokenUsageDetails.getTradeTypeEnum() == TradeTypeEnum.ENROLLMENT) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
-                                .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
+                                .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
                                 .message("도토리 가입 축하 적립 ")
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
@@ -120,7 +125,7 @@ public class DotoriTokenService {
                                 .boardTitle(dotoriTokenUsageDetails.getBoardEntity().getTitle())
                                 .receiverId(dotoriTokenUsageDetails.getReceiver().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
-                                .tradeType(dotoriTokenUsageDetails.getTradeType().getTradeType())
+                                .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
                                 .message(dotoriTokenUsageDetails.getReceiver().getNickname()+"에게 선물을 보냈습니다.")
                                 .build();
                         giveResponseList.add(dotoriGiveResponse);

@@ -42,4 +42,9 @@ public class CommentRepositoryImpl implements CommentRepository {
     public Long countByBoard(Board board) {
         return commentJPARepository.countByBoard(BoardEntity.from(board));
     }
+
+    @Override
+    public void deleteAllByBoard(Board board) {
+        commentJPARepository.deleteAllByBoard(BoardEntity.from(board));
+    }
 }

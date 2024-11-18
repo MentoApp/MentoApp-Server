@@ -13,12 +13,12 @@ import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse
 import com.mentit.mento.domain.board.service.port.BoardFileRepository;
 import com.mentit.mento.domain.board.service.port.BoardKeywordForCreatingRepository;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
-import com.mentit.mento.domain.comment.repository.CommentJPARepository;
 import com.mentit.mento.domain.comment.service.CommentService;
+import com.mentit.mento.domain.comment.service.port.CommentRepository;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
-import com.mentit.mento.domain.dotoriToken.service.DotoriTokenRepository;
+import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
+import com.mentit.mento.domain.users.domain.BoardKeyword;
 import com.mentit.mento.domain.users.domain.Users;
-import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -47,11 +47,11 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
     private final BoardKeywordForCreatingRepository boardKeywordForCreatingRepository;
-    private final S3FileUtilImpl s3FileUtilImpl;
-    private final CommentJPARepository commentJPARepository;
-    private final RedisLikeService redisLikeService;
-    private final CommentService commentService;
+    private final CommentRepository commentRepository;
     private final DotoriTokenRepository dotoriTokenRepository;
+    private final CommentService commentService;
+    private final S3FileUtilImpl s3FileUtilImpl;
+    private final RedisLikeService redisLikeService;
     private final RedisService redisService;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -75,7 +75,7 @@ public class BoardService {
 
         Board createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(savedBoard, boardFileEntities, boardKeywordForCreatingEntityList);
 
-        DotoriToken dotoriToken = findUserByUserDetail.getDotoriToken();
+        DotoriToken dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
         DotoriToken updatedDotoriToken = dotoriToken
                 .toBuilder()
                 .count(boardCreate
@@ -139,7 +139,7 @@ public class BoardService {
 
         redisService.deleteBoardKeywords(findBoard.getBoardId());
 
-        commentJPARepository.deleteAllByBoard(BoardEntity.from(findBoard));
+        commentRepository.deleteAllByBoard(findBoard);
 
         boardFileRepository.deleteAllByBoard(findBoard);
 
@@ -289,7 +289,7 @@ public class BoardService {
                 .nickname(findUserByBoard.getNickname())
                 .profileImage(findUserByBoard.getProfileImage())
                 .keyword(findUserByBoard.getBoardKeywords().stream().map(
-                        boardKeywords -> boardKeywords.getBoardKeywordEnum().getKoreanValue()
+                        boardKeywords -> boardKeywords.getBoardKeyword().getKoreanValue()
                 ).toList())
                 .simpleIntroduce(findUserByBoard.getSimpleIntroduce())
                 .build();
@@ -321,7 +321,7 @@ public class BoardService {
 
         // 키워드별로 게시물 매핑을 위한 구조 준비
         List<String> keywords = findUserByUserDetail.getBoardKeywords().stream()
-                .map(BoardKeywordEntity::getBoardKeywordEnum)
+                .map(BoardKeyword::getBoardKeyword)
                 .map(Enum::name)
                 .toList();
 

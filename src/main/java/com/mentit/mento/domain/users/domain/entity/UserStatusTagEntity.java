@@ -40,18 +40,18 @@ public class UserStatusTagEntity {
     public static UserStatusTagEntity from(UserStatusTag userStatusTag) {
         return UserStatusTagEntity.builder()
                 .corporateFormEnum(userStatusTag.getCorporateFormEnum())
-                .myCareerTags(userStatusTag.getMyCareerTags())
-                .myStatus(userStatusTag.getMyStatus())
-                .usersEntity(userStatusTag.getUsersEntity())
+                .myCareerTags(MyCareerTagsEntity.from(userStatusTag.getMyCareerTags()))
+                .myStatus(userStatusTag.getMyStatus().stream().map(MyStatusTagsEntity::from).toList())
+                .usersEntity(UsersEntity.from(userStatusTag.getUsersEntity()))
                 .build();
     }
 
     public UserStatusTag to() {
         return UserStatusTag.builder()
-                .myCareerTags(this.myCareerTags)
+                .myCareerTags(this.myCareerTags.to())
                 .userStatusTagId(this.userStatusTagId)
-                .myStatus(this.myStatus)
-                .usersEntity(this.usersEntity)
+                .myStatus(myStatus.stream().map(MyStatusTagsEntity::to).toList())
+                .usersEntity(this.usersEntity.to())
                 .build();
     }
 }

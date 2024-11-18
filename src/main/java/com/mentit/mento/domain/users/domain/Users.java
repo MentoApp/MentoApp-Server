@@ -1,9 +1,13 @@
 package com.mentit.mento.domain.users.domain;
 
+import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.users.constant.AccountStatus;
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGenderEnum;
@@ -42,15 +46,15 @@ public class Users {
     private String profileImage;
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
-    private DotoriToken dotoriToken;
+    private DotoriToken dotoriTokenEntity;
     @Builder.Default
     private List<DotoriTokenUsageDetails> presentedDotoriTokens = new ArrayList<>();
     @Builder.Default
     private List<DotoriTokenUsageDetails> receivedDotoriTokens = new ArrayList<>();
-    private UserStatusTagEntity userStatusTagEntity;
-    private List<BoardKeywordEntity> boardKeywords;
-    private List<CommentEntity> commentEntity;
-    private List<BoardEntity> boardEntities;
+    private UserStatusTag userStatusTagEntity;
+    private List<BoardKeyword> boardKeywords;
+    private List<Comment> commentEntity;
+    private List<Board> boardEntities;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));

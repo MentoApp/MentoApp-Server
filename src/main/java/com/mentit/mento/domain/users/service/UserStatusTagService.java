@@ -65,9 +65,9 @@ public class UserStatusTagService {
         // UserStatusTag 생성
         UserStatusTag userStatusTag = UserStatusTag.builder()
             .corporateFormEnum(request.getCorporateFormEnum())
-            .myCareerTags(myCareerTags != null ? MyCareerTagsEntity.from(myCareerTags) : null)
-            .myStatus(myStatusEntities.stream().map(MyStatusTagsEntity::from).toList())
-            .usersEntity(UsersEntity.from(user))
+            .myCareerTags(myCareerTags != null ? myCareerTags : null)
+            .myStatus(myStatusEntities)
+            .usersEntity(user)
             .build();
 
         userStatusTagRepository.save(userStatusTag);
@@ -120,9 +120,9 @@ public class UserStatusTagService {
 
         UserStatusTag userStatusTagEntity = UserStatusTag.builder()
                 .corporateFormEnum(corporateFormEnum)
-                .myCareerTags(MyCareerTagsEntity.from(myCareerTags))
-                .myStatus(myStatus.stream().map(myStatusTags -> MyStatusTagsEntity.from(myStatusTags)).toList()) // 새로운 ArrayList로 변경
-                .usersEntity(UsersEntity.from(user))
+                .myCareerTags(myCareerTags)
+                .myStatus(myStatus) // 새로운 ArrayList로 변경
+                .usersEntity(user)
                 .build();
 
         userStatusTagRepository.save(userStatusTagEntity);

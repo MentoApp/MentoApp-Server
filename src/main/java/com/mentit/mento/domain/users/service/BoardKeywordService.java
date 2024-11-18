@@ -31,7 +31,7 @@ public class BoardKeywordService {
 
             boardKeyword = boardKeywordRepository.save(boardKeyword);
 
-            user.getBoardKeywords().add(BoardKeywordEntity.from(boardKeyword));
+            user.getBoardKeywords().add(boardKeyword);
         });
     }
 
