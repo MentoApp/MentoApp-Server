@@ -1,0 +1,13 @@
+package com.mentit.mento.domain.board.repository.jpaRepository;
+
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BoardFileJPARepository extends JpaRepository<BoardFilesEntity,Long> {
+    void deleteAllByBoardEntity(BoardEntity findBoardEntity);
+
+    List<BoardFilesEntity> findAllByBoardEntity(BoardEntity findBoardEntity);
+}

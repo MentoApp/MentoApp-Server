@@ -1,50 +1,33 @@
 package com.mentit.mento.domain.dotoriToken.entity;
 
-import com.mentit.mento.domain.board.entity.Board;
-import com.mentit.mento.domain.dotoriToken.constant.TradeType;
+import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.dotoriToken.constant.TradeTypeEnum;
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 
-@Entity
-@Builder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 @Getter
-@SQLDelete(sql = " update dotori_token_usage_details set is_deleted = true where user_id = ?")
 public class DotoriTokenUsageDetails extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dotoriTokenUsageDetailId;
 
-    private TradeType tradeType;
+    private TradeTypeEnum tradeTypeEnum;
 
     private int tradeAmount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "presenter_id")  // 기부하는 유저
-    private UsersEntity presenter;
+    private Users presenter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")   // 도토리를 받는 유저
-    private UsersEntity receiver;
+    private Users receiver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dotori_token_id")
-    private DotoriToken dotoriToken;
+    private DotoriToken dotoriTokenEntity;
 
-    @OneToOne(mappedBy = "dotoriTokenUsageDetail")
-    private Board board;
+    private Board boardEntity;
 
-    @Column(nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
-
 
 }

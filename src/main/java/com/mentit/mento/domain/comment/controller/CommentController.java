@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.comment.controller;
 
-import com.mentit.mento.domain.comment.dto.CommentCreateRequest;
-import com.mentit.mento.domain.comment.dto.CommentUpdateRequest;
+import com.mentit.mento.domain.comment.dto.request.CommentCreate;
+import com.mentit.mento.domain.comment.dto.request.CommentUpdate;
 import com.mentit.mento.domain.comment.dto.CommentsResponse;
 import com.mentit.mento.domain.comment.service.CommentService;
 import com.mentit.mento.global.response.Response;
@@ -26,9 +26,9 @@ public class CommentController {
     public Response<Void> createComment(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @PathVariable Long boardId,
-            CommentCreateRequest commentCreateRequest
+            CommentCreate commentCreate
     ) {
-        commentService.createComment(customUserDetail, boardId, commentCreateRequest);
+        commentService.createComment(customUserDetail, boardId, commentCreate);
 
         return Response.success(HttpStatus.OK, "댓글 작성 성공");
     }
@@ -38,9 +38,9 @@ public class CommentController {
     public Response<Void> updateComment(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @PathVariable Long commentId,
-            CommentUpdateRequest commentUpdateRequest
+            CommentUpdate commentUpdate
     ) {
-        commentService.updateComment(customUserDetail, commentId, commentUpdateRequest);
+        commentService.updateComment(customUserDetail, commentId, commentUpdate);
 
         return Response.success(HttpStatus.OK, "댓글 수정 성공");
     }

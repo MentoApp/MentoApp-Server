@@ -1,7 +1,6 @@
 package com.mentit.mento.domain.users.service.port;
 
 import com.mentit.mento.domain.users.domain.BoardKeyword;
-import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import org.springframework.stereotype.Repository;
 

@@ -25,7 +25,7 @@ public class UserStatusTagRepositoryImpl implements UserStatusTagRepository {
 
     @Override
     public Optional<UserStatusTag> findByUsers(Users user) {
-        return userStatusTagJPARepository.findByUsers(UsersEntity.from(user));
+        return userStatusTagJPARepository.findByUsersEntity(UsersEntity.from(user)).map(UserStatusTagEntity::to);
     }
 
     @Override

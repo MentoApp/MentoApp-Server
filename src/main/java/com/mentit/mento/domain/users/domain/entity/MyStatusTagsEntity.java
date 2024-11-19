@@ -6,11 +6,14 @@ import com.mentit.mento.domain.users.domain.UserStatusTag;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(name = "myStatusTags")
 public class MyStatusTagsEntity {
 
     @Id

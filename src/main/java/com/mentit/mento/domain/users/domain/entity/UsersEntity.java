@@ -1,9 +1,9 @@
 package com.mentit.mento.domain.users.domain.entity;
 
-import com.mentit.mento.domain.board.entity.Board;
-import com.mentit.mento.domain.comment.entity.Comment;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.users.constant.*;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.global.BaseEntity;
@@ -76,7 +76,6 @@ public class UsersEntity extends BaseEntity {
 
     public static UsersEntity from(Users user) {
         return UsersEntity.builder()
-                .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -122,27 +121,27 @@ public class UsersEntity extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    private DotoriToken dotoriToken;
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DotoriTokenEntity dotoriTokenEntity;
 
     @OneToMany(mappedBy = "presenter")
     @Builder.Default
-    private List<DotoriTokenUsageDetails> presentedDotoriTokens = new ArrayList<>();
+    private List<DotoriTokenUsageDetailsEntity> presentedDotoriTokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver")
     @Builder.Default
-    private List<DotoriTokenUsageDetails> receivedDotoriTokens = new ArrayList<>();
+    private List<DotoriTokenUsageDetailsEntity> receivedDotoriTokens = new ArrayList<>();
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStatusTagEntity userStatusTagEntity;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardKeywordEntity> boardKeywords;
 
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comment;
+    private List<CommentEntity> commentEntity;
 
     @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Board> boards;
+    private List<BoardEntity> boardEntities;
 
 }

@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Users findByBoard(Long userId) {
-        return userJPARepository.findByBoard(userId).to();
+        return userJPARepository.findByBoardEntities(userId).to();
     }
 
     @Override

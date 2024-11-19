@@ -1,0 +1,50 @@
+package com.mentit.mento.domain.comment.entity;
+
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.global.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Table(name = "comment")
+public class CommentEntity extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long commentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private BoardEntity boardEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UsersEntity writer;
+
+    private String comment;
+
+    public static CommentEntity from(Comment comment) {
+        return CommentEntity.builder()
+                .boardEntity(BoardEntity.from(comment.getBoard()))
+                .writer(UsersEntity.from(comment.getWriter()))
+                .comment(comment.getComment())
+                .build();
+    }
+
+    public Comment to() {
+        return Comment.builder()
+                .commentId(commentId)
+                .board(boardEntity.to())
+                .writer(writer.to())
+                .comment(comment)
+                .build();
+    }
+}

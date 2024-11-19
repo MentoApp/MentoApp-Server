@@ -1,7 +1,6 @@
 package com.mentit.mento.domain.users.service.port;
 
 import com.mentit.mento.domain.users.domain.Users;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 
 import java.util.Optional;
 

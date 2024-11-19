@@ -1,5 +1,6 @@
 package com.mentit.mento.global.security.service;
 
+import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -19,7 +20,7 @@ public class LoginService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UsersEntity findUser = userRepositoryImpl.findByEmail(username).orElseThrow(
+        Users findUser = userRepositoryImpl.findByEmail(username).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
 

@@ -31,13 +31,13 @@ public class BoardKeywordService {
 
             boardKeyword = boardKeywordRepository.save(boardKeyword);
 
-            user.getBoardKeywords().add(BoardKeywordEntity.from(boardKeyword));
+            user.getBoardKeywords().add(boardKeyword);
         });
     }
 
     @Transactional
-    public void deleteExistingBoardKeywords(UsersEntity user) {
-        boardKeywordRepository.deleteAllByUsers(user);
+    public void deleteExistingBoardKeywords(Users user) {
+        boardKeywordRepository.deleteAllByUsers(UsersEntity.from(user));
     }
 
     public List<String> getBoardKeywords(UsersEntity findUserByUserDetail) {

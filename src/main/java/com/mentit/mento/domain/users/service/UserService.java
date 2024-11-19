@@ -70,7 +70,7 @@ public class UserService {
         boardKeywordService.createUserBoardKeyword(signInUser.getBoardKeywordEnums(), findUserByUserDetail);
 
         // DotoriToken 및 관련 상세 정보 생성 (토큰 서비스로 위임)
-        dotoriTokenService.createDotoriToken(UsersEntity.from(findUserByUserDetail));
+        dotoriTokenService.createDotoriToken(findUserByUserDetail);
 
         // 유저 정보 업데이트
         updateUserInformation(UsersEntity.from(findUserByUserDetail), signInUser, uploadedFile, userStatusTag);
@@ -116,7 +116,7 @@ public class UserService {
         UserStatusTag savedTag = userStatusTagService.update(modifyUser, findUserByUserDetail);
 
         // 기존 게시판 키워드 삭제
-        boardKeywordService.deleteExistingBoardKeywords(UsersEntity.from(findUserByUserDetail));
+        boardKeywordService.deleteExistingBoardKeywords(findUserByUserDetail);
 
         //새로운 게시판 키워드 생성
         boardKeywordService.createUserBoardKeyword(modifyUser.getBoardKeywordEnums(), findUserByUserDetail);
@@ -137,7 +137,7 @@ public class UserService {
                 .nickname(modifyUser.getNickname())
                 .profileImage(uploadedFile)
                 .simpleIntroduce(modifyUser.getSimpleIntroduce())
-                .userStatusTagEntity(UserStatusTagEntity.from(savedTag))
+                .userStatusTagEntity(savedTag)
                 .build();
 
         userRepository.save(updatedUser);
@@ -189,6 +189,7 @@ public class UserService {
         switch (findUser.getAuthType()) {
             case MEMBER_KAKAO -> oAuth2RevokeService.revokeKakao(socialAccessToken);
             case MEMBER_NAVER -> oAuth2RevokeService.revokeNaver(socialAccessToken);
+            default -> {} // 다른 타입의 회원은 소셜 토큰 철회가 필요 없음
         }
     }
 
@@ -224,7 +225,7 @@ public class UserService {
     @Transactional
     public FindUserResponse findMyInfo(CustomUserDetail userDetail) {
         Users findUserByUserDetail = getUsers(userDetail);
-        UserStatusTag userStatusTag = findUserByUserDetail.getUserStatusTagEntity().to();
+        UserStatusTag userStatusTag = findUserByUserDetail.getUserStatusTagEntity();
 
         List<String> boardKeywordList = boardKeywordService.getBoardKeywords(UsersEntity.from(findUserByUserDetail));
 
@@ -237,7 +238,7 @@ public class UserService {
                 .simpleIntroduce(findUserByUserDetail.getSimpleIntroduce())
                 .nickname(findUserByUserDetail.getNickname())
                 .profileImage(findUserByUserDetail.getProfileImage())
-                .dotoriTokenAmount(findUserByUserDetail.getDotoriToken().getCount())
+                .dotoriTokenAmount(findUserByUserDetail.getDotoriTokenEntity().getCount())
                 .boardKeywordList(boardKeywordList)
                 .corporateForm(userStatusTag.getCorporateFormEnum().getKoreanValue())
                 .myStatus(myStatusTagsList)

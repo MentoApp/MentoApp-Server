@@ -9,11 +9,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.lang.model.element.Name;
+
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(name = "myCareerTags")
 public class MyCareerTagsEntity {
 
     @Id
@@ -28,14 +31,12 @@ public class MyCareerTagsEntity {
 
     public static MyCareerTagsEntity from(MyCareerTags myCareerTags) {
         return MyCareerTagsEntity.builder()
-                .myCareerTagsId(myCareerTags.getMyCareerTagsId())
                 .myCareerTagsEnum(myCareerTags.getMyCareerTagsEnum())
                 .build();
     }
 
     public static MyCareerTagsEntity from(MyCareerTags myCareerTags, UserStatusTag userStatusTag) {
         return MyCareerTagsEntity.builder()
-                .myCareerTagsId(myCareerTags.getMyCareerTagsId())
                 .myCareerTagsEnum(myCareerTags.getMyCareerTagsEnum())
                 .userStatusTagEntity(UserStatusTagEntity.from(userStatusTag))
                 .build();

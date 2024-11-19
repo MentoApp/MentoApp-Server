@@ -1,14 +1,16 @@
 package com.mentit.mento.domain.comment.service;
 
-import com.mentit.mento.domain.board.entity.Board;
-import com.mentit.mento.domain.board.repository.BoardRepository;
-import com.mentit.mento.domain.comment.dto.CommentCreateRequest;
-import com.mentit.mento.domain.comment.dto.CommentUpdateRequest;
+import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.board.service.port.BoardRepository;
+import com.mentit.mento.domain.comment.dto.request.CommentCreate;
+import com.mentit.mento.domain.comment.dto.request.CommentUpdate;
 import com.mentit.mento.domain.comment.dto.CommentsResponse;
 import com.mentit.mento.domain.comment.entity.Comment;
-import com.mentit.mento.domain.comment.repository.CommentRepository;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
+import com.mentit.mento.domain.comment.service.port.CommentRepository;
+import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
 import com.mentit.mento.global.exception.customException.CommentException;
@@ -27,51 +29,51 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final UserRepositoryImpl userRepositoryImpl;
+    private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
     @Transactional
-    public void createComment(CustomUserDetail customUserDetail, Long boardId, CommentCreateRequest commentCreateRequest) {
-        UsersEntity findUserByUserDetail = getUser(customUserDetail);
+    public void createComment(CustomUserDetail customUserDetail, Long boardId, CommentCreate commentCreate) {
+        Users findUserByUserDetail = getUser(customUserDetail);
 
-        if (!findUserByUserDetail.getNickname().equals(commentCreateRequest.getWriter())) {
+        if (!findUserByUserDetail.getNickname().equals(commentCreate.getWriter())) {
             throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
         }
 
-        Board findBoardById = getBoard(boardId);
+        Board findBoardEntityById = getBoard(boardId);
 
-        Comment createdComment = Comment.builder()
+        Comment createdCommentEntity = Comment.builder()
                 .writer(findUserByUserDetail)
-                .board(findBoardById)
-                .comment(commentCreateRequest.getContent())
+                .board(findBoardEntityById)
+                .comment(commentCreate.getContent())
                 .build();
 
-        findBoardById.getComments().add(createdComment);
+        findBoardEntityById.getComments().add(createdCommentEntity);
 
-        boardRepository.save(findBoardById);
+        boardRepository.save(findBoardEntityById);
 
-        commentRepository.save(createdComment);
+        commentRepository.save(createdCommentEntity);
 
     }
 
     @Transactional
-    public void updateComment(CustomUserDetail customUserDetail,Long commentId, CommentUpdateRequest commentUpdateRequest) {
-        UsersEntity findUserByUserDetail = getUser(customUserDetail);
+    public void updateComment(CustomUserDetail customUserDetail,Long commentId, CommentUpdate commentUpdate) {
+        Users findUserByUserDetail = getUser(customUserDetail);
 
-        if (!findUserByUserDetail.getNickname().equals(commentUpdateRequest.getWriter())) {
+        if (!findUserByUserDetail.getNickname().equals(commentUpdate.getWriter())) {
             throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
         }
 
-        Comment findCommentById = commentRepository.findById(commentId).orElseThrow(
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentException(ExceptionCode.NOT_FOUND_COMMENT)
         );
 
-        Comment updatedComment = findCommentById.toBuilder()
-                .comment(commentUpdateRequest.getContent())
+        Comment updatedCommentEntity = findComment.toBuilder()
+                .comment(commentUpdate.getContent())
                 .build();
 
-        commentRepository.save(updatedComment);
+        commentRepository.save(updatedCommentEntity);
     }
 
     private Board getBoard(Long boardId) {
@@ -80,14 +82,14 @@ public class CommentService {
         );
     }
 
-    private UsersEntity getUser(CustomUserDetail customUserDetail) {
-        return userRepositoryImpl.findById(customUserDetail.getId()).orElseThrow(
+    private Users getUser(CustomUserDetail customUserDetail) {
+        return userRepository.findById(customUserDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public void deleteComment(CustomUserDetail customUserDetail, Long commentId) {
-        UsersEntity findUserByUserDetail = getUser(customUserDetail);
+        Users findUserByUserDetail = getUser(customUserDetail);
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentException(ExceptionCode.NOT_FOUND_COMMENT)
         );
@@ -99,8 +101,8 @@ public class CommentService {
 
         @Transactional(readOnly = true)
         public Page<CommentsResponse> getCommentsByBoardId(Long boardId, Pageable pageable) {
-            Board board = getBoard(boardId); // 게시판 존재 여부 체크
-            Page<Comment> comments = commentRepository.findAllByBoard(board.getBoardId(), pageable); // 댓글 조회
+            Board boardEntity = getBoard(boardId); // 게시판 존재 여부 체크
+            Page<Comment> comments = commentRepository.findAllByBoard(boardEntity.getBoardId(), pageable); // 댓글 조회
 
             // CommentsResponse 변환
             List<CommentsResponse> commentsResponses = comments.stream()
@@ -117,8 +119,8 @@ public class CommentService {
         }
 
         public Long getCommentCount(Long boardId) {
-        Board board = getBoard(boardId);
-         return commentRepository.countByBoard(board);
+        Board boardEntity = getBoard(boardId);
+         return commentRepository.countByBoard(boardEntity);
         }
     }
 
