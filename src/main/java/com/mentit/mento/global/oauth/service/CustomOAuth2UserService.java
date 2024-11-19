@@ -4,7 +4,6 @@ import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGenderEnum;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
@@ -21,6 +20,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -30,10 +30,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED)
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final UserRepository userRepositoryImpl;
+    private final UserRepository userRepository;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
 
     @Override
@@ -62,7 +62,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
-        Users user = userRepositoryImpl.findByEmail(email)
+        Users user = userRepository.findByEmail(email)
                 .map(existingUser -> {
                     // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
                     socialAccessTokenRepository.findByUser(UsersEntity.from(existingUser)).ifPresentOrElse(
@@ -77,7 +77,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     return existingUser;
 
                 }).orElseGet(() -> {
-                    UsersEntity mappedUser = UsersEntity.builder()
+                    Users mappedUser = Users.builder()
                             .email(email)
                             .name(name)
                             .nickname(nickname)
@@ -88,19 +88,23 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                             .birthDay(birthDay)
                             .birthYear(birthYear)
                             .build();
+
                     String tempPassword = PasswordUtil.generateRandomPassword();
                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(tempPassword);
                     mappedUser = mappedUser.toBuilder()
                             .password(encodedPassword)
                             .build();
-                    Users users = mappedUser.to();
-                    userRepositoryImpl.save(users);
-                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, mappedUser));
+
+                    mappedUser = userRepository.save(mappedUser);
+                    UsersEntity savedEntity = UsersEntity.from(mappedUser);
+
+                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, savedEntity));
                     isNewUser.set(true);
 
-                    return users;
+                    return mappedUser;
                 });
+        userRepository.save(user);
 
         CustomUserDetail customUserDetail = new CustomUserDetail(
                 user,

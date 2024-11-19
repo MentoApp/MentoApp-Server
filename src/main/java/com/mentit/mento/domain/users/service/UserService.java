@@ -62,7 +62,7 @@ public class UserService {
             uploadedFile = s3FileUtilImpl.upload(profileImage);
         }
 
-        // 유저 상태 태그 생성 및 저장 (서비스로 위임)
+        // 유저 상태 태그 생성 및 저장
         UserStatusTag userStatusTag = userStatusTagService.create(signInUser, findUserByUserDetail);
         userStatusTag = userStatusTagRepository.save(userStatusTag);
 

@@ -19,4 +19,6 @@ public interface UserRepository {
     Optional<Users> findById(Long id);
 
     void delete(Users findUser);
+
+    void flush();
 }

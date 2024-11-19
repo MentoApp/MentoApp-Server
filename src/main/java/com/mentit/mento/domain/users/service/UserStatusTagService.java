@@ -39,7 +39,9 @@ public class UserStatusTagService {
 
     @Transactional
     public UserStatusTag create(SignInUser request, Users user) {
-
+        
+        // 먼저 Users 엔티티 저장
+        Users savedUser = userRepository.save(user);
 
         // MyStatusTags 생성 및 null 체크
         List<MyStatusTags> myStatusEntities = request.getMyStatus() != null 

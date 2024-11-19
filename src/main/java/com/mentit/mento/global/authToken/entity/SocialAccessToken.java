@@ -19,7 +19,7 @@ public class SocialAccessToken {
 
     private String socialAccessToken;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "member_id")
     private UsersEntity user;
 

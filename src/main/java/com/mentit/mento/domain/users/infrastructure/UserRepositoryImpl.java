@@ -45,4 +45,9 @@ public class UserRepositoryImpl implements UserRepository {
     public void delete(Users findUser) {
         userJPARepository.delete(UsersEntity.from(findUser));
     }
+
+    @Override
+    public void flush() {
+        userJPARepository.flush();
+    }
 }
