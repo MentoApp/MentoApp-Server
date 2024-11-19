@@ -1,19 +1,13 @@
 package com.mentit.mento.domain.users.domain;
 
 import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.Comment;
-import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.users.constant.AccountStatus;
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGenderEnum;
 import com.mentit.mento.domain.users.constant.UserJobEnum;
-import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
-import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,8 +47,8 @@ public class Users {
     private List<DotoriTokenUsageDetails> receivedDotoriTokens = new ArrayList<>();
     private UserStatusTag userStatusTagEntity;
     private List<BoardKeyword> boardKeywords;
-    private List<Comment> commentEntity;
-    private List<Board> boardEntities;
+    private List<Comment> comment;
+    private List<Board> board;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));

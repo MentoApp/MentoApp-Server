@@ -43,16 +43,17 @@ public class UserStatusTagEntity {
                 .corporateFormEnum(userStatusTag.getCorporateFormEnum())
                 .myCareerTags(MyCareerTagsEntity.from(userStatusTag.getMyCareerTags()))
                 .myStatus(userStatusTag.getMyStatus().stream().map(MyStatusTagsEntity::from).toList())
-                .usersEntity(UsersEntity.from(userStatusTag.getUsersEntity()))
+                .usersEntity(UsersEntity.from(userStatusTag.getUsers()))
                 .build();
     }
 
     public UserStatusTag to() {
         return UserStatusTag.builder()
+                .userStatusTagId(userStatusTagId)
                 .myCareerTags(this.myCareerTags.to())
                 .userStatusTagId(this.userStatusTagId)
                 .myStatus(myStatus.stream().map(MyStatusTagsEntity::to).toList())
-                .usersEntity(this.usersEntity.to())
+                .users(usersEntity.to())
                 .build();
     }
 }

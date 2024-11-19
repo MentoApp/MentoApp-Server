@@ -11,7 +11,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class UserStatusTag {
     private Long userStatusTagId;
@@ -19,12 +19,12 @@ public class UserStatusTag {
     @Builder.Default
     private List<MyStatusTags> myStatus = new ArrayList<>(); // 복수 선택 가능한 태그 카테고리
     private MyCareerTags myCareerTags; // 연차
-    private Users usersEntity;
+    private Users users;
 
 
     public static UserStatusTagEntity from(UserStatusTag userStatusTag) {
         return UserStatusTagEntity.builder()
-                .usersEntity(UsersEntity.from(userStatusTag.getUsersEntity()))
+                .usersEntity(UsersEntity.from(userStatusTag.getUsers()))
                 .corporateFormEnum(userStatusTag.getCorporateFormEnum())
                 .myStatus(userStatusTag.getMyStatus().stream().map(MyStatusTagsEntity::from).toList())
                 .myCareerTags(MyCareerTagsEntity.from(userStatusTag.getMyCareerTags()))

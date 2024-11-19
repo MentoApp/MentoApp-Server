@@ -7,9 +7,6 @@ import com.mentit.mento.domain.users.domain.UserStatusTag;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
-import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
-import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.MyCareerTagsEntityRepository;
 import com.mentit.mento.domain.users.service.port.MyStatusTagsEntityRepository;
 import com.mentit.mento.domain.users.service.port.UserRepository;
@@ -39,12 +36,9 @@ public class UserStatusTagService {
 
     @Transactional
     public UserStatusTag create(SignInUser request, Users user) {
-        
-        // 먼저 Users 엔티티 저장
-        Users savedUser = userRepository.save(user);
 
         // MyStatusTags 생성 및 null 체크
-        List<MyStatusTags> myStatusEntities = request.getMyStatus() != null 
+        List<MyStatusTags> myStatusTags = request.getMyStatus() != null
             ? request.getMyStatus().stream()
                 .filter(Objects::nonNull)
                 .map(status -> MyStatusTags.builder()
@@ -67,16 +61,18 @@ public class UserStatusTagService {
         // UserStatusTag 생성
         UserStatusTag userStatusTag = UserStatusTag.builder()
             .corporateFormEnum(request.getCorporateFormEnum())
-            .myCareerTags(myCareerTags != null ? myCareerTags : null)
-            .myStatus(myStatusEntities)
-            .usersEntity(user)
+            .myCareerTags(myCareerTags)
+            .myStatus(myStatusTags)
+            .users(user)
             .build();
+
+        log.info("userId: {}", user.getUserId());
 
         userStatusTagRepository.save(userStatusTag);
 
         // 연관 관계 설정
-        if (!myStatusEntities.isEmpty()) {
-            myStatusEntities.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus, userStatusTag));
+        if (!myStatusTags.isEmpty()) {
+            myStatusTags.forEach(myStatus -> myStatusTagsEntityRepository.save(myStatus, userStatusTag));
         }
         if (myCareerTags != null) {
             myCareerTagsEntityRepository.save(myCareerTags, userStatusTag);
@@ -124,7 +120,7 @@ public class UserStatusTagService {
                 .corporateFormEnum(corporateFormEnum)
                 .myCareerTags(myCareerTags)
                 .myStatus(myStatus) // 새로운 ArrayList로 변경
-                .usersEntity(user)
+                .users(user)
                 .build();
 
         userStatusTagRepository.save(userStatusTagEntity);
@@ -151,7 +147,6 @@ public class UserStatusTagService {
 
         userStatusTag.getMyStatus().forEach(
                 myStatus -> myStatusTagsList.add(myStatus.getMyStatusTag().getDescription())
-
         );
         return myStatusTagsList;
     }
