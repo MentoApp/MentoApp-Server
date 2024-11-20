@@ -52,21 +52,21 @@ public class DotoriTokenService {
                 .tradeTypeEnum(TradeTypeEnum.BOARD_EARN)
                 .dotoriTokenEntity(dotoriToken)
                 .build();
-        dotoriTokenUsageDetailsRepository.save(dotoriTokenUsageDetails);
+        dotoriTokenUsageDetailsRepository.saveCreateAccount(dotoriTokenUsageDetails);
     }
 
-    private Users getUsers(CustomUserDetail userDetail) {
+    private UsersEntity getUsers(CustomUserDetail userDetail) {
         return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public Page<DotoriUsageResponse> findUsage(Pageable pageable, CustomUserDetail customUserDetail) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
-        DotoriToken dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
+        DotoriTokenEntity dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
 
-        Page<DotoriTokenUsageDetailsEntity> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken,pageable);
+        Page<DotoriTokenUsageDetailsEntity> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken.to(),pageable);
 
 
         List<DotoriUsageResponse> DotoriUsageResponseList = usageList.stream().map(

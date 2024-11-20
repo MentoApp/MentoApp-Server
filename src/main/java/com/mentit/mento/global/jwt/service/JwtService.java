@@ -163,7 +163,7 @@ public class JwtService {
 
     private Authentication getAuthenticationFromMemberId(Long memberId) {
         // 회원 ID로 사용자 정보 조회
-        Users user = userRepositoryImpl.findById(memberId)
+        UsersEntity user = userRepositoryImpl.findById(memberId)
                 .orElseThrow(() -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER));
         GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuthType().name());
 

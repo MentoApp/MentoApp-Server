@@ -1,6 +1,7 @@
 package com.mentit.mento.domain.users.service.port;
 
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 
 import java.util.Optional;
 
@@ -14,11 +15,11 @@ public interface UserRepository {
 
     Users findByBoard(Long userId);
 
-    Users save(Users modifiedUser);
+    UsersEntity save(Users modifiedUser);
 
-    Optional<Users> findById(Long id);
+    Optional<UsersEntity> findById(Long id);
 
-    void delete(Users findUser);
+    void delete(UsersEntity findUser);
 
     void flush();
 }

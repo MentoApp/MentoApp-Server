@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleDefaultException(Exception ex) {
         defaultLogger.error(ex.getMessage());
         exceptionLogger.error(ex.getMessage());
+        log.error("Unexpected error occurred", ex);  // 스택트레이스 포함하여 로깅
 
         ExceptionResponse exceptionResponse = ExceptionResponse.fromError(ex);
         return ResponseEntity.status(exceptionResponse.httpStatus()).body(exceptionResponse);

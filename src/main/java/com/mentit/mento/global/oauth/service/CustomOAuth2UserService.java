@@ -7,6 +7,8 @@ import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
+import com.mentit.mento.global.exception.ExceptionCode;
+import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.PasswordUtil;
@@ -20,17 +22,17 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
@@ -62,56 +64,82 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
-        Users user = userRepository.findByEmail(email)
-                .map(existingUser -> {
-                    // SocialAccessToken 엔티티 업데이트 또는 생성 로직 수정
-                    socialAccessTokenRepository.findByUser(UsersEntity.from(existingUser)).ifPresentOrElse(
-                            existingToken -> {
-                                log.info("existingToken: {}", existingToken.getSocialAccessToken());
-                                existingToken.updateSocialAccessToken(socialAccessToken);
-                                socialAccessTokenRepository.save(existingToken);
-                            },
-                            () -> socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, UsersEntity.from(existingUser))
-                            )
-                    );
-                    return existingUser;
+        
+        // 이메일로 기존 유저 찾기 전에 로그 추가
+        log.info("Searching for user with email: {}", email);
+        
+        Optional<Users> existingUserOptional = userRepository.findByEmail(email);
+        existingUserOptional.ifPresent(existingUser -> 
+            log.info("Found existing user with ID: {}", existingUser.getUserId())
+        );
 
-                }).orElseGet(() -> {
-                    Users mappedUser = Users.builder()
-                            .email(email)
-                            .name(name)
-                            .nickname(nickname)
-                            .profileImage(profileImage)
-                            .phoneNumber(phoneNumber)
-                            .authType(authType)
-                            .gender(gender)
-                            .birthDay(birthDay)
-                            .birthYear(birthYear)
-                            .build();
+        Users user;
+        if (existingUserOptional.isPresent()) {
+            user = existingUserOptional.get();
+            log.info("Using existing user with ID: {}", user.getUserId());
+            
+            // 소셜 액세스 토큰 업데이트
 
-                    String tempPassword = PasswordUtil.generateRandomPassword();
-                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                    String encodedPassword = passwordEncoder.encode(tempPassword);
-                    mappedUser = mappedUser.toBuilder()
-                            .password(encodedPassword)
-                            .build();
+            updateSocialAccessToken(user, socialAccessToken);
+        } else {
+            UsersEntity usersEntity = createNewUser(email, name, nickname, profileImage, phoneNumber,
+                    authType, gender, birthDay, birthYear);
+            log.info("Created new user with ID: {}", usersEntity.getUserId());
+            user = usersEntity.to();
+        }
 
-                    mappedUser = userRepository.save(mappedUser);
-                    UsersEntity savedEntity = UsersEntity.from(mappedUser);
+        return createCustomUserDetail(user, authType, memberAttribute, isNewUser.get());
+    }
 
-                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, savedEntity));
-                    isNewUser.set(true);
+    private void updateSocialAccessToken(Users user, String socialAccessToken) {
+        UsersEntity userEntity = userRepository.findById(user.getUserId()).orElseThrow(
+                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
+        );
 
-                    return mappedUser;
-                });
-        userRepository.save(user);
+        socialAccessTokenRepository.findByUser(userEntity).ifPresentOrElse(
+                existingToken -> {
+                    log.info("Updating social access token for user: {}", userEntity.getUserId());
+                    existingToken.updateSocialAccessToken(socialAccessToken);
+                    socialAccessTokenRepository.save(existingToken);
+                },
+                () -> {
+                    log.info("Creating new social access token for user: {}", userEntity.getUserId());
+                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, userEntity));
+                }
+        );
+    }
 
+    private UsersEntity createNewUser(String email, String name, String nickname, String profileImage,
+                              String phoneNumber, AuthType authType, UserGenderEnum gender,
+                              String birthDay, String birthYear) {
+        String encodedPassword = new BCryptPasswordEncoder()
+                .encode(PasswordUtil.generateRandomPassword());
+
+        Users newUser = Users.builder()
+                .email(email)
+                .name(name)
+                .nickname(nickname)
+                .profileImage(profileImage)
+                .phoneNumber(phoneNumber)
+                .authType(authType)
+                .gender(gender)
+                .birthDay(birthDay)
+                .birthYear(birthYear)
+                .password(encodedPassword)
+                .isNewUser(true)
+                .build();
+
+        return userRepository.save(newUser);
+    }
+
+    private CustomUserDetail createCustomUserDetail(Users user, AuthType authType,
+                                                  Map<String, Object> memberAttribute,
+                                                  boolean isNewUser) {
         CustomUserDetail customUserDetail = new CustomUserDetail(
                 user,
-                Collections.singleton(new SimpleGrantedAuthority(AuthType.of(registrationId).name())),
+                Collections.singleton(new SimpleGrantedAuthority(authType.name())),
                 memberAttribute);
-        customUserDetail.setIsNewUser(isNewUser.get());
-
+        customUserDetail.setIsNewUser(isNewUser);
         return customUserDetail;
     }
 

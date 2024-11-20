@@ -47,14 +47,27 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
+    //TODO:: 게시판용, 회원가입용 나눠서 작성하기
     public static DotoriTokenUsageDetailsEntity from(DotoriTokenUsageDetails dotoriTokenUsageDetails) {
         return DotoriTokenUsageDetailsEntity.builder()
                 .tradeTypeEnum(dotoriTokenUsageDetails.getTradeTypeEnum())
                 .tradeAmount(dotoriTokenUsageDetails.getTradeAmount())
-                .presenter(dotoriTokenUsageDetails.getBoardEntity().getWriter())
-                .receiver(dotoriTokenUsageDetails.getBoardEntity().getWriter())
+                .presenter(dotoriTokenUsageDetails.getBoardEntity().getWriter()==null?null:dotoriTokenUsageDetails.getBoardEntity().getWriter())
+                .receiver(dotoriTokenUsageDetails.getBoardEntity().getWriter()==null?null:dotoriTokenUsageDetails.getBoardEntity().getWriter())
                 .dotoriTokenEntity(DotoriTokenEntity.from(dotoriTokenUsageDetails.getDotoriTokenEntity()))
                 .boardEntity(BoardEntity.from(dotoriTokenUsageDetails.getBoardEntity()))
+                .isDeleted(dotoriTokenUsageDetails.isDeleted())
+                .build();
+    }
+
+    public static DotoriTokenUsageDetailsEntity fromCreateUsage(DotoriTokenUsageDetails dotoriTokenUsageDetails) {
+        return DotoriTokenUsageDetailsEntity.builder()
+                .tradeTypeEnum(dotoriTokenUsageDetails.getTradeTypeEnum())
+                .tradeAmount(dotoriTokenUsageDetails.getTradeAmount())
+                .presenter(null)
+                .receiver(UsersEntity.from(dotoriTokenUsageDetails.getReceiver()))
+                .dotoriTokenEntity(DotoriTokenEntity.from(dotoriTokenUsageDetails.getDotoriTokenEntity()))
+                .boardEntity(null)
                 .isDeleted(dotoriTokenUsageDetails.isDeleted())
                 .build();
     }
@@ -68,6 +81,19 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
                 .receiver(receiver.to())
                 .dotoriTokenEntity(dotoriTokenEntity.to())
                 .boardEntity(boardEntity.to())
+                .isDeleted(isDeleted)
+                .build();
+    }
+
+    public DotoriTokenUsageDetails toCreateUsage() {
+        return  DotoriTokenUsageDetails.builder()
+                .dotoriTokenUsageDetailId(dotoriTokenUsageDetailId)
+                .tradeTypeEnum(tradeTypeEnum)
+                .tradeAmount(tradeAmount)
+                .presenter(null)
+                .receiver(receiver.to())
+                .dotoriTokenEntity(dotoriTokenEntity.to())
+                .boardEntity(null)
                 .isDeleted(isDeleted)
                 .build();
     }

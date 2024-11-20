@@ -10,6 +10,7 @@ import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
@@ -35,7 +36,7 @@ public class CommentService {
 
     @Transactional
     public void createComment(CustomUserDetail customUserDetail, Long boardId, CommentCreate commentCreate) {
-        Users findUserByUserDetail = getUser(customUserDetail);
+        UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(commentCreate.getWriter())) {
             throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
@@ -44,7 +45,7 @@ public class CommentService {
         Board findBoardEntityById = getBoard(boardId);
 
         Comment createdCommentEntity = Comment.builder()
-                .writer(findUserByUserDetail)
+                .writer(findUserByUserDetail.to())
                 .board(findBoardEntityById)
                 .comment(commentCreate.getContent())
                 .build();
@@ -59,7 +60,7 @@ public class CommentService {
 
     @Transactional
     public void updateComment(CustomUserDetail customUserDetail,Long commentId, CommentUpdate commentUpdate) {
-        Users findUserByUserDetail = getUser(customUserDetail);
+        UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(commentUpdate.getWriter())) {
             throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
@@ -82,14 +83,14 @@ public class CommentService {
         );
     }
 
-    private Users getUser(CustomUserDetail customUserDetail) {
+    private UsersEntity getUser(CustomUserDetail customUserDetail) {
         return userRepository.findById(customUserDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public void deleteComment(CustomUserDetail customUserDetail, Long commentId) {
-        Users findUserByUserDetail = getUser(customUserDetail);
+        UsersEntity findUserByUserDetail = getUser(customUserDetail);
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentException(ExceptionCode.NOT_FOUND_COMMENT)
         );

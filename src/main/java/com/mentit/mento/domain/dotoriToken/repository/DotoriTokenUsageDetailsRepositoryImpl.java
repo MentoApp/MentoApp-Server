@@ -24,4 +24,10 @@ public class DotoriTokenUsageDetailsRepositoryImpl implements DotoriTokenUsageDe
     public Page<DotoriTokenUsageDetailsEntity> findByDotoriToken(DotoriToken dotoriToken, Pageable pageable) {
         return dotoriTokenUsageDetailsJPARepository.findByDotoriTokenEntity(DotoriTokenEntity.from(dotoriToken), pageable);
     }
+
+    @Override
+    public DotoriTokenUsageDetails saveCreateAccount(DotoriTokenUsageDetails dotoriTokenUsageDetails) {
+        return dotoriTokenUsageDetailsJPARepository.save(DotoriTokenUsageDetailsEntity.fromCreateUsage(dotoriTokenUsageDetails)).toCreateUsage();
+
+    }
 }

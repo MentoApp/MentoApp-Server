@@ -34,7 +34,7 @@ public class UserStatusTagEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private MyCareerTagsEntity myCareerTags; // 연차
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "users_user_id")
     private UsersEntity usersEntity;
 

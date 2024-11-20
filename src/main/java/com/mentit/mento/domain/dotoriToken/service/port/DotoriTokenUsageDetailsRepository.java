@@ -10,4 +10,6 @@ public interface DotoriTokenUsageDetailsRepository {
     DotoriTokenUsageDetails save(DotoriTokenUsageDetails dotoriTokenUsageDetails);
 
     Page<DotoriTokenUsageDetailsEntity> findByDotoriToken(DotoriToken dotoriToken, Pageable pageable);
+
+    DotoriTokenUsageDetails saveCreateAccount(DotoriTokenUsageDetails dotoriTokenUsageDetails);
 }

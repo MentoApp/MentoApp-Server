@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.lang.model.element.Name;
-
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor

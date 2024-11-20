@@ -16,9 +16,11 @@ import com.mentit.mento.domain.board.service.port.BoardRepository;
 import com.mentit.mento.domain.comment.service.CommentService;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
 import com.mentit.mento.domain.users.domain.BoardKeyword;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -58,7 +60,7 @@ public class BoardService {
     @Transactional
     public FindBoardResponse createBoard(CustomUserDetail customUserDetail, BoardCreate boardCreate, List<MultipartFile> images) {
         //유저 정보 조회
-        Users findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         //게시판 작성자와 유저 닉네임이 일치하지 않으면 예외 발생
         if (!findUserByUserDetail.getNickname().equals(boardCreate.getWriter())) {
@@ -75,8 +77,8 @@ public class BoardService {
 
         Board createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(savedBoard, boardFileEntities, boardKeywordForCreatingEntityList);
 
-        DotoriToken dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
-        DotoriToken updatedDotoriToken = dotoriToken
+        DotoriTokenEntity dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
+        DotoriTokenEntity updatedDotoriToken = dotoriToken
                 .toBuilder()
                 .count(boardCreate
                         .getBoardTypeEnum()
@@ -84,7 +86,7 @@ public class BoardService {
                         .equals("IT 일상") ? dotoriToken.getCount() : dotoriToken.getCount() + 5)
                 .build();
 
-        dotoriTokenRepository.save(updatedDotoriToken);
+        dotoriTokenRepository.save(updatedDotoriToken.to());
 
         redisService.saveBoardKeywords(savedBoard.getBoardId(), boardCreate.getKeywords());
 
@@ -94,7 +96,7 @@ public class BoardService {
 
     @Transactional
     public FindBoardResponse updateBoard(CustomUserDetail customUserDetail, BoardUpdate boardUpdate, List<MultipartFile> images) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(boardUpdate.getWriter())) {
             throw new MemberException(ExceptionCode.NICKNAME_NOT_MATCH);
@@ -158,11 +160,11 @@ public class BoardService {
         return boardRepository.save(updatedSavedBoard);
     }
 
-    private Board createBoard(BoardCreate boardCreate, Users findUserByUserDetail) {
+    private Board createBoard(BoardCreate boardCreate, UsersEntity usersEntity) {
         Board createdBoard = Board.builder()
                 .title(boardCreate.getTitle())
                 .content(boardCreate.getContent())
-                .writer(UsersEntity.from(findUserByUserDetail))
+                .writer(usersEntity)
                 .boardTypeEnum(boardCreate.getBoardTypeEnum())
                 .viewCount(1L)
                 .build();
@@ -239,7 +241,7 @@ public class BoardService {
     }
 
 
-    private Users getUsers(CustomUserDetail userDetail) {
+    private UsersEntity getUsers(CustomUserDetail userDetail) {
         return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
@@ -282,14 +284,14 @@ public class BoardService {
 
     //TODO:: 게시판별 키워드를 레디스에 저장해서 조회하는것이 더 빠를듯
     private UserInfoInBoardResponse getUserInfoInBoardResponse(Board findBoardByBoardId) {
-        Users findUserByBoard = userRepository.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
+        UsersEntity findUserByBoard = userRepository.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
         return UserInfoInBoardResponse.builder()
                 .nickname(findUserByBoard.getNickname())
                 .profileImage(findUserByBoard.getProfileImage())
                 .keyword(findUserByBoard.getBoardKeywords().stream().map(
-                        boardKeywords -> boardKeywords.getBoardKeyword().getKoreanValue()
+                        boardKeywords -> boardKeywords.getBoardKeywordEnum().getKoreanValue()
                 ).toList())
                 .simpleIntroduce(findUserByBoard.getSimpleIntroduce())
                 .build();
@@ -317,11 +319,11 @@ public class BoardService {
     // 2. 겹치는 키워드 수가 같다면 최신순 상단 노출
     // 3. 겹치는 키워드가 없다면 해당 게시판 게시물 최신순 상단 노출
     public List<FindSimilarBoardResponse> findBoardContainsKeywords(CustomUserDetail customUserDetail) {
-        Users findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         // 키워드별로 게시물 매핑을 위한 구조 준비
         List<String> keywords = findUserByUserDetail.getBoardKeywords().stream()
-                .map(BoardKeyword::getBoardKeyword)
+                .map(BoardKeywordEntity::getBoardKeywordEnum)
                 .map(Enum::name)
                 .toList();
 
@@ -384,7 +386,7 @@ public class BoardService {
 
     public List<FindBoardResponse> findTop3Boards(CustomUserDetail customUserDetail) {
 
-        Users findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         return boardRepository.findTop3ByOrderByViewCountDesc()
                 .map(boards -> boards.stream().map(

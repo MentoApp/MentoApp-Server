@@ -5,6 +5,7 @@ import com.mentit.mento.domain.BoardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.BoardException;
@@ -42,12 +43,12 @@ public class BoardLikeService {
     }
 
     public Long like(CustomUserDetail customUserDetail, Long boardId) {
-        Users findUserByUserDetail = getUser(customUserDetail);
+        UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
         Board findBoardByBoardEntityId = boardEntityRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
-        Optional<BoardLike> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail);
+        Optional<BoardLike> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail.to());
 
         if (existingBoardLike.isPresent()) {
             BoardLike findBoardLikeEntity = existingBoardLike.get();
@@ -57,7 +58,7 @@ public class BoardLikeService {
         }
 
         BoardLike createdBoardLikeEntity = BoardLike.builder()
-                .user(findUserByUserDetail)
+                .user(findUserByUserDetail.to())
                 .liked(true)
                 .board(findBoardByBoardEntityId)
                 .build();
@@ -74,7 +75,7 @@ public class BoardLikeService {
 
     }
 
-    private Users getUser(CustomUserDetail customUserDetail) {
+    private UsersEntity getUser(CustomUserDetail customUserDetail) {
 
         return userRepository.findById(customUserDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
