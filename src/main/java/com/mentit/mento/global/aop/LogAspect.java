@@ -24,10 +24,8 @@ import java.util.Map;
 @Component
 public class LogAspect {
 
-    @Pointcut("execution(* com.mentit.mento..Controller.*(..))")
-    public void controller() {
-    }
-
+    @Pointcut("within(com.mentit.mento..*Controller)")
+    public void controller() {}
     @Around("controller()")
     public Object loggingBefore(ProceedingJoinPoint joinPoint) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -74,6 +72,47 @@ public class LogAspect {
         if (returnValue == null) return;
 
         log.info("\t{}", returnValue);
+    }
+
+    // Service의 메서드를 포인트컷으로 지정
+    @Pointcut("within(com.mentit.mento..*Service)")
+    public void service() {}
+
+    // Service 메서드 호출 전후 로깅
+    @Around("service()")
+    public Object loggingService(ProceedingJoinPoint joinPoint) throws Throwable {
+        String serviceName = joinPoint.getSignature().getDeclaringType().getSimpleName();
+        String methodName = joinPoint.getSignature().getName();
+        Object[] args = joinPoint.getArgs(); // 메서드 인자 값
+
+        // 서비스 시작 로그
+        log.info("Service method started: {}.{}()", serviceName, methodName);
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                log.info("Arg[{}]: {}", i, args[i]);
+            }
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        // 실제 메서드 실행
+        Object result = joinPoint.proceed();
+
+        long elapsedTime = System.currentTimeMillis() - startTime;
+
+        // 서비스 종료 로그
+        log.info("Service method finished: {}.{}() [Execution time: {} ms]", serviceName, methodName, elapsedTime);
+        log.info("Return value: {}", result);
+
+        return result;
+    }
+
+    @AfterReturning(pointcut = "service()", returning = "returnValue")
+    public void afterReturningServiceLogging(JoinPoint joinPoint, Object returnValue) {
+        log.info("### Service method finished: {}", joinPoint.getSignature().toShortString());
+        if (returnValue != null) {
+            log.info("Service return value: {}", returnValue);
+        }
     }
 
 }

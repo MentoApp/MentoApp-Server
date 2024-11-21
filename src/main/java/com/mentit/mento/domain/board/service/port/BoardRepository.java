@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository {
-    Board save(Board createdBoard);
+    BoardEntity save(BoardEntity createdBoard);
 
-    Optional<Board> findByBoardId(Long boardId);
+    Optional<BoardEntity> findByBoardId(Long boardId);
 
-    void delete(Board findBoard);
+    void delete(BoardEntity findBoard);
 
-    Optional<Board> findById(Long boardId);
+    Optional<BoardEntity> findById(Long boardId);
 
-    Optional<List<Board>> findTop3ByOrderByViewCountDesc();
+    Optional<List<BoardEntity>> findTop3ByOrderByViewCountDesc();
 
-    List<Board> findAll();
+    List<BoardEntity> findAll();
 }

@@ -2,17 +2,15 @@ package com.mentit.mento.domain.users.domain.entity;
 
 import com.mentit.mento.domain.users.constant.MyStatusTagsEnum;
 import com.mentit.mento.domain.users.domain.MyStatusTags;
-import com.mentit.mento.domain.users.domain.UserStatusTag;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "myStatusTags")
 public class MyStatusTagsEntity {
 
@@ -21,31 +19,19 @@ public class MyStatusTagsEntity {
     private Long myStatusTagId;
 
     @Enumerated(EnumType.STRING)
-    private MyStatusTagsEnum myStatusTag; // 상태 태그
+    private MyStatusTagsEnum myStatusTagEnum; // 상태 태그
 
-    @ManyToOne // UserStatusTag와의 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_status_tag_id")
-    private UserStatusTagEntity userStatusTagEntity; // UserStatusTag 참조
+    private UserStatusTagEntity userStatusTagEntity; // 연관 관계를 설정하는 필드
 
     public MyStatusTags to() {
         return MyStatusTags.builder()
                 .myStatusTagId(myStatusTagId)
                 .userStatusTag(userStatusTagEntity)
-                .myStatusTag(myStatusTag)
+                .myStatusTag(myStatusTagEnum)
                 .build();
     }
 
-    public static MyStatusTagsEntity from(MyStatusTags myStatus, UserStatusTag userStatusTag) {
-        return MyStatusTagsEntity.builder()
-                .myStatusTag(myStatus.getMyStatusTag())
-                .userStatusTagEntity(UserStatusTag.from(userStatusTag))
-                .build();
 
-    }
-
-    public static MyStatusTagsEntity from(MyStatusTags myStatus) {
-        return MyStatusTagsEntity.builder()
-                .myStatusTag(myStatus.getMyStatusTag())
-                .build();
-    }
 }

@@ -16,18 +16,18 @@ public class DotoriTokenUsageDetailsRepositoryImpl implements DotoriTokenUsageDe
     private final DotoriTokenUsageDetailsJPARepository dotoriTokenUsageDetailsJPARepository;
 
     @Override
-    public DotoriTokenUsageDetails save(DotoriTokenUsageDetails dotoriTokenUsageDetails) {
-        return dotoriTokenUsageDetailsJPARepository.save(DotoriTokenUsageDetailsEntity.from(dotoriTokenUsageDetails)).to();
+    public DotoriTokenUsageDetailsEntity save(DotoriTokenUsageDetailsEntity dotoriTokenUsageDetails) {
+        return dotoriTokenUsageDetailsJPARepository.save(dotoriTokenUsageDetails);
     }
 
     @Override
-    public Page<DotoriTokenUsageDetailsEntity> findByDotoriToken(DotoriToken dotoriToken, Pageable pageable) {
-        return dotoriTokenUsageDetailsJPARepository.findByDotoriTokenEntity(DotoriTokenEntity.from(dotoriToken), pageable);
+    public Page<DotoriTokenUsageDetailsEntity> findByDotoriToken(DotoriTokenEntity dotoriToken, Pageable pageable) {
+        return dotoriTokenUsageDetailsJPARepository.findByDotoriTokenEntity(dotoriToken, pageable);
     }
 
     @Override
-    public DotoriTokenUsageDetails saveCreateAccount(DotoriTokenUsageDetails dotoriTokenUsageDetails) {
-        return dotoriTokenUsageDetailsJPARepository.save(DotoriTokenUsageDetailsEntity.fromCreateUsage(dotoriTokenUsageDetails)).toCreateUsage();
+    public DotoriTokenUsageDetailsEntity saveCreateAccount(DotoriTokenUsageDetailsEntity dotoriTokenUsageDetails) {
+        return dotoriTokenUsageDetailsJPARepository.save(dotoriTokenUsageDetails);
 
     }
 }

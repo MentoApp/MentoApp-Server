@@ -2,13 +2,15 @@ package com.mentit.mento.domain.board.service.port;
 
 import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.BoardFiles;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
+import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 
 import java.util.List;
 
 public interface BoardFileRepository {
-    BoardFiles save(BoardFiles createdFile);
+    BoardFilesEntity save(BoardFilesEntity createdFile);
 
-    void deleteAllByBoardEntity(Board findBoard);
+    void deleteAllByBoardEntity(BoardEntity boardEntity);
 
-    List<BoardFiles> findAllByBoardEntity(Board findBoard);
+    List<BoardFilesEntity> findAllByBoardEntity(BoardEntity boardEntity);
 }

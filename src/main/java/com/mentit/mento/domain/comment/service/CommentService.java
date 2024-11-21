@@ -39,20 +39,20 @@ public class CommentService {
         UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
         if (!findUserByUserDetail.getNickname().equals(commentCreate.getWriter())) {
-            throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
+            throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER );
         }
 
-        Board findBoardEntityById = getBoard(boardId);
+        BoardEntity boardEntity = getBoard(boardId);
 
-        Comment createdCommentEntity = Comment.builder()
-                .writer(findUserByUserDetail.to())
-                .board(findBoardEntityById)
+        CommentEntity createdCommentEntity = CommentEntity.builder()
+                .writer(findUserByUserDetail)
+                .boardEntity(boardEntity)
                 .comment(commentCreate.getContent())
                 .build();
 
-        findBoardEntityById.getComments().add(createdCommentEntity);
+        boardEntity.getCommentEntities().add(createdCommentEntity);
 
-        boardRepository.save(findBoardEntityById);
+        boardRepository.save(boardEntity);
 
         commentRepository.save(createdCommentEntity);
 
@@ -66,18 +66,18 @@ public class CommentService {
             throw new MemberException(ExceptionCode.NOT_MATCHED_WRITER);
         }
 
-        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+        CommentEntity findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentException(ExceptionCode.NOT_FOUND_COMMENT)
         );
 
-        Comment updatedCommentEntity = findComment.toBuilder()
+        CommentEntity updatedCommentEntity = findComment.toBuilder()
                 .comment(commentUpdate.getContent())
                 .build();
 
         commentRepository.save(updatedCommentEntity);
     }
 
-    private Board getBoard(Long boardId) {
+    private BoardEntity getBoard(Long boardId) {
         return boardRepository.findByBoardId(boardId).orElseThrow(
                 ()-> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
@@ -91,7 +91,7 @@ public class CommentService {
 
     public void deleteComment(CustomUserDetail customUserDetail, Long commentId) {
         UsersEntity findUserByUserDetail = getUser(customUserDetail);
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentException(ExceptionCode.NOT_FOUND_COMMENT)
         );
         if(!comment.getWriter().getNickname().equals(findUserByUserDetail.getNickname())) {
@@ -102,8 +102,8 @@ public class CommentService {
 
         @Transactional(readOnly = true)
         public Page<CommentsResponse> getCommentsByBoardId(Long boardId, Pageable pageable) {
-            Board boardEntity = getBoard(boardId); // 게시판 존재 여부 체크
-            Page<Comment> comments = commentRepository.findAllByBoard(boardEntity.getBoardId(), pageable); // 댓글 조회
+            BoardEntity boardEntity = getBoard(boardId); // 게시판 존재 여부 체크
+            Page<CommentEntity> comments = commentRepository.findAllByBoard(boardEntity.getBoardId(), pageable); // 댓글 조회
 
             // CommentsResponse 변환
             List<CommentsResponse> commentsResponses = comments.stream()
@@ -120,7 +120,7 @@ public class CommentService {
         }
 
         public Long getCommentCount(Long boardId) {
-        Board boardEntity = getBoard(boardId);
+        BoardEntity boardEntity = getBoard(boardId);
          return commentRepository.countByBoard(boardEntity);
         }
     }

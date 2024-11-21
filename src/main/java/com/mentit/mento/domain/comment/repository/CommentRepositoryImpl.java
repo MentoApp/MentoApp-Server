@@ -18,32 +18,32 @@ public class CommentRepositoryImpl implements CommentRepository {
     private final CommentJPARepository commentJPARepository;
 
     @Override
-    public Comment save(Comment comment) {
-        return commentJPARepository.save(CommentEntity.from(comment)).to();
+    public CommentEntity save(CommentEntity comment) {
+        return commentJPARepository.save(comment);
     }
 
     @Override
-    public Optional<Comment> findById(Long commentId) {
-        return commentJPARepository.findByCommentId(commentId).map(CommentEntity::to);
+    public Optional<CommentEntity> findById(Long commentId) {
+        return commentJPARepository.findByCommentId(commentId);
     }
 
     @Override
-    public void delete(Comment comment) {
-        commentJPARepository.delete(CommentEntity.from(comment));
+    public void delete(CommentEntity comment) {
+        commentJPARepository.delete(comment);
     }
 
     @Override
-    public Page<Comment> findAllByBoard(Long boardId, Pageable pageable) {
-        return commentJPARepository.findAllByBoard(boardId,pageable).map(CommentEntity::to);
+    public Page<CommentEntity> findAllByBoard(Long boardId, Pageable pageable) {
+        return commentJPARepository.findAllByBoard(boardId,pageable);
     }
 
     @Override
-    public Long countByBoard(Board board) {
-        return commentJPARepository.countByBoardEntity(BoardEntity.from(board));
+    public Long countByBoard(BoardEntity board) {
+        return commentJPARepository.countByBoardEntity(board);
     }
 
     @Override
-    public void deleteAllByBoard(Board board) {
-        commentJPARepository.deleteAllByBoardEntity(BoardEntity.from(board));
+    public void deleteAllByBoard(BoardEntity board) {
+        commentJPARepository.deleteAllByBoardEntity(board);
     }
 }

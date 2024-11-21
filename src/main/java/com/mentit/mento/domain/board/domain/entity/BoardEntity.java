@@ -50,7 +50,7 @@ public class BoardEntity extends BaseEntity {
     @JoinColumn(name = "dotori_token_usage_detail_id")
     private DotoriTokenUsageDetailsEntity dotoriTokenUsageDetail;
 
-    @OneToMany(mappedBy = "boardEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardEntity", fetch = FetchType.EAGER)
     @Builder.Default
     private List<BoardKeywordForCreatingEntity> boardKeywordForCreatings = new ArrayList<>();
 
@@ -58,29 +58,13 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "boardEntity",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardEntity",fetch = FetchType.EAGER)
     @Builder.Default
     private List<BoardFilesEntity> boardFileEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "boardEntity")
     @Builder.Default
     private List<CommentEntity> commentEntities = new ArrayList<>();
-
-
-    public static BoardEntity from(Board createdBoard) {
-        return BoardEntity.builder()
-                .boardTypeEnum(createdBoard.getBoardTypeEnum())
-                .title(createdBoard.getTitle())
-                .writer(createdBoard.getWriter())
-                .content(createdBoard.getContent())
-                .viewCount(createdBoard.getViewCount())
-                .isDeleted(createdBoard.isDeleted())
-                .dotoriTokenUsageDetail(DotoriTokenUsageDetailsEntity.from(createdBoard.getDotoriTokenUsageDetail()))
-                .boardKeywordForCreatings(createdBoard.getBoardKeywordForCreatings().stream().map(BoardKeywordForCreatingEntity::from).toList())
-                .boardFileEntities(createdBoard.getBoardFiles().stream().map(BoardFilesEntity::from).toList())
-                .commentEntities(createdBoard.getComments().stream().map(CommentEntity::from).toList())
-                .build();
-    }
 
     public Board to() {
         return Board.builder()

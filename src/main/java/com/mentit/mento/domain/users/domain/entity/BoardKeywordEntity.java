@@ -27,12 +27,6 @@ public class BoardKeywordEntity {
     @JoinColumn(name = "user_id")
     private UsersEntity usersEntity;
 
-    public static BoardKeywordEntity from(BoardKeyword boardKeyword) {
-        return BoardKeywordEntity.builder()
-                .boardKeywordEnum(boardKeyword.getBoardKeyword())
-                .usersEntity(boardKeyword.getUsersEntity())
-                .build();
-    }
 
     public BoardKeyword toModel() {
         return BoardKeyword.builder()

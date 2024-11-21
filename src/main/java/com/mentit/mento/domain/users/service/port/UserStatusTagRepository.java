@@ -2,15 +2,17 @@ package com.mentit.mento.domain.users.service.port;
 
 import com.mentit.mento.domain.users.domain.UserStatusTag;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 
 import java.util.Optional;
 
 public interface UserStatusTagRepository {
-    void deleteAllByUsers(Users findUserByUserDetail);
+    void deleteAllByUsers(UsersEntity usersEntity);
 
-    Optional<UserStatusTag> findByUsers(Users user);
+    Optional<UserStatusTagEntity> findByUsers(UsersEntity usersEntity);
 
-    UserStatusTag save(UserStatusTag userStatusTag);
+    UserStatusTagEntity save(UserStatusTagEntity userStatusTagEntity);
 
-    void delete(UserStatusTag findUserStatusTag);
+    void delete(UserStatusTagEntity userStatusTagEntity);
 }

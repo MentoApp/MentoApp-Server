@@ -25,12 +25,6 @@ public class BoardFilesEntity {
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
 
-    public static BoardFilesEntity from(BoardFiles createdFile) {
-        return BoardFilesEntity.builder()
-                .boardFileName(createdFile.getBoardFileName())
-                .boardEntity(BoardEntity.from(createdFile.getBoardEntity()))
-                .build();
-    }
 
     public BoardFiles to() {
         return BoardFiles.builder()

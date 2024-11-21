@@ -1,8 +1,10 @@
 package com.mentit.mento.domain.BoardLike.service;
 
 import com.mentit.mento.domain.BoardLike.domain.BoardLike;
+import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
 import com.mentit.mento.domain.BoardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
@@ -35,8 +37,8 @@ public class BoardLikeService {
     }
 
     private void initializeLikeCounts() {
-        List<Board> boards = boardEntityRepository.findAll(); // 모든 게시판 조회
-        for (Board board : boards) {
+        List<BoardEntity> boards = boardEntityRepository.findAll(); // 모든 게시판 조회
+        for (BoardEntity board : boards) {
             long likeCount = boardLikeRepository.countByBoard(board); // 게시판별 좋아요 수 카운트
             redisLikeService.setLikeCount(board.getBoardId(), likeCount); // Redis에 저장
         }
@@ -45,22 +47,22 @@ public class BoardLikeService {
     public Long like(CustomUserDetail customUserDetail, Long boardId) {
         UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
-        Board findBoardByBoardEntityId = boardEntityRepository.findByBoardId(boardId).orElseThrow(
+        BoardEntity findBoardByBoardEntityId = boardEntityRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
-        Optional<BoardLike> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail.to());
+        Optional<BoardLikeEntity> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail);
 
         if (existingBoardLike.isPresent()) {
-            BoardLike findBoardLikeEntity = existingBoardLike.get();
-            BoardLike updatedBoardLike = findBoardLikeEntity.toBuilder().liked(!findBoardLikeEntity.getLiked()).build();
+            BoardLikeEntity findBoardLikeEntity = existingBoardLike.get();
+            BoardLikeEntity updatedBoardLike = findBoardLikeEntity.toBuilder().liked(!findBoardLikeEntity.getLiked()).build();
             boardLikeRepository.save(updatedBoardLike);
             return boardId;
         }
 
-        BoardLike createdBoardLikeEntity = BoardLike.builder()
-                .user(findUserByUserDetail.to())
+        BoardLikeEntity createdBoardLikeEntity = BoardLikeEntity.builder()
+                .user(findUserByUserDetail)
                 .liked(true)
-                .board(findBoardByBoardEntityId)
+                .boardEntity(findBoardByBoardEntityId)
                 .build();
 
         boardLikeRepository.save(createdBoardLikeEntity);

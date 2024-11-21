@@ -20,7 +20,7 @@ public class LoginService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users findUser = userRepositoryImpl.findByEmail(username).orElseThrow(
+        UsersEntity findUser = userRepositoryImpl.findByEmail(username).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
 

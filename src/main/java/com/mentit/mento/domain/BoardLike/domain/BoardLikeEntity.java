@@ -33,14 +33,6 @@ public class BoardLikeEntity extends BaseEntity {
     @Builder.Default
     private Boolean liked =  Boolean.FALSE;
 
-    public static BoardLikeEntity from(BoardLike boardLike) {
-        return BoardLikeEntity.builder()
-                .liked(boardLike.getLiked())
-                .user(UsersEntity.from(boardLike.getUser()))
-                .boardEntity(BoardEntity.from(boardLike.getBoard()))
-                .build();
-    }
-
     public BoardLike to(){
         return BoardLike.builder()
                 .boardLikeId(boardLikeId)

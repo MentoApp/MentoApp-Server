@@ -8,18 +8,18 @@ import java.util.Optional;
 public interface UserRepository {
 
 
-    Optional<Users> findByEmail(String email);
+    Optional<UsersEntity> findByEmail(String email);
 
 
-    Optional<Users> findByNickname(String nickname, Long userId);
+    Optional<UsersEntity> findByNickname(String nickname, Long userId);
 
-    Users findByBoard(Long userId);
+    UsersEntity findByBoard(Long userId);
 
-    UsersEntity save(Users modifiedUser);
+    UsersEntity save(UsersEntity usersEntity);
 
     Optional<UsersEntity> findById(Long id);
 
-    void delete(UsersEntity findUser);
+    void delete(UsersEntity usersEntity);
 
     void flush();
 }

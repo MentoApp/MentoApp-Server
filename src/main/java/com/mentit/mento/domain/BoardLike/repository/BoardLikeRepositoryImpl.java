@@ -18,17 +18,17 @@ public class BoardLikeRepositoryImpl implements BoardLikeRepository {
     private final BoardLikeJPARepository boardLikeJPARepository;
 
     @Override
-    public long countByBoard(Board board) {
-        return boardLikeJPARepository.countByBoardEntity(BoardEntity.from(board));
+    public long countByBoard(BoardEntity boardEntity) {
+        return boardLikeJPARepository.countByBoardEntity(boardEntity);
     }
 
     @Override
-    public Optional<BoardLike> findBoardLikeByBoardAndUsersEntity(Board findBoardByBoardId, Users from) {
-        return boardLikeJPARepository.findBoardLikeByBoardEntityAndUser(BoardEntity.from(findBoardByBoardId), UsersEntity.from(from)).map(BoardLikeEntity::to);
+    public Optional<BoardLikeEntity> findBoardLikeByBoardAndUsersEntity(BoardEntity findBoardByBoardId, UsersEntity from) {
+        return boardLikeJPARepository.findBoardLikeByBoardEntityAndUser(findBoardByBoardId, from);
     }
 
     @Override
-    public BoardLike save(BoardLike updatedBoardLike) {
-        return boardLikeJPARepository.save(BoardLikeEntity.from(updatedBoardLike)).to();
+    public BoardLikeEntity save(BoardLikeEntity updatedBoardLike) {
+        return boardLikeJPARepository.save(updatedBoardLike);
     }
 }

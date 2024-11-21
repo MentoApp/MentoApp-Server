@@ -4,8 +4,8 @@ import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
+import com.mentit.mento.domain.users.service.UserCreateService;
 import com.mentit.mento.domain.users.service.UserService;
-import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -16,16 +16,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,16 +29,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("api/v1/user")
 public class UserController {
 
-    private final UserService userService;
+    private final UserCreateService userCreateService;
     private final CookieUtils cookieUtils;
     private final RedisService redisService;
+    private final UserService userService;
 
-    @Operation(summary = "회원 정보 추가 기입", description = "회원 정보 추가 기입")
+    @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 true로 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원 가입 성공",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "회원 가입 실패",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
+            @ApiResponse(responseCode = "200", description = "가입 성공!"),
+            @ApiResponse(responseCode = "401", description = "인증 문제 발생"),
+            @ApiResponse(responseCode = "803", description = "회원을 찾을 수 없음"),
+
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
@@ -52,25 +48,25 @@ public class UserController {
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
 
-        userService.create(userDetail, signInUser, profileImage);
+        userCreateService.create(userDetail, signInUser, profileImage);
 
         return Response.success(HttpStatus.OK, "회원가입 성공");
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 기입")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 수정 성공",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "정보 수정 실패",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
+            @ApiResponse(responseCode = "200", description = "정보 수정 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 문제 발생"),
+            @ApiResponse(responseCode = "803", description = "회원을 찾을 수 없음"),
+            @ApiResponse(responseCode = "810", description = "유저 태그를 찾을 수 없음"),
     })
     @PatchMapping(value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUser,
+            @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUserRequest,
             @RequestPart(value = "profileImage", required = false) @Nullable MultipartFile profileImage
     ) {
-        userService.modifyUser(customUserDetail, modifyUser, profileImage);
+        userCreateService.modifyUser(customUserDetail, modifyUserRequest, profileImage);
 
         return Response.success(HttpStatus.OK, "회원정보 수정 성공");
     }
@@ -101,7 +97,7 @@ public class UserController {
     public Response<FindUserAccountResponse> findMyAccountInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
     ) {
-        FindUserAccountResponse findUserAccountResponse = userService.findMyAccountInfo(userDetail);
+        FindUserAccountResponse findUserAccountResponse = userCreateService.findMyAccountInfo(userDetail);
         return Response.success(HttpStatus.OK, "계정 정보 조회 성공", findUserAccountResponse);
     }
 
@@ -116,71 +112,4 @@ public class UserController {
         return Response.success(HttpStatus.OK, "조회 결과", flag + "");
     }
 
-    @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "발급 성공",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "발급 실패",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
-    })
-    @GetMapping("/reissue-token")
-    @Transactional
-    public ResponseEntity<String> reissue(
-            @AuthenticationPrincipal CustomUserDetail userDetail,
-            HttpServletResponse response,
-            HttpServletRequest request
-    ) {
-
-        String refreshToken = cookieUtils.getRefreshToken(request);
-        JwtToken newToken = userService.reissueToken(refreshToken);
-        cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
-        redisService.saveAccessToken(newToken.getAccessToken(), userDetail.getId());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("accessToken", newToken.getAccessToken());
-        headers.add("refreshToken", newToken.getRefreshToken());
-
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).build();
-    }
-
-    @Operation(summary = "소셜 회원 탈퇴", description = "소셜 회원은 재로그인을 통해 검증, 재발급 받은 액세스 토큰을 통해 서비스 탈퇴")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "소셜 회원 탈퇴 성공",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "해당 소셜 회원이 존재하지 않습니다.",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
-    })
-    @DeleteMapping("/social/me")
-    public Response<Void> deleteSocialMember(
-            @AuthenticationPrincipal CustomUserDetail user,
-            HttpServletResponse response  // HttpServletResponse 추가
-
-    ) {
-        userService.deleteSocialMember(user.getId());
-        cookieUtils.deleteCookie(response, "refreshToken");
-
-
-        return Response.success(HttpStatus.OK, "탈퇴 성공");
-
-    }
-
-    @Operation(summary = "로그아웃", description = "DB에 저장된 리프레쉬 토큰을 사용하여 로그아웃")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공",
-                    content = {@Content(schema = @Schema(implementation = ResponseEntity.class))}),
-            @ApiResponse(responseCode = "400", description = "리프레시 토큰이 쿠키에 없습니다.")
-    })
-    @PostMapping("/logout")
-    public Response<Void> logout(
-            @AuthenticationPrincipal CustomUserDetail userDetail,
-            HttpServletResponse response
-    ) {
-
-        // 로그아웃 처리
-        userService.logout(userDetail.getId());
-
-        // 쿠키에서 refreshToken 삭제
-        cookieUtils.deleteCookie(response, "refreshToken");
-
-        return Response.success(HttpStatus.OK, "로그아웃 성공");
-    }
 }

@@ -1,15 +1,18 @@
 package com.mentit.mento.domain.BoardLike.service.port;
 
 import com.mentit.mento.domain.BoardLike.domain.BoardLike;
+import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
 import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 
 import java.util.Optional;
 
 public interface BoardLikeRepository {
-    long countByBoard(Board board);
+    long countByBoard(BoardEntity board);
 
-    Optional<BoardLike> findBoardLikeByBoardAndUsersEntity(Board findBoardByBoardEntityId, Users from);
+    Optional<BoardLikeEntity> findBoardLikeByBoardAndUsersEntity(BoardEntity findBoardByBoardEntityId, UsersEntity from);
 
-    BoardLike save(BoardLike updatedBoardLike);
+    BoardLikeEntity save(BoardLikeEntity updatedBoardLike);
 }

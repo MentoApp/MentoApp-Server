@@ -3,21 +3,22 @@ package com.mentit.mento.domain.comment.service.port;
 import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.Comment;
+import com.mentit.mento.domain.comment.entity.CommentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface CommentRepository {
-    Comment save(Comment createdCommentEntity);
+    CommentEntity save(CommentEntity createdCommentEntity);
 
-    Optional<Comment> findById(Long commentId);
+    Optional<CommentEntity> findById(Long commentId);
 
-    void delete(Comment comment);
+    void delete(CommentEntity commentEntity);
 
-    Page<Comment> findAllByBoard(Long boardId, Pageable pageable);
+    Page<CommentEntity> findAllByBoard(Long boardId, Pageable pageable);
 
-    Long countByBoard(Board boardEntity);
+    Long countByBoard(BoardEntity boardEntity);
 
-    void deleteAllByBoard(Board board);
+    void deleteAllByBoard(BoardEntity boardEntity);
 }

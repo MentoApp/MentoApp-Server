@@ -9,71 +9,58 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum ExceptionCode {
-    // 500
-    NOT_HANDLED_EXCEPTION(INTERNAL_SERVER_ERROR, "Unhandled exception occurred.", 900),
+
+    // 500 - General Exceptions
+    NOT_HANDLED_EXCEPTION(INTERNAL_SERVER_ERROR, "Unhandled exception occurred.", 500),
     REDIS_CONNECTION_FAILURE(INTERNAL_SERVER_ERROR, "Failed to connect to Redis.", 500),
-    EMAIL_SEND_FAILURE(INTERNAL_SERVER_ERROR, "Failed to send email.", 500),
     UNEXPECTED_ERROR(INTERNAL_SERVER_ERROR, "An unexpected error occurred.", 500),
 
-    // 400
+    // 400 - Bad Request
     PASSWORD_MISMATCH(BAD_REQUEST, "Passwords do not match.", 400),
     INVALID_CURRENT_PASSWORD(BAD_REQUEST, "The current password is incorrect.", 400),
     INVALID_AUTH_CODE(BAD_REQUEST, "Invalid email authentication code.", 400),
     NOT_FOUND_REFRESH_TOKEN_IN_COOKIE(BAD_REQUEST, "Refresh token not found in cookie.", 400),
     INVALID_PARAMETER(BAD_REQUEST, "Invalid request parameter.", 400),
     INVALID_FILE_EXTENTION(BAD_REQUEST, "Invalid File Extention", 400),
-    TOO_SHORT_NICKNAME(BAD_REQUEST, "닉네임은 2자 이상 적어주세요" , 400 ),
-    TOO_LONG_NICKNAME(BAD_REQUEST, "닉네임은 10자 이하 적어주세요" , 400 ),
-    NICKNAME_PATTERN_INVALIDATION(BAD_REQUEST,"닉네임은 띄어쓰기 없이 한글,영문, 숫자만 가능합니다." , 400),
 
+    // User-related Errors (800)
+    TOO_SHORT_NICKNAME(BAD_REQUEST, "닉네임은 2자 이상 적어주세요.", 800),
+    TOO_LONG_NICKNAME(BAD_REQUEST, "닉네임은 10자 이하 적어주세요.", 801),
+    NICKNAME_PATTERN_INVALIDATION(BAD_REQUEST, "닉네임은 띄어쓰기 없이 한글, 영문, 숫자만 가능합니다.", 802),
+    NOT_FOUND_MEMBER(CONFLICT, "Member not found.", 803),
+    MEMBER_ALREADY_EXISTS(CONFLICT, "Member already exists.", 804),
+    MEMBER_ALREADY_WITHDRAW(CONFLICT, "Member has already withdrawn.", 805),
+    DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login", 806),
+    ALREADY_ENROLLED_ACCOUNT(CONFLICT, "Already Enrolled Account", 807),
+    NICKNAME_NOT_MATCH(CONFLICT, "Nickname does not match.", 809),
+    CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus", 810),
 
-    // 401
-    UNAUTHORIZED_LOGIN(UNAUTHORIZED, "Login failed: authentication failed.", 401),
-    TOKEN_EXPIRED(UNAUTHORIZED, "Token has expired.", 401),
-    INVALID_TOKEN(UNAUTHORIZED, "Invalid token provided.", 401),
-    UNSUPPORTED_TOKEN(UNAUTHORIZED, "Token format is unsupported.", 401),
-    NOT_FOUND_TOKEN(UNAUTHORIZED, "Token not found.", 401),
-    NOT_FOUND_REFRESH_TOKEN(UNAUTHORIZED, "Refresh token not found for the user.", 401),
-    INVALID_AUTHENTICATION(UNAUTHORIZED, "Invalid authentication.", 401),
-    MALFORMED_TOKEN(UNAUTHORIZED, "Malformed token.", 401),
-    EXPIRED_TOKEN(UNAUTHORIZED, "Expired token.", 401),
+    // Board-related Errors (700)
+    NOT_FOUND_BOARD(CONFLICT, "Board not found.", 700),
+    INVALID_BOARD(CONFLICT, "Invalid board.", 701),
+    NOT_FOUND_MORE_THAN_3_BOARDS(CONFLICT, "Can't find more than 3 Boards.", 702),
+    NOT_MATCHED_WRITER(CONFLICT, "Not matched Writer",703 ),
+    FILE_IS_EMPTY(CONFLICT, "File is Empty.", 704),
+    NO_FILE_EXTENTION(CONFLICT, "No file extension.", 705),
+    IO_EXCEPTION_ON_IMAGE_UPLOAD(CONFLICT, "IO Exception happened on Image Upload.", 706),
+    PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception.", 707),
+    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete.", 708),
 
-    DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login", 999),
+    // Comment-related Errors (710)
+    NOT_FOUND_COMMENT(CONFLICT, "Can't Find Comment.", 710),
 
-    // 403,
-    DUPLICATE_RESOURCE(CONFLICT, "Resource already exists.", 403),
-    NOT_FOUND_MEMBER(CONFLICT, "Member not found.", 403),
-    NOT_FOUND_OWNER(CONFLICT, "Owner not found.", 403),
-    NOT_FOUND_MATE(CONFLICT, "Mate not found.", 403),
-    NOT_FOUND_BOARD(CONFLICT, "Board not found.", 403),
-    NOT_FOUND_MATCH(CONFLICT, "Match not found.", 403),
-    MEMBER_ALREADY_EXISTS(CONFLICT, "Member already exists.", 403),
-    MATE_ALREADY_EXIST(CONFLICT, "MATE already exists", 403),
-    NICKNAME_ALREADY_EXISTS(CONFLICT, "Nickname already exists.", 403),
-    NOT_MATCHED_WRITER(CONFLICT, "Writer does not match.", 403),
-    INVALID_BOARD(CONFLICT, "Invalid board.", 403),
-    MEMBER_ALREADY_WITHDRAW(CONFLICT, "Member has already withdrawn.", 403),
-    NOT_FOUND_BOARDCOMMENT(CONFLICT, "Board comment not found.", 403),
-    NOT_FOUND_DOG(CONFLICT, "Dog not found", 403),
-    NOT_FOUND_MATE_TAG(CONFLICT, "Dog not Mate Tag", 403),
-    DOG_ALREADY_EXISTS(CONFLICT, "Dog already exists.", 403),
-    AVAILABLE_FOR_REGISTRATION_EXCEEDED(CONFLICT, "Available for registration exceeded(Max=5)", 403),
-    NOT_FOUND_WALKING_PLACE_TAG(CONFLICT, "WalkingPlaceTag not found", 403),
-    FILE_IS_EMPTY(CONFLICT, "File is Empty", 403),
-    IO_EXCEPTION_ON_IMAGE_UPLOAD(CONFLICT, "IO Exception happened on Image Upload", 403),
-    NO_FILE_EXTENTION(CONFLICT, "No file Extention", 403),
-    PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception", 403),
-    IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete", 403),
-    INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter", 403),
-    CANT_FIND_USERSTATUS(CONFLICT, "Can't Find UserStatus", 403),
-    ALREADY_ENROLLED_ACCOUNT(CONFLICT, "Already Enrolled Account", 403),
-    ACCESS_DENIED(CONFLICT, "Access Denied", 403),
-    NICKNAME_NOT_MATCH(CONFLICT, "NickName Not Matched", 403),
-    NOT_FOUND_COMMENT(CONFLICT, "Can't Find Comment", 403),
-    NOT_FOUND_BOARD_LIKE(CONFLICT,"Can't Find Board Like" , 403 ),
-    ALREADY_LIKED(CONFLICT, "Already Liked" , 403 ),
-    NOT_FOUND_MORE_THAN_3_BOARDS(CONFLICT, "Can't find more than 3 Boards" , 403 );
+    // Token-related Errors (901)
+    TOKEN_EXPIRED(UNAUTHORIZED, "Token has expired.", 902),
+    INVALID_TOKEN(UNAUTHORIZED, "Invalid token provided.", 902),
+    UNSUPPORTED_TOKEN(UNAUTHORIZED, "Token format is unsupported.", 903),
+    NOT_FOUND_TOKEN(UNAUTHORIZED, "Token not found.", 904),
+    NOT_FOUND_REFRESH_TOKEN(UNAUTHORIZED, "Refresh token not found for the user.", 905),
+    MALFORMED_TOKEN(UNAUTHORIZED, "Malformed token.", 906),
 
+    // Registration-related Errors (403)
+    INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter", 404),
+    ACCESS_DENIED(UNAUTHORIZED,"access_denied" ,401 )
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

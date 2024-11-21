@@ -12,7 +12,7 @@ public class DotoriTokenRepositoryImpl implements DotoriTokenRepository {
     private final DotoriTokenJPARepository dotoriTokenJPARepository;
 
     @Override
-    public DotoriToken save(DotoriToken dotoriToken) {
-        return dotoriTokenJPARepository.save(DotoriTokenEntity.from(dotoriToken)).to();
+    public DotoriTokenEntity save(DotoriTokenEntity dotoriTokenEntity) {
+        return dotoriTokenJPARepository.save(dotoriTokenEntity);
     }
 }

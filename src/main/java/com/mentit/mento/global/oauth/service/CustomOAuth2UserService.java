@@ -68,12 +68,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 이메일로 기존 유저 찾기 전에 로그 추가
         log.info("Searching for user with email: {}", email);
         
-        Optional<Users> existingUserOptional = userRepository.findByEmail(email);
+        Optional<UsersEntity> existingUserOptional = userRepository.findByEmail(email);
         existingUserOptional.ifPresent(existingUser -> 
             log.info("Found existing user with ID: {}", existingUser.getUserId())
         );
 
-        Users user;
+        UsersEntity user= null;
         if (existingUserOptional.isPresent()) {
             user = existingUserOptional.get();
             log.info("Using existing user with ID: {}", user.getUserId());
@@ -82,16 +82,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
             updateSocialAccessToken(user, socialAccessToken);
         } else {
-            UsersEntity usersEntity = createNewUser(email, name, nickname, profileImage, phoneNumber,
+            user = createNewUser(email, name, nickname, profileImage, phoneNumber,
                     authType, gender, birthDay, birthYear);
-            log.info("Created new user with ID: {}", usersEntity.getUserId());
-            user = usersEntity.to();
+            log.info("Created new user with ID: {}", user.getUserId());
         }
 
         return createCustomUserDetail(user, authType, memberAttribute, isNewUser.get());
     }
 
-    private void updateSocialAccessToken(Users user, String socialAccessToken) {
+    private void updateSocialAccessToken(UsersEntity user, String socialAccessToken) {
         UsersEntity userEntity = userRepository.findById(user.getUserId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
@@ -115,7 +114,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String encodedPassword = new BCryptPasswordEncoder()
                 .encode(PasswordUtil.generateRandomPassword());
 
-        Users newUser = Users.builder()
+        UsersEntity newUser = UsersEntity.builder()
                 .email(email)
                 .name(name)
                 .nickname(nickname)
@@ -132,7 +131,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return userRepository.save(newUser);
     }
 
-    private CustomUserDetail createCustomUserDetail(Users user, AuthType authType,
+    private CustomUserDetail createCustomUserDetail(UsersEntity user, AuthType authType,
                                                   Map<String, Object> memberAttribute,
                                                   boolean isNewUser) {
         CustomUserDetail customUserDetail = new CustomUserDetail(

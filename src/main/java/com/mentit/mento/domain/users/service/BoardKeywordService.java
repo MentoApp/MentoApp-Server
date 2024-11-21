@@ -3,6 +3,7 @@ package com.mentit.mento.domain.users.service;
 import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
 import com.mentit.mento.domain.users.domain.BoardKeyword;
 import com.mentit.mento.domain.users.domain.Users;
+import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.domain.users.service.port.BoardKeywordRepository;
@@ -25,22 +26,21 @@ public class BoardKeywordService {
     private final UserRepositoryImpl userRepositoryImpl;
 
     @Transactional
-    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, Users user) {
-        boardKeywordEnums.forEach(keyword -> {
-            BoardKeyword boardKeyword = BoardKeyword.builder()
-                    .boardKeyword(keyword)
-                    .usersEntity(UsersEntity.from(user))
+    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity usersEntity) {
+
+        List<BoardKeywordEntity> list = boardKeywordEnums.stream().map(keyword -> {
+            return BoardKeywordEntity.builder()
+                    .boardKeywordEnum(keyword)
+                    .usersEntity(usersEntity)
                     .build();
+        }).toList();
 
-            boardKeyword = boardKeywordRepository.save(boardKeyword);
-
-            user.getBoardKeywords().add(boardKeyword);
-        });
+        boardKeywordRepository.saveAll(list);
     }
 
     @Transactional
-    public void deleteExistingBoardKeywords(Users user) {
-        boardKeywordRepository.deleteAllByUsers(UsersEntity.from(user));
+    public void deleteExistingBoardKeywords(UsersEntity usersEntity) {
+        boardKeywordRepository.deleteAllByUsers(usersEntity);
     }
 
     public List<String> getBoardKeywords(UsersEntity findUserByUserDetail) {

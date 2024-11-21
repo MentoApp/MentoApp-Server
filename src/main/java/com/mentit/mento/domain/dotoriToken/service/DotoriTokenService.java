@@ -38,16 +38,16 @@ public class DotoriTokenService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createDotoriToken(Users findUserByUserDetail) {
-        DotoriToken dotoriToken = DotoriToken.builder()
-                .usersEntity(findUserByUserDetail)
+    public void createDotoriToken(UsersEntity usersEntity) {
+        DotoriTokenEntity dotoriToken = DotoriTokenEntity.builder()
+                .usersEntity(usersEntity)
                 .count(5)
                 .build();
         dotoriTokenRepository.save(dotoriToken);
 
         //TODO:: 운영진이 주는 경우 어떻게 처리할것인가? -> 운영진 계정 필요?
-        DotoriTokenUsageDetails dotoriTokenUsageDetails = DotoriTokenUsageDetails.builder()
-                .receiver(findUserByUserDetail)
+        DotoriTokenUsageDetailsEntity dotoriTokenUsageDetails = DotoriTokenUsageDetailsEntity.builder()
+                .receiver(usersEntity)
                 .tradeAmount(5)
                 .tradeTypeEnum(TradeTypeEnum.BOARD_EARN)
                 .dotoriTokenEntity(dotoriToken)
@@ -66,7 +66,7 @@ public class DotoriTokenService {
 
         DotoriTokenEntity dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
 
-        Page<DotoriTokenUsageDetailsEntity> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken.to(),pageable);
+        Page<DotoriTokenUsageDetailsEntity> usageList = dotoriTokenUsageDetailsRepository.findByDotoriToken(dotoriToken,pageable);
 
 
         List<DotoriUsageResponse> DotoriUsageResponseList = usageList.stream().map(

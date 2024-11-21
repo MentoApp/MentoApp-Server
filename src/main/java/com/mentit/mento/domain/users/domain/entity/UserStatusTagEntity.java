@@ -25,35 +25,25 @@ public class UserStatusTagEntity {
     @Enumerated(EnumType.STRING)
     private CorporateFormEnum corporateFormEnum; // 회사형태 (단일 선택)
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_status_tag_id")
+    @OneToMany(mappedBy = "userStatusTagEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<MyStatusTagsEntity> myStatus = new ArrayList<>(); // 복수 선택 가능한 태그 카테고리
+    private List<MyStatusTagsEntity> myStatus = new ArrayList<>();
 
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private MyCareerTagsEntity myCareerTags; // 연차
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_user_id")
     private UsersEntity usersEntity;
 
-    public static UserStatusTagEntity from(UserStatusTag userStatusTag) {
-        return UserStatusTagEntity.builder()
-                .corporateFormEnum(userStatusTag.getCorporateFormEnum())
-                .myCareerTags(MyCareerTagsEntity.from(userStatusTag.getMyCareerTags()))
-                .myStatus(userStatusTag.getMyStatus().stream().map(MyStatusTagsEntity::from).toList())
-                .usersEntity(UsersEntity.from(userStatusTag.getUsers()))
-                .build();
-    }
 
     public UserStatusTag to() {
         return UserStatusTag.builder()
                 .userStatusTagId(userStatusTagId)
-                .myCareerTags(this.myCareerTags.to())
-                .userStatusTagId(this.userStatusTagId)
-                .myStatus(myStatus.stream().map(MyStatusTagsEntity::to).toList())
-                .users(usersEntity.to())
+                .myCareerTags(this.myCareerTags != null ? this.myCareerTags.to() : null)
+                .myStatus(myStatus)
+                .users(usersEntity != null ? usersEntity.to() : null)
                 .build();
     }
 }

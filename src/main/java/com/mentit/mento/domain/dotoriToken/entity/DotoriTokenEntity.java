@@ -17,7 +17,7 @@ import org.hibernate.annotations.SQLDelete;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "dotoriToken")
-@SQLDelete(sql = " update dotori_token set is_deleted = true where user_id = ?")
+@SQLDelete(sql = " update dotori_token set is_deleted = true where user_entity_user_id = ?")
 public class DotoriTokenEntity extends BaseEntity {
 
     @Id
@@ -34,14 +34,6 @@ public class DotoriTokenEntity extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
-
-    public static DotoriTokenEntity from(DotoriToken dotoriToken) {
-        return DotoriTokenEntity.builder()
-                .count(dotoriToken.getCount())
-                .usersEntity(UsersEntity.from(dotoriToken.getUsersEntity()))
-                .isDeleted(dotoriToken.isDeleted())
-                .build();
-    }
 
     public DotoriToken to() {
         return DotoriToken.builder()

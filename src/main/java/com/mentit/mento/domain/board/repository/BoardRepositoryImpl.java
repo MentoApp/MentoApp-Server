@@ -16,32 +16,32 @@ public class BoardRepositoryImpl implements BoardRepository {
     private final BoardEntityJPARepository boardJPARepository;
 
     @Override
-    public Board save(Board createdBoard) {
-        return boardJPARepository.save(BoardEntity.from(createdBoard)).to();
+    public BoardEntity save(BoardEntity boardEntity) {
+        return boardJPARepository.save(boardEntity);
     }
 
     @Override
-    public Optional<Board> findByBoardId(Long boardId) {
-        return boardJPARepository.findByBoardId(boardId).map(BoardEntity::to);
+    public Optional<BoardEntity> findByBoardId(Long boardId) {
+        return boardJPARepository.findByBoardId(boardId);
     }
 
     @Override
-    public void delete(Board findBoard) {
-        boardJPARepository.delete(BoardEntity.from(findBoard));
+    public void delete(BoardEntity findBoard) {
+        boardJPARepository.delete(findBoard);
     }
 
     @Override
-    public Optional<Board> findById(Long boardId) {
-        return boardJPARepository.findById(boardId).map(BoardEntity::to);
+    public Optional<BoardEntity> findById(Long boardId) {
+        return boardJPARepository.findById(boardId);
     }
 
     @Override
-    public Optional<List<Board>> findTop3ByOrderByViewCountDesc() {
-        return boardJPARepository.findTop3ByOrderByViewCountDesc().map(boardEntities -> boardEntities.stream().map(BoardEntity::to).toList());
+    public Optional<List<BoardEntity>> findTop3ByOrderByViewCountDesc() {
+        return boardJPARepository.findTop3ByOrderByViewCountDesc();
     }
 
     @Override
-    public List<Board> findAll() {
-        return boardJPARepository.findAll().stream().map(BoardEntity::to).toList();
+    public List<BoardEntity> findAll() {
+        return boardJPARepository.findAll();
     }
 }

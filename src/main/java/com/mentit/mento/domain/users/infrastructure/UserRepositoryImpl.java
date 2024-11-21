@@ -18,31 +18,28 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJPARepository userJPARepository;
 
     @Override
-    public Optional<Users> findByEmail(String email) {
+    public Optional<UsersEntity> findByEmail(String email) {
         log.info("Searching for user in repository with email: {}", email);
         Optional<UsersEntity> userEntity = userJPARepository.findByEmail(email);
         userEntity.ifPresent(entity -> 
             log.info("Found user entity with ID: {}", entity.getUserId())
         );
-        return userEntity.map(UsersEntity::to);
+        return userEntity;
     }
 
     @Override
-    public Optional<Users> findByNickname(String nickname, Long userId) {
-        return userJPARepository.findByNickname(nickname,userId).map(UsersEntity::to);
+    public Optional<UsersEntity> findByNickname(String nickname, Long userId) {
+        return userJPARepository.findByNickname(nickname,userId);
     }
 
     @Override
-    public Users findByBoard(Long userId) {
-        return userJPARepository.findByBoardEntities(userId).to();
+    public UsersEntity findByBoard(Long userId) {
+        return userJPARepository.findByBoardEntities(userId);
     }
 
     @Override
-    public UsersEntity save(Users user) {
-        log.info("Saving user with email: {}", user.getEmail());
-        UsersEntity savedEntity = userJPARepository.save(UsersEntity.from(user));
-        log.info("Saved user with ID: {}", savedEntity.getUserId());
-        return savedEntity;
+    public UsersEntity save(UsersEntity usersEntity) {
+        return  userJPARepository.save(usersEntity);
     }
 
     @Override
@@ -51,8 +48,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(UsersEntity findUser) {
-        userJPARepository.delete(findUser);
+    public void delete(UsersEntity usersEntity) {
+        userJPARepository.delete(usersEntity);
     }
 
     @Override

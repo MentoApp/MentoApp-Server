@@ -93,6 +93,11 @@
             <AppenderRef ref="RollingFileAppender"/>
         </Root>
 
+        <Logger name="com.mentit.mento" level="DEBUG" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="RollingFileAppender"/>
+        </Logger>
+
         <!-- springframework logger -->
         <Logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="ConsoleAppender"/>

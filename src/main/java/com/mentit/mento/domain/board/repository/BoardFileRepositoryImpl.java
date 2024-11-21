@@ -17,17 +17,17 @@ public class BoardFileRepositoryImpl implements BoardFileRepository {
     private final BoardFileJPARepository boardFileJPARepository;
 
     @Override
-    public BoardFiles save(BoardFiles createdFile) {
-        return boardFileJPARepository.save(BoardFilesEntity.from(createdFile)).to();
+    public BoardFilesEntity save(BoardFilesEntity createdFile) {
+        return boardFileJPARepository.save(createdFile);
     }
 
     @Override
-    public void deleteAllByBoardEntity(Board findBoard) {
-        boardFileJPARepository.deleteAllByBoardEntity(BoardEntity.from(findBoard));
+    public void deleteAllByBoardEntity(BoardEntity boardEntity) {
+        boardFileJPARepository.deleteAllByBoardEntity(boardEntity);
     }
 
     @Override
-    public List<BoardFiles> findAllByBoardEntity(Board findBoard) {
-        return boardFileJPARepository.findAllByBoardEntity(BoardEntity.from(findBoard)).stream().map(BoardFilesEntity::to).toList();
+    public List<BoardFilesEntity> findAllByBoardEntity(BoardEntity boardEntity) {
+        return boardFileJPARepository.findAllByBoardEntity(boardEntity);
     }
 }

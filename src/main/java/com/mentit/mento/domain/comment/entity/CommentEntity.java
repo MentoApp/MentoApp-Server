@@ -31,14 +31,6 @@ public class CommentEntity extends BaseEntity {
 
     private String comment;
 
-    public static CommentEntity from(Comment comment) {
-        return CommentEntity.builder()
-                .boardEntity(BoardEntity.from(comment.getBoard()))
-                .writer(UsersEntity.from(comment.getWriter()))
-                .comment(comment.getComment())
-                .build();
-    }
-
     public Comment to() {
         return Comment.builder()
                 .commentId(commentId)

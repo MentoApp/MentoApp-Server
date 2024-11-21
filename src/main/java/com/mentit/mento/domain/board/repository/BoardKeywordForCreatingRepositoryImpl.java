@@ -15,12 +15,12 @@ public class BoardKeywordForCreatingRepositoryImpl implements BoardKeywordForCre
     private final BoardKeywordForCreatingJPARepository boardKeywordForCreatingJPARepository;
 
     @Override
-    public BoardKeywordForCreating save(BoardKeywordForCreating savedBoardKeyword) {
-        return boardKeywordForCreatingJPARepository.save(BoardKeywordForCreatingEntity.from(savedBoardKeyword)).to();
+    public BoardKeywordForCreatingEntity save(BoardKeywordForCreatingEntity boardKeywordForCreatingEntity) {
+        return boardKeywordForCreatingJPARepository.save(boardKeywordForCreatingEntity);
     }
 
     @Override
-    public void deleteAllByBoard(Board findBoard) {
-        boardKeywordForCreatingJPARepository.deleteAllByBoardEntity(BoardEntity.from(findBoard));
+    public void deleteAllByBoard(BoardEntity boardEntity) {
+        boardKeywordForCreatingJPARepository.deleteAllByBoardEntity(boardEntity);
     }
 }

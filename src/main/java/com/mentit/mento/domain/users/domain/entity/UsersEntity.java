@@ -8,10 +8,7 @@ import com.mentit.mento.domain.users.constant.*;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +18,7 @@ import java.util.*;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,7 +43,8 @@ public class UsersEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AuthType authType;
 
-    private boolean isNewUser;
+    @Builder.Default
+    private boolean isNewUser= Boolean.TRUE;
 
     @Enumerated(EnumType.STRING)
     private UserJobEnum job;
@@ -74,25 +73,7 @@ public class UsersEntity extends BaseEntity {
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
-    public static UsersEntity from(Users user) {
-        return UsersEntity.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .authType(user.getAuthType())
-                .isNewUser(user.isNewUser())
-                .job(user.getJob())
-                .gender(user.getGender())
-                .birthYear(user.getBirthYear())
-                .birthDay(user.getBirthDay())
-                .phoneNumber(user.getPhoneNumber())
-                .isDeleted(user.isDeleted())
-                .simpleIntroduce(user.getSimpleIntroduce())
-                .profileImage(user.getProfileImage())
-                .accountStatus(user.getAccountStatus())
-                .build();
-    }
+
 
 
     public Users to(){
@@ -121,7 +102,7 @@ public class UsersEntity extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
-    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private DotoriTokenEntity dotoriTokenEntity;
 
     @OneToMany(mappedBy = "presenter")
@@ -132,16 +113,16 @@ public class UsersEntity extends BaseEntity {
     @Builder.Default
     private List<DotoriTokenUsageDetailsEntity> receivedDotoriTokens = new ArrayList<>();
 
-    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "usersEntity")
     private UserStatusTagEntity userStatusTagEntity;
 
-    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER)
     private List<BoardKeywordEntity> boardKeywords;
 
-    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "writer")
     private List<CommentEntity> commentEntity;
 
-    @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "writer")
     private List<BoardEntity> boardEntities;
 
 }
