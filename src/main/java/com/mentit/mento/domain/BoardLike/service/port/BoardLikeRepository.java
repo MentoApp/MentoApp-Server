@@ -15,4 +15,6 @@ public interface BoardLikeRepository {
     Optional<BoardLikeEntity> findBoardLikeByBoardAndUsersEntity(BoardEntity findBoardByBoardEntityId, UsersEntity from);
 
     BoardLikeEntity save(BoardLikeEntity updatedBoardLike);
+
+    void delete(BoardLikeEntity findBoardLikeEntity);
 }

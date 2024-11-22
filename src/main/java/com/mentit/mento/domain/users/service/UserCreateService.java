@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -94,7 +93,6 @@ public class UserCreateService {
         // 기존 태그 삭제
         if (usersEntity.getUserStatusTagEntity() != null) {
             usersEntity = userStatusTagService.delete(usersEntity); //삭제 후 초기화한 유저 반환
-            log.info("userStatustag 삭제 유무 = {}", usersEntity.getUserStatusTagEntity()==null);
         }
 
         // 새로운 UserStatusTag 생성

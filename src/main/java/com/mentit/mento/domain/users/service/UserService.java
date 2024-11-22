@@ -24,13 +24,15 @@ public class UserService {
 
     public boolean validateNickname(String nickname, CustomUserDetail userDetail) {
         UsersEntity findUserByUserDetail = getUsers(userDetail);
+        log.info(findUserByUserDetail.getNickname() + "닉네임 존재");
 
-        boolean isPresent = userRepository.findByNickname(nickname, findUserByUserDetail.getUserId()).isPresent();
-
-        log.info("닉네임 존재 여부 ={}", isPresent);
         if (nickname.equals(findUserByUserDetail.getNickname())) {
+            log.info("현재 유저가 사용하는 닉네임");
             return true;
         }
+        //
+        boolean isPresent = userRepository.findByNickname(nickname).isPresent();
+
 
         if (!isPresent) {
             if (nickname.length() < 2) {
@@ -43,7 +45,7 @@ public class UserService {
             }
         }
 
-
+        log.info("닉네임 존재 여부 ={}", isPresent);
         return !isPresent;
     }
 
@@ -63,7 +65,7 @@ public class UserService {
                 .simpleIntroduce(findUserByUserDetail.getSimpleIntroduce())
                 .nickname(findUserByUserDetail.getNickname())
                 .profileImage(findUserByUserDetail.getProfileImage())
-                .dotoriTokenAmount(findUserByUserDetail.getDotoriTokenEntity().getCount())
+                .dotoriTokenAmount(findUserByUserDetail.getDotoriTokenEntity()!=null? findUserByUserDetail.getDotoriTokenEntity().getCount() : 0)
                 .boardKeywordList(boardKeywordList)
                 .corporateForm(userStatusTag.getCorporateFormEnum().getKoreanValue())
                 .myStatus(myStatusTagsList)

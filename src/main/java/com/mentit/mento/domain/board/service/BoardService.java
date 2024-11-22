@@ -223,7 +223,6 @@ public class BoardService {
         return boardKeywordForCreatingList;
     }
 
-
     private List<BoardFilesEntity> getBoardFiles(List<MultipartFile> images, BoardEntity boardEntity) {
         List<BoardFilesEntity> boardFiles = new ArrayList<>();
 
@@ -302,7 +301,7 @@ public class BoardService {
         return Optional.ofNullable(findBoardByBoardId.getBoardFileEntities())
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(boardFilesEntity -> boardFilesEntity.getBoardFileName())
+                .map(BoardFilesEntity::getBoardFileName)
                 .toList();
     }
 
@@ -349,7 +348,7 @@ public class BoardService {
                     return boardEntity2.getCreatedAt().compareTo(boardEntity1.getCreatedAt());
                 })
                 .limit(3)
-                .collect(Collectors.toList());
+                .toList();
 
 
         List<BoardEntity> matchedBoard = boardMatchCounts.stream().map(

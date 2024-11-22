@@ -47,31 +47,30 @@ public class BoardLikeService {
     public Long like(CustomUserDetail customUserDetail, Long boardId) {
         UsersEntity findUserByUserDetail = getUser(customUserDetail);
 
-        BoardEntity findBoardByBoardEntityId = boardEntityRepository.findByBoardId(boardId).orElseThrow(
+        BoardEntity findBoard = boardEntityRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
-        Optional<BoardLikeEntity> existingBoardLike = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoardByBoardEntityId, findUserByUserDetail);
+        Optional<BoardLikeEntity> curBoardLikeEntity = boardLikeRepository.findBoardLikeByBoardAndUsersEntity(findBoard, findUserByUserDetail);
 
-        if (existingBoardLike.isPresent()) {
-            BoardLikeEntity findBoardLikeEntity = existingBoardLike.get();
-            BoardLikeEntity updatedBoardLike = findBoardLikeEntity.toBuilder().liked(!findBoardLikeEntity.getLiked()).build();
-            boardLikeRepository.save(updatedBoardLike);
-            return boardId;
+        //이미 좋아요 엔티티가 존재했을때 요청할 경우, 엔티티를 삭제하고 하나 차감
+        if (curBoardLikeEntity.isPresent()) {
+            BoardLikeEntity findBoardLikeEntity = curBoardLikeEntity.get();
+            findBoardLikeEntity = findBoardLikeEntity.toBuilder().liked(!findBoardLikeEntity.getLiked()).build();
+            boardLikeRepository.delete(findBoardLikeEntity);
+            redisLikeService.decrementLikeCount(boardId);
+            return redisLikeService.getLikeCount(boardId);
         }
 
         BoardLikeEntity createdBoardLikeEntity = BoardLikeEntity.builder()
                 .user(findUserByUserDetail)
                 .liked(true)
-                .boardEntity(findBoardByBoardEntityId)
+                .boardEntity(findBoard)
                 .build();
 
-        boardLikeRepository.save(createdBoardLikeEntity);
+        createdBoardLikeEntity= boardLikeRepository.save(createdBoardLikeEntity);
 
-        if (createdBoardLikeEntity.getLiked()) {
-            redisLikeService.incrementLikeCount(boardId); // Redis 좋아요 수 증가
-        }else{
-            redisLikeService.decrementLikeCount(boardId);
-        }
+        redisLikeService.incrementLikeCount(boardId); // Redis 좋아요 수 증가
+
 
         return redisLikeService.getLikeCount(boardId);
 

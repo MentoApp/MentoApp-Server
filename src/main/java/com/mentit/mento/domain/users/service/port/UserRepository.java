@@ -7,11 +7,9 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-
     Optional<UsersEntity> findByEmail(String email);
 
-
-    Optional<UsersEntity> findByNickname(String nickname, Long userId);
+    Optional<UsersEntity> findByNickname(String nickname);
 
     UsersEntity findByBoard(Long userId);
 

@@ -31,4 +31,9 @@ public class BoardLikeRepositoryImpl implements BoardLikeRepository {
     public BoardLikeEntity save(BoardLikeEntity updatedBoardLike) {
         return boardLikeJPARepository.save(updatedBoardLike);
     }
+
+    @Override
+    public void delete(BoardLikeEntity findBoardLikeEntity) {
+        boardLikeJPARepository.delete(findBoardLikeEntity);
+    }
 }

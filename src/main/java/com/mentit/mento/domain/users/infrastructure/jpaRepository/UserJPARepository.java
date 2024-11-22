@@ -12,8 +12,8 @@ public interface UserJPARepository extends JpaRepository<UsersEntity, Long> {
     @Query("select u from UsersEntity u where u.email = :email and u.isDeleted=false")
     Optional<UsersEntity> findByEmail(String email);
 
-    @Query("select u from UsersEntity u where u.userId !=:userId And u.isDeleted=false And u.nickname=:nickname  ")
-    Optional<UsersEntity> findByNickname(String nickname, Long userId);
+    @Query("select u from UsersEntity u where u.nickname=:nickname and u.isDeleted=false")
+    Optional<UsersEntity> findByNickname(String nickname);
 
     @Query("select u from UsersEntity u where u.userId= :userId")
     UsersEntity findByBoardEntities(Long userId);

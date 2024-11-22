@@ -10,6 +10,7 @@ import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -23,6 +24,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = " update Users set is_deleted = true where user_id = ?")
+@SQLRestriction("is_deleted = false")
 public class UsersEntity extends BaseEntity {
 
     @Id

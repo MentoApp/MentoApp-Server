@@ -28,12 +28,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UsersEntity> findByNickname(String nickname, Long userId) {
-        return userJPARepository.findByNickname(nickname,userId);
+    public Optional<UsersEntity> findByNickname(String nickname) {
+        log.info("Searching for user in repository with nickname: {}", nickname);
+        return userJPARepository.findByNickname(nickname);
     }
 
     @Override
     public UsersEntity findByBoard(Long userId) {
+        log.info("Searching for user in repository with ID: {}", userId);
         return userJPARepository.findByBoardEntities(userId);
     }
 
@@ -44,6 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UsersEntity> findById(Long id) {
+        log.info("Searching for user in repository with ID: {}", id);
         return userJPARepository.findById(id);
     }
 

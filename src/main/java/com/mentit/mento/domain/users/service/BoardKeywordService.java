@@ -1,14 +1,10 @@
 package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
-import com.mentit.mento.domain.users.domain.BoardKeyword;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.domain.users.service.port.BoardKeywordRepository;
-import com.mentit.mento.global.exception.ExceptionCode;
-import com.mentit.mento.global.exception.customException.MemberException;
+import com.mentit.mento.domain.users.service.port.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +19,7 @@ import java.util.List;
 public class BoardKeywordService {
 
     private final BoardKeywordRepository boardKeywordRepository;
-    private final UserRepositoryImpl userRepositoryImpl;
+    private final UserRepository userRepository;
 
     @Transactional
     public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity usersEntity) {

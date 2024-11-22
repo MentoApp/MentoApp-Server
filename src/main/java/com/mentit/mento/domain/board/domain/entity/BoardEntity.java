@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "board")
 @SQLDelete(sql = " update board set is_deleted = true where board_id = ?")
+@SQLRestriction("is_deleted = false")
 public class BoardEntity extends BaseEntity {
 
     @Id
