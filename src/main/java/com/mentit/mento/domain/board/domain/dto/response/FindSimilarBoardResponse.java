@@ -10,6 +10,8 @@ import java.util.List;
 @Builder
 public class FindSimilarBoardResponse {
 
+    private Long boardId;
+
     private String title;
 
     private String writer;

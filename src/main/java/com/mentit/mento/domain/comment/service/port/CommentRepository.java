@@ -1,8 +1,6 @@
 package com.mentit.mento.domain.comment.service.port;
 
-import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -13,6 +13,7 @@ import com.mentit.mento.global.security.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
@@ -23,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +48,7 @@ public class UserController {
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @Valid @RequestPart(value = "signInRequest") SignInUser signInUser,
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+            @RequestPart(value = "profileImage") MultipartFile profileImage
     ) {
 
         userCreateService.create(userDetail, signInUser, profileImage);
@@ -64,7 +67,7 @@ public class UserController {
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUserRequest,
-            @RequestPart(value = "profileImage", required = false) @Nullable MultipartFile profileImage
+            @RequestPart(value = "profileImage") @Nullable MultipartFile profileImage
     ) {
         userCreateService.modifyUser(customUserDetail, modifyUserRequest, profileImage);
 
@@ -110,6 +113,17 @@ public class UserController {
         boolean flag = userService.validateNickname(nickname, userDetail);
 
         return Response.success(HttpStatus.OK, "조회 결과", flag + "");
+    }
+
+    @Operation(summary = "내 추천 게시물 키워드 편집" , description = "기존의 게시물 키워드를 삭제하고 업데이트합니다.")
+    @PutMapping("/modify-boardKeyword")
+    public Response<Void> modifyBoardKeyword(
+            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @ModelAttribute List<String> modifyBoardKeyword
+            ){
+        userService.modifyBoardKeyword(userDetail,modifyBoardKeyword);
+
+        return Response.success(HttpStatus.OK, "키워드 갱신 완료");
     }
 
 }

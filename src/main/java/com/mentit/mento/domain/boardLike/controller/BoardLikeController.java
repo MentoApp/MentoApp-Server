@@ -1,6 +1,6 @@
-package com.mentit.mento.domain.BoardLike.controller;
+package com.mentit.mento.domain.boardLike.controller;
 
-import com.mentit.mento.domain.BoardLike.service.BoardLikeService;
+import com.mentit.mento.domain.boardLike.service.BoardLikeService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import lombok.RequiredArgsConstructor;

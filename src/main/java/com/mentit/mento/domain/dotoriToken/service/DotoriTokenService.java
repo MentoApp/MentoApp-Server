@@ -49,7 +49,7 @@ public class DotoriTokenService {
         DotoriTokenUsageDetailsEntity dotoriTokenUsageDetails = DotoriTokenUsageDetailsEntity.builder()
                 .receiver(usersEntity)
                 .tradeAmount(5)
-                .tradeTypeEnum(TradeTypeEnum.BOARD_EARN)
+                .tradeTypeEnum(TradeTypeEnum.ENROLLMENT)
                 .dotoriTokenEntity(dotoriToken)
                 .build();
         dotoriTokenUsageDetailsRepository.saveCreateAccount(dotoriTokenUsageDetails);
@@ -104,17 +104,17 @@ public class DotoriTokenService {
                                 .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
                                 .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
-                                .message("원 결제")//TODO 교환 환율에 맞춰 적기 만약 1000:20이고 40개 충전했다면 40*100적기
+                                .message("원 결제")
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
                     // 가입
                     } else if (dotoriTokenUsageDetails.getTradeTypeEnum() == TradeTypeEnum.ENROLLMENT) {
                         DotoriEarnRseponse dotoriEarnRseponse = DotoriEarnRseponse.builder()
                                 .usageCount("+"+dotoriTokenUsageDetails.getTradeAmount()+"개")
-                                .senderId(dotoriTokenUsageDetails.getPresenter().getUserId())
+                                .senderId(dotoriTokenUsageDetails.getPresenter()==null?null:dotoriTokenUsageDetails.getPresenter().getUserId())
                                 .timestamp(dotoriTokenUsageDetails.getCreatedAt())
                                 .tradeType(dotoriTokenUsageDetails.getTradeTypeEnum().getTradeType())
-                                .message("도토리 가입 축하 적립 ")
+                                .message("도토리 가입 축하 적립")
                                 .build();
                         earnRseponseList.add(dotoriEarnRseponse);
                     } else{

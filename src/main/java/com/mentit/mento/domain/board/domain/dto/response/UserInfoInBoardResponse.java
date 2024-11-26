@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class UserInfoInBoardResponse {
 
+    private Long userId;
     private String nickname;
     private String profileImage;
     private List<String> keyword;

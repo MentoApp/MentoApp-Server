@@ -16,19 +16,15 @@ public enum ExceptionCode {
     UNEXPECTED_ERROR(INTERNAL_SERVER_ERROR, "An unexpected error occurred.", 500),
 
     // 400 - Bad Request
-    PASSWORD_MISMATCH(BAD_REQUEST, "Passwords do not match.", 400),
-    INVALID_CURRENT_PASSWORD(BAD_REQUEST, "The current password is incorrect.", 400),
-    INVALID_AUTH_CODE(BAD_REQUEST, "Invalid email authentication code.", 400),
     NOT_FOUND_REFRESH_TOKEN_IN_COOKIE(BAD_REQUEST, "Refresh token not found in cookie.", 400),
     INVALID_PARAMETER(BAD_REQUEST, "Invalid request parameter.", 400),
     INVALID_FILE_EXTENTION(BAD_REQUEST, "Invalid File Extention", 400),
 
     // User-related Errors (800)
     TOO_SHORT_NICKNAME(BAD_REQUEST, "닉네임은 2자 이상 적어주세요.", 800),
-    TOO_LONG_NICKNAME(BAD_REQUEST, "닉네임은 10자 이하 적어주세요.", 801),
+    TOO_LONG_NICKNAME(BAD_REQUEST, "닉네임은 10자 이하로 적어주세요.", 801),
     NICKNAME_PATTERN_INVALIDATION(BAD_REQUEST, "닉네임은 띄어쓰기 없이 한글, 영문, 숫자만 가능합니다.", 802),
     NOT_FOUND_MEMBER(CONFLICT, "Member not found.", 803),
-    MEMBER_ALREADY_EXISTS(CONFLICT, "Member already exists.", 804),
     MEMBER_ALREADY_WITHDRAW(CONFLICT, "Member has already withdrawn.", 805),
     DUPLICATE_LOGIN(UNAUTHORIZED, "Duplicate Login", 806),
     ALREADY_ENROLLED_ACCOUNT(CONFLICT, "Already Enrolled Account", 807),
@@ -37,7 +33,6 @@ public enum ExceptionCode {
 
     // Board-related Errors (700)
     NOT_FOUND_BOARD(CONFLICT, "Board not found.", 700),
-    INVALID_BOARD(CONFLICT, "Invalid board.", 701),
     NOT_FOUND_MORE_THAN_3_BOARDS(CONFLICT, "Can't find more than 3 Boards.", 702),
     NOT_MATCHED_WRITER(CONFLICT, "Not matched Writer",703 ),
     FILE_IS_EMPTY(CONFLICT, "File is Empty.", 704),
@@ -50,7 +45,7 @@ public enum ExceptionCode {
     NOT_FOUND_COMMENT(CONFLICT, "Can't Find Comment.", 710),
 
     // Token-related Errors (901)
-    TOKEN_EXPIRED(UNAUTHORIZED, "Token has expired.", 902),
+    TOKEN_EXPIRED(UNAUTHORIZED, "Token has expired.", 901),
     INVALID_TOKEN(UNAUTHORIZED, "Invalid token provided.", 902),
     UNSUPPORTED_TOKEN(UNAUTHORIZED, "Token format is unsupported.", 903),
     NOT_FOUND_TOKEN(UNAUTHORIZED, "Token not found.", 904),

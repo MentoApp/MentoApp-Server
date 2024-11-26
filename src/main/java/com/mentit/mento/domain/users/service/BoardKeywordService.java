@@ -22,7 +22,7 @@ public class BoardKeywordService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity usersEntity) {
+    public List<BoardKeywordEntity> createUserBoardKeyword(List<BoardKeywordEnum> boardKeywordEnums, UsersEntity usersEntity) {
 
         List<BoardKeywordEntity> list = boardKeywordEnums.stream().map(keyword -> {
             return BoardKeywordEntity.builder()
@@ -31,7 +31,7 @@ public class BoardKeywordService {
                     .build();
         }).toList();
 
-        boardKeywordRepository.saveAll(list);
+       return boardKeywordRepository.saveAll(list);
     }
 
     @Transactional

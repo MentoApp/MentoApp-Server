@@ -1,6 +1,6 @@
-package com.mentit.mento.domain.BoardLike.repository;
+package com.mentit.mento.domain.boardLike.repository;
 
-import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
+import com.mentit.mento.domain.boardLike.domain.BoardLikeEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

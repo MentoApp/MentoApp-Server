@@ -69,13 +69,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof CustomUserDetail userDetail) {
-            userRepositoryImpl.findById(userDetail.getId()).orElseThrow(
-                    () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
-            );
-        }
-
         filterChain.doFilter(request, response);
     }
 

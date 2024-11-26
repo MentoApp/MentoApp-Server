@@ -1,11 +1,8 @@
-package com.mentit.mento.domain.BoardLike.repository;
+package com.mentit.mento.domain.boardLike.repository;
 
-import com.mentit.mento.domain.BoardLike.domain.BoardLike;
-import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
-import com.mentit.mento.domain.BoardLike.service.port.BoardLikeRepository;
-import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.boardLike.domain.BoardLikeEntity;
+import com.mentit.mento.domain.boardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

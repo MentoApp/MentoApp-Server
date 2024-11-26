@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class FindBoardResponse {
+public class FindMyBoardResponse {
 
     private Long boardId;
 
@@ -27,8 +27,6 @@ public class FindBoardResponse {
     private List<String> boardKeywords;
 
     private List<String> imageList;
-
-    private UserInfoInBoardResponse userInfo;
 
     private Long commentCount;
 

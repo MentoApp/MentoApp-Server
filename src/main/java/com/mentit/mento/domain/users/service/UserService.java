@@ -1,6 +1,8 @@
 package com.mentit.mento.domain.users.service;
 
+import com.mentit.mento.domain.users.constant.BoardKeywordEnum;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
+import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
@@ -80,4 +82,19 @@ public class UserService {
         );
     }
 
+    public void modifyBoardKeyword(CustomUserDetail userDetail, List<String> modifyBoardKeyword) {
+        UsersEntity usersEntity = getUsers(userDetail);
+
+        boardKeywordService.deleteExistingBoardKeywords(usersEntity);
+        List<BoardKeywordEnum> boardKeywordEnums = modifyBoardKeyword.stream().map(
+                keyword -> {
+                    return BoardKeywordEnum.fromKoreanValue(keyword);
+                }
+        ).toList();
+        List<BoardKeywordEntity> userBoardKeyword = boardKeywordService.createUserBoardKeyword(boardKeywordEnums, usersEntity);
+
+        usersEntity.setBoardKeywords(userBoardKeyword);
+
+        userRepository.save(usersEntity);
+    }
 }

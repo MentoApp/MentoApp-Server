@@ -1,8 +1,6 @@
 package com.mentit.mento.domain.board.service;
 
-import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.board.domain.BoardFiles;
-import com.mentit.mento.domain.board.domain.BoardKeywordForCreating;
+import com.mentit.mento.domain.board.domain.dto.response.FindMyBoardResponse;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardKeywordForCreatingEntity;
@@ -11,16 +9,15 @@ import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
 import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse;
+import com.mentit.mento.domain.board.domain.entity.SavedBoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardFileRepository;
 import com.mentit.mento.domain.board.service.port.BoardKeywordForCreatingRepository;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
+import com.mentit.mento.domain.board.service.port.SavedBoardRepository;
 import com.mentit.mento.domain.comment.service.CommentService;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
-import com.mentit.mento.domain.users.domain.BoardKeyword;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
@@ -33,6 +30,9 @@ import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class BoardService {
 
     private final UserRepository userRepository;
@@ -57,6 +58,7 @@ public class BoardService {
     private final RedisLikeService redisLikeService;
     private final RedisService redisService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final SavedBoardRepository savedBoardRepository;
 
     @Transactional
     public FindBoardResponse createBoard(CustomUserDetail customUserDetail, BoardCreate boardCreate, List<MultipartFile> images) {
@@ -91,7 +93,7 @@ public class BoardService {
 
         redisService.saveBoardKeywords(boardEntity.getBoardId(), boardCreate.getKeywords());
 
-        return findBoard(customUserDetail, createdBoard.getBoardId());
+        return findOneBoard(customUserDetail, createdBoard.getBoardId());
 
     }
 
@@ -124,7 +126,7 @@ public class BoardService {
 
         BoardEntity createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(boardEntity, boardFileEntities, boardKeywordForCreatingList);
 
-        return findBoard(customUserDetail, createdBoard.getBoardId());
+        return findOneBoard(customUserDetail, createdBoard.getBoardId());
     }
 
     @Transactional
@@ -150,6 +152,259 @@ public class BoardService {
 
         boardRepository.delete(findBoard);
 
+    }
+
+    //게시판 단일 조회
+    public FindBoardResponse findOneBoard(CustomUserDetail customUserDetail, Long boardId) {
+        BoardEntity findBoardByBoardId = boardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new MemberException(ExceptionCode.NOT_FOUND_BOARD)
+        );
+
+        // 게시판 키워드 생성
+        List<String> keywords = getBoardKeywords(findBoardByBoardId);
+
+        // 이미지 리스트 생성 (비어있을 경우 빈 리스트 반환)
+        List<String> imageList = getImageList(findBoardByBoardId);
+
+        //좋아요 카운트
+        Long likeCount = redisLikeService.getLikeCount(boardId);
+
+        //유저 정보
+        UserInfoInBoardResponse userInfoInBoardResponse = getUserInfoInBoardResponse(findBoardByBoardId);
+
+        //댓글 수
+        Long commentCount = commentService.getCommentCount(boardId);
+
+        return FindBoardResponse.builder()
+                .boardId(boardId)
+                .title(findBoardByBoardId.getTitle())
+                .writer(userInfoInBoardResponse.getNickname())
+                .createdTime(findBoardByBoardId.getCreatedAt())
+                .content(findBoardByBoardId.getContent())
+                .viewCount(findBoardByBoardId.getViewCount())
+                .imageList(imageList)
+                .likeCount(likeCount)
+                .viewCount(findBoardByBoardId.getViewCount() + 1L)
+                .userInfo(userInfoInBoardResponse)
+                .commentCount(commentCount)
+                .boardKeywords(keywords)
+                .build();
+    }
+
+
+    //조건 맞추기, 레디스에 키워드 저장하는 서비스 먼저 생성
+    // 1. 해당 게시물과 겹치는 키워드 수가 많은 순서대로 상단 노출
+    // 2. 겹치는 키워드 수가 같다면 최신순 상단 노출
+    // 3. 겹치는 키워드가 없다면 해당 게시판 게시물 최신순 상단 노출
+    //유사키워드 게시판 추출
+    public List<FindSimilarBoardResponse> findBoardContainsKeywords(CustomUserDetail customUserDetail) {
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+
+        // 키워드별로 게시물 매핑을 위한 구조 준비
+        List<String> keywords = findUserByUserDetail.getBoardKeywords().stream()
+                .map(BoardKeywordEntity::getBoardKeywordEnum)
+                .map(Enum::name)
+                .toList();
+
+        Set<String> allBoardKeys = redisTemplate.keys("boardKeywords:*");
+        if (allBoardKeys == null || allBoardKeys.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        //게시판 ID 별로 키워드 일치 개수 계산
+        List<BoardMatchCount> boardMatchCounts = allBoardKeys.stream()
+                .map(key -> {
+                    Long boardId = Long.parseLong(key.split(":")[1]);
+                    long matchCount = redisService.countMatchingKeywords(boardId, keywords);
+                    return new BoardMatchCount(boardId, matchCount);
+                })
+                .sorted((b1, b2) -> {
+                    if (b1.matchCount != b2.matchCount) {
+                        return Long.compare(b2.matchCount, b1.matchCount);
+                    }
+                    BoardEntity boardEntity1 = boardRepository.findByBoardId(b1.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
+                    BoardEntity boardEntity2 = boardRepository.findByBoardId(b2.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
+                    return boardEntity2.getCreatedAt().compareTo(boardEntity1.getCreatedAt());
+                })
+                .limit(3)
+                .toList();
+
+
+        List<BoardEntity> matchedBoard = boardMatchCounts.stream().map(
+                boardMatchCount -> boardRepository.findByBoardId(boardMatchCount.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD))
+        ).collect(Collectors.toList());
+
+        return mapBoardsToResponse(matchedBoard);
+
+    }
+
+    //조회수순 3개 추출
+    public List<FindBoardResponse> findTop3Boards(CustomUserDetail customUserDetail) {
+
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+
+        return boardRepository.findTop3ByOrderByViewCountDesc()
+                .map(boards -> boards.stream().map(
+                        board -> {
+
+                            return FindBoardResponse.builder()
+                                    .boardId(board.getBoardId())
+                                    .title(board.getTitle())
+                                    .content(board.getContent())
+                                    .createdTime(board.getCreatedAt())
+                                    .viewCount(board.getViewCount())
+                                    .imageList(getImageList(board))
+                                    .boardKeywords(getBoardKeywords(board))
+                                    .userInfo(getUserInfoInBoardResponse(board))
+                                    .likeCount(redisLikeService.getLikeCount(board.getBoardId()))
+                                    .writer(findUserByUserDetail.getNickname())
+                                    .commentCount(commentService.getCommentCount(board.getBoardId()))
+                                    .build();
+
+                        }
+                ).collect(Collectors.toList())).orElse(Collections.emptyList());
+
+    }
+    //내가쓴게시판
+    public Page<FindMyBoardResponse> findMyBoards(CustomUserDetail customUserDetail, Pageable pageable) {
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+        Page<BoardEntity> findBoards = boardRepository.findByUsers(findUserByUserDetail,pageable);
+
+        //FindBoardResponse로 변환
+        List<FindMyBoardResponse> findBoardResponseList = findBoards.map(
+                boardEntity ->{
+                   return FindMyBoardResponse.builder()
+                            .boardId(boardEntity.getBoardId())
+                            .title(boardEntity.getTitle())
+                            .content(boardEntity.getContent())
+                            .createdTime(boardEntity.getCreatedAt())
+                            .boardKeywords(getBoardKeywords(boardEntity))
+                            .viewCount(boardEntity.getViewCount())
+                            .likeCount(redisLikeService.getLikeCount(boardEntity.getBoardId()))
+                            .imageList(getImageList(boardEntity))
+                            .build();
+                }
+        ).toList();
+
+        return new PageImpl<>(findBoardResponseList, pageable, findBoards.getTotalElements());
+    }
+
+    //게시판 저장
+    public void saveBoard(CustomUserDetail customUserDetail, Long boardId) {
+        UsersEntity usersEntity = getUsers(customUserDetail);
+        BoardEntity boardEntity = boardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
+        );
+
+        SavedBoardEntity savedBoardEntity = SavedBoardEntity.builder()
+                .userEntity(usersEntity)
+                .boardEntity(boardEntity)
+                .build();
+
+        savedBoardRepository.save(savedBoardEntity);
+
+    }
+
+    //게시판 저장 삭제
+    public void deleteSavedBoard(CustomUserDetail customUserDetail, Long boardId) {
+        UsersEntity usersEntity = getUsers(customUserDetail);
+        BoardEntity boardEntity = boardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
+        );
+        savedBoardRepository.deleteByBoardAndUser(boardEntity,usersEntity);
+    }
+
+    public Page<FindBoardResponse> findMySavedBoards(CustomUserDetail customUserDetail, Pageable pageable) {
+        UsersEntity usersEntity = getUsers(customUserDetail);
+        List<BoardEntity> boardEntities = boardRepository.findAllByUsers(usersEntity.getUserId());
+        List<FindBoardResponse> findBoardResponses = boardEntities.stream().map(
+                boardEntity ->
+                        FindBoardResponse.builder()
+                                .boardId(boardEntity.getBoardId())
+                                .title(boardEntity.getTitle())
+                                .writer(boardEntity.getWriter().getNickname())
+                                .imageList(getImageList(boardEntity))
+                                .likeCount(redisLikeService.getLikeCount(boardEntity.getBoardId()))
+                                .viewCount(boardEntity.getViewCount())
+                                .boardKeywords(getBoardKeywords(boardEntity))
+                                .userInfo(getUserInfoInBoardResponse(boardEntity))
+                                .commentCount(commentService.getCommentCount(boardEntity.getBoardId()))
+                                .createdTime(boardEntity.getCreatedAt())
+                                .build()
+        ).toList();
+
+        return new PageImpl<>(findBoardResponses, pageable, findBoardResponses.size());
+
+    }
+
+    // Board ID와 일치 개수를 담는 클래스
+    private static class BoardMatchCount {
+
+        Long boardId;
+
+        long matchCount;
+
+        public BoardMatchCount(Long boardId, long matchCount) {
+            this.boardId = boardId;
+            this.matchCount = matchCount;
+        }
+
+    }
+    private List<FindSimilarBoardResponse> mapBoardsToResponse(List<BoardEntity> boardList) {
+        return boardList.stream()
+                .map(board -> {
+                    List<String> boardKeywords = getBoardKeywords(board);
+                    List<String> imageList = getImageList(board);
+                    Long likeCount = redisLikeService.getLikeCount(board.getBoardId());
+                    Long commentCount = commentService.getCommentCount(board.getBoardId());
+                    UserInfoInBoardResponse userInfo = getUserInfoInBoardResponse(board);
+
+                    return FindSimilarBoardResponse.builder()
+                            .boardId(board.getBoardId())
+                            .title(board.getTitle())
+                            .writer(userInfo.getNickname())
+                            .content(board.getContent())
+                            .createdTime(board.getCreatedAt())
+                            .boardKeywords(boardKeywords)
+                            .userInfo(userInfo)
+                            .imageList(!imageList.isEmpty() ? imageList.get(0) : null) // 이미지 리스트를 ','로 연결
+                            .viewCount(board.getViewCount())
+                            .likeCount(likeCount)
+                            .commentCount(commentCount)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+    //TODO:: 게시판별 키워드를 레디스에 저장해서 조회하는것이 더 빠를듯
+    private UserInfoInBoardResponse getUserInfoInBoardResponse(BoardEntity findBoardByBoardId) {
+        UsersEntity findUserByBoard = userRepository.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
+                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
+        );
+        return UserInfoInBoardResponse.builder()
+                .userId(findUserByBoard.getUserId())
+                .nickname(findUserByBoard.getNickname())
+                .profileImage(findUserByBoard.getProfileImage())
+                .keyword(findUserByBoard.getBoardKeywords().stream().map(
+                        boardKeywords -> boardKeywords.getBoardKeywordEnum().getKoreanValue()
+                ).toList())
+                .simpleIntroduce(findUserByBoard.getSimpleIntroduce())
+                .build();
+    }
+    private static List<String> getImageList(BoardEntity findBoardByBoardId) {
+        return Optional.ofNullable(findBoardByBoardId.getBoardFileEntities())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoardFilesEntity::getBoardFileName)
+                .toList();
+    }
+
+    private static List<String> getBoardKeywords(BoardEntity findBoardByBoardId) {
+        // 키워드 리스트 생성 (비어있을 경우 빈 리스트 반환)
+        return Optional.ofNullable(findBoardByBoardId.getBoardKeywordForCreatings())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(keyword -> keyword.getBoardKeyword().getKoreanValue())
+                .toList();
     }
 
     private BoardEntity mappingBoardFileAndBoardKeywordInSavedBoard(BoardEntity boardEntity, List<BoardFilesEntity> boardFilesEntities, List<BoardKeywordForCreatingEntity> boardKeywordForCreatingList) {
@@ -245,181 +500,6 @@ public class BoardService {
         return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
-    }
-
-    public FindBoardResponse findBoard(CustomUserDetail customUserDetail, Long boardId) {
-        BoardEntity findBoardByBoardId = boardRepository.findById(boardId).orElseThrow(
-                () -> new MemberException(ExceptionCode.NOT_FOUND_BOARD)
-        );
-
-        // 게시판 키워드 생성
-        List<String> keywords = getBoardKeywords(findBoardByBoardId);
-
-        // 이미지 리스트 생성 (비어있을 경우 빈 리스트 반환)
-        List<String> imageList = getImageList(findBoardByBoardId);
-
-        //좋아요 카운트
-        Long likeCount = redisLikeService.getLikeCount(boardId);
-
-        //유저 정보
-        UserInfoInBoardResponse userInfoInBoardResponse = getUserInfoInBoardResponse(findBoardByBoardId);
-
-        //댓글 수
-        Long commentCount = commentService.getCommentCount(boardId);
-
-        return FindBoardResponse.builder()
-                .title(findBoardByBoardId.getTitle())
-                .writer(userInfoInBoardResponse.getNickname())
-                .createdTime(findBoardByBoardId.getCreatedAt())
-                .content(findBoardByBoardId.getContent())
-                .viewCount(findBoardByBoardId.getViewCount())
-                .imageList(imageList)
-                .likeCount(likeCount)
-                .viewCount(findBoardByBoardId.getViewCount() + 1L)
-                .userInfo(userInfoInBoardResponse)
-                .commentCount(commentCount)
-                .boardKeywords(keywords)
-                .build();
-    }
-
-    //TODO:: 게시판별 키워드를 레디스에 저장해서 조회하는것이 더 빠를듯
-    private UserInfoInBoardResponse getUserInfoInBoardResponse(BoardEntity findBoardByBoardId) {
-        UsersEntity findUserByBoard = userRepository.findById(findBoardByBoardId.getWriter().getUserId()).orElseThrow(
-                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
-        );
-        return UserInfoInBoardResponse.builder()
-                .nickname(findUserByBoard.getNickname())
-                .profileImage(findUserByBoard.getProfileImage())
-                .keyword(findUserByBoard.getBoardKeywords().stream().map(
-                        boardKeywords -> boardKeywords.getBoardKeywordEnum().getKoreanValue()
-                ).toList())
-                .simpleIntroduce(findUserByBoard.getSimpleIntroduce())
-                .build();
-    }
-
-    private static List<String> getImageList(BoardEntity findBoardByBoardId) {
-        return Optional.ofNullable(findBoardByBoardId.getBoardFileEntities())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(BoardFilesEntity::getBoardFileName)
-                .toList();
-    }
-
-    private static List<String> getBoardKeywords(BoardEntity findBoardByBoardId) {
-        // 키워드 리스트 생성 (비어있을 경우 빈 리스트 반환)
-        return Optional.ofNullable(findBoardByBoardId.getBoardKeywordForCreatings())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(keyword -> keyword.getBoardKeyword().getKoreanValue())
-                .toList();
-    }
-
-    //조건 맞추기, 레디스에 키워드 저장하는 서비스 먼저 생성
-    // 1. 해당 게시물과 겹치는 키워드 수가 많은 순서대로 상단 노출
-    // 2. 겹치는 키워드 수가 같다면 최신순 상단 노출
-    // 3. 겹치는 키워드가 없다면 해당 게시판 게시물 최신순 상단 노출
-    public List<FindSimilarBoardResponse> findBoardContainsKeywords(CustomUserDetail customUserDetail) {
-        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
-
-        // 키워드별로 게시물 매핑을 위한 구조 준비
-        List<String> keywords = findUserByUserDetail.getBoardKeywords().stream()
-                .map(BoardKeywordEntity::getBoardKeywordEnum)
-                .map(Enum::name)
-                .toList();
-
-        Set<String> allBoardKeys = redisTemplate.keys("boardKeywords:*");
-        if (allBoardKeys == null || allBoardKeys.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        //게시판 ID 별로 키워드 일치 개수 계산
-        List<BoardMatchCount> boardMatchCounts = allBoardKeys.stream()
-                .map(key -> {
-                    Long boardId = Long.parseLong(key.split(":")[1]);
-                    long matchCount = redisService.countMatchingKeywords(boardId, keywords);
-                    return new BoardMatchCount(boardId, matchCount);
-                })
-                .sorted((b1, b2) -> {
-                    if (b1.matchCount != b2.matchCount) {
-                        return Long.compare(b2.matchCount, b1.matchCount);
-                    }
-                    BoardEntity boardEntity1 = boardRepository.findById(b1.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
-                    BoardEntity boardEntity2 = boardRepository.findByBoardId(b2.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD));
-                    return boardEntity2.getCreatedAt().compareTo(boardEntity1.getCreatedAt());
-                })
-                .limit(3)
-                .toList();
-
-
-        List<BoardEntity> matchedBoard = boardMatchCounts.stream().map(
-                boardMatchCount -> boardRepository.findById(boardMatchCount.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD))
-        ).collect(Collectors.toList());
-
-        return mapBoardsToResponse(matchedBoard);
-
-    }
-
-    private List<FindSimilarBoardResponse> mapBoardsToResponse(List<BoardEntity> boardList) {
-        return boardList.stream()
-                .map(board -> {
-                    List<String> boardKeywords = getBoardKeywords(board);
-                    List<String> imageList = getImageList(board);
-                    Long likeCount = redisLikeService.getLikeCount(board.getBoardId());
-                    Long commentCount = commentService.getCommentCount(board.getBoardId());
-                    UserInfoInBoardResponse userInfo = getUserInfoInBoardResponse(board);
-
-                    return FindSimilarBoardResponse.builder()
-                            .title(board.getTitle())
-                            .writer(userInfo.getNickname())
-                            .content(board.getContent())
-                            .createdTime(board.getCreatedAt())
-                            .boardKeywords(boardKeywords)
-                            .userInfo(userInfo)
-                            .imageList(!imageList.isEmpty() ? imageList.get(0) : null) // 이미지 리스트를 ','로 연결
-                            .viewCount(board.getViewCount())
-                            .likeCount(likeCount)
-                            .commentCount(commentCount)
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<FindBoardResponse> findTop3Boards(CustomUserDetail customUserDetail) {
-
-        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
-
-        return boardRepository.findTop3ByOrderByViewCountDesc()
-                .map(boards -> boards.stream().map(
-                        board -> {
-                            List<String> imageList = getImageList(board);
-
-                            return FindBoardResponse.builder()
-                                    .title(board.getTitle())
-                                    .content(board.getContent())
-                                    .createdTime(board.getCreatedAt())
-                                    .viewCount(board.getViewCount())
-                                    .imageList(imageList)
-                                    .boardKeywords(getBoardKeywords(board))
-                                    .userInfo(getUserInfoInBoardResponse(board))
-                                    .imageList(imageList)
-                                    .writer(findUserByUserDetail.getNickname())
-                                    .commentCount(commentService.getCommentCount(board.getBoardId()))
-                                    .build();
-
-                        }
-                ).collect(Collectors.toList())).orElse(Collections.emptyList());
-
-    }
-
-    // Board ID와 일치 개수를 담는 클래스
-    private static class BoardMatchCount {
-        Long boardId;
-        long matchCount;
-
-        public BoardMatchCount(Long boardId, long matchCount) {
-            this.boardId = boardId;
-            this.matchCount = matchCount;
-        }
     }
 }
 

@@ -3,7 +3,6 @@ package com.mentit.mento.domain.board.domain;
 import com.mentit.mento.domain.board.constant.BoardTypeEnum;
 import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import lombok.Builder;

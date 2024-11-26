@@ -1,8 +1,6 @@
 package com.mentit.mento.domain.comment.repository;
 
-import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
-import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
 import lombok.RequiredArgsConstructor;

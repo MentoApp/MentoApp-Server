@@ -1,9 +1,7 @@
-package com.mentit.mento.domain.BoardLike.domain;
+package com.mentit.mento.domain.boardLike.domain;
 
 import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.users.domain.Users;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.Table;
 import lombok.Builder;

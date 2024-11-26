@@ -1,15 +1,13 @@
 package com.mentit.mento.domain.comment.service;
 
-import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
 import com.mentit.mento.domain.comment.dto.request.CommentCreate;
 import com.mentit.mento.domain.comment.dto.request.CommentUpdate;
 import com.mentit.mento.domain.comment.dto.CommentsResponse;
-import com.mentit.mento.domain.comment.entity.Comment;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.comment.service.port.CommentRepository;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -108,10 +106,19 @@ public class CommentService {
             // CommentsResponse 변환
             List<CommentsResponse> commentsResponses = comments.stream()
                     .map(comment -> {
+                        UsersEntity writer = comment.getWriter();
+
+                        UserInfoInBoardResponse UserInfo = UserInfoInBoardResponse.builder()
+                                .userId(writer.getUserId())
+                                .nickname(writer.getNickname())
+                                .profileImage(writer.getProfileImage())
+                                .build();
+
                         CommentsResponse response = new CommentsResponse();
                         response.setWriter(comment.getWriter().getNickname()); // 작성자 이름
                         response.setComment(comment.getComment()); // 댓글 내용
                         response.setWriteDate(comment.getCreatedAt()); // 작성 날짜
+                        response.setUserInfo(UserInfo);
                         return response;
                     })
                     .collect(Collectors.toList());

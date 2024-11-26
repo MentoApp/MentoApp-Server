@@ -1,12 +1,9 @@
-package com.mentit.mento.domain.BoardLike.service;
+package com.mentit.mento.domain.boardLike.service;
 
-import com.mentit.mento.domain.BoardLike.domain.BoardLike;
-import com.mentit.mento.domain.BoardLike.domain.BoardLikeEntity;
-import com.mentit.mento.domain.BoardLike.service.port.BoardLikeRepository;
-import com.mentit.mento.domain.board.domain.Board;
+import com.mentit.mento.domain.boardLike.domain.BoardLikeEntity;
+import com.mentit.mento.domain.boardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;

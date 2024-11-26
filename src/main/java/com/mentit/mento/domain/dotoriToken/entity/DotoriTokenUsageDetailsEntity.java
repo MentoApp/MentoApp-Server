@@ -24,6 +24,7 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dotoriTokenUsageDetailId;
 
+    @Enumerated(EnumType.STRING)
     private TradeTypeEnum tradeTypeEnum;
 
     private int tradeAmount;

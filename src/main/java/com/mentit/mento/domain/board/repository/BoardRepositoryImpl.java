@@ -1,10 +1,12 @@
 package com.mentit.mento.domain.board.repository;
 
-import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.repository.jpaRepository.BoardEntityJPARepository;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,11 +33,6 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public Optional<BoardEntity> findById(Long boardId) {
-        return boardJPARepository.findById(boardId);
-    }
-
-    @Override
     public Optional<List<BoardEntity>> findTop3ByOrderByViewCountDesc() {
         return boardJPARepository.findTop3ByOrderByViewCountDesc();
     }
@@ -43,5 +40,15 @@ public class BoardRepositoryImpl implements BoardRepository {
     @Override
     public List<BoardEntity> findAll() {
         return boardJPARepository.findAll();
+    }
+
+    @Override
+    public Page<BoardEntity> findByUsers(UsersEntity usersEntity, Pageable pageable) {
+        return boardJPARepository.findAllByWriter(usersEntity,pageable);
+    }
+
+    @Override
+    public List<BoardEntity> findAllByUsers(Long usersId) {
+        return boardJPARepository.findAllByUsers(usersId);
     }
 }
