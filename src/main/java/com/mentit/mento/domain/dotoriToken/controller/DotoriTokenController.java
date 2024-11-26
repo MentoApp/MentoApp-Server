@@ -1,7 +1,10 @@
 package com.mentit.mento.domain.dotoriToken.controller;
 
+import com.mentit.mento.domain.dotoriToken.dto.TokenGiftRequest;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriUsageResponse;
+import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenService;
+import com.mentit.mento.domain.dotoriToken.service.DotoriTokenUsageService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,12 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/dotoriToken")
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DotoriTokenController {
 
     private final DotoriTokenService dotoriTokenService;
+    private final DotoriTokenUsageService dotoriTokenUsageService;
 
 
     @Operation(summary = "도토리 내역 조회" , description = "도토리 거래 내역을 조회합니다.")
@@ -38,7 +40,7 @@ public class DotoriTokenController {
                     content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
     @GetMapping("/dotoriUsage")
-    public ResponseEntity<Page<DotoriUsageResponse>> find(
+    public Response<Page<DotoriUsageResponse>> find(
             @Parameter(description = "페이지 시작 번호(0부터 시작)")
             @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 사이즈(3부터 시작)")
@@ -49,7 +51,29 @@ public class DotoriTokenController {
 
         Page<DotoriUsageResponse> dotoriUsageList = dotoriTokenService.findUsage(pageable, customUserDetail);
 
-        return ResponseEntity.ok().body(dotoriUsageList);
+        return Response.success(HttpStatus.OK,"도토리 사용 내역 조회 성공", dotoriUsageList);
+    }
+
+    @Operation(summary = "도토리 선물하기" , description = "도토리 선물 후 준사람과 받은 사람 개수를 업데이트함.")
+    @PostMapping("/token-gift/board")
+    public Response<Void> presentToken(
+            @AuthenticationPrincipal CustomUserDetail customUserDetail,
+            @RequestBody TokenGiftRequest tokenGiftRequest
+    ){
+        DotoriTokenEntity dotoriTokenEntity = dotoriTokenService.updateDotoriToken(customUserDetail, tokenGiftRequest);
+        dotoriTokenUsageService.create(customUserDetail, tokenGiftRequest,dotoriTokenEntity);
+
+        return Response.success(HttpStatus.OK,"토큰 선물 완료");
+    }
+
+    @Operation(summary = "도토리 개수 조회" , description = "도토리 잔여 개수 조회")
+    @PostMapping("/get-count")
+    public Response<Integer> presentToken(
+            @AuthenticationPrincipal CustomUserDetail customUserDetail
+    ){
+        int tokenCount = dotoriTokenService.getTokenCount(customUserDetail);
+
+        return Response.success(HttpStatus.OK,"토큰 선물 완료",tokenCount);
     }
 
 }

@@ -14,6 +14,5 @@ public class DotoriGiveResponse {
     private String message;
     private String boardTitle;
     private Long boardId;
-    private String usageContent;
     private String usageCount;
 }

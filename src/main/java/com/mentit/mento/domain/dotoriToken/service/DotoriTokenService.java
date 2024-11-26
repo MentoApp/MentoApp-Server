@@ -1,20 +1,18 @@
 package com.mentit.mento.domain.dotoriToken.service;
 
 import com.mentit.mento.domain.dotoriToken.constant.TradeTypeEnum;
+import com.mentit.mento.domain.dotoriToken.dto.TokenGiftRequest;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriEarnRseponse;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriGiveResponse;
 import com.mentit.mento.domain.dotoriToken.dto.response.DotoriUsageResponse;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
-import com.mentit.mento.domain.dotoriToken.repository.DotoriTokenJPARepository;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenUsageDetailsRepository;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
+import com.mentit.mento.global.exception.customException.DotoriTokenException;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.transaction.Transactional;
@@ -31,6 +29,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class DotoriTokenService {
 
     private final DotoriTokenRepository dotoriTokenRepository;
@@ -55,14 +54,14 @@ public class DotoriTokenService {
         dotoriTokenUsageDetailsRepository.saveCreateAccount(dotoriTokenUsageDetails);
     }
 
-    private UsersEntity getUsers(CustomUserDetail userDetail) {
-        return userRepository.findById(userDetail.getId()).orElseThrow(
+    private UsersEntity getUsers(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
     }
 
     public Page<DotoriUsageResponse> findUsage(Pageable pageable, CustomUserDetail customUserDetail) {
-        UsersEntity findUserByUserDetail = getUsers(customUserDetail);
+        UsersEntity findUserByUserDetail = getUsers(customUserDetail.getId());
 
         DotoriTokenEntity dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
 
@@ -137,5 +136,32 @@ public class DotoriTokenService {
                 })
                 .toList();
             return new PageImpl<>(DotoriUsageResponseList,pageable,usageList.getTotalElements());
+    }
+
+    public DotoriTokenEntity updateDotoriToken(CustomUserDetail customUserDetail, TokenGiftRequest tokenGiftRequest) {
+        UsersEntity usersEntity = getUsers(customUserDetail.getId());
+
+        DotoriTokenEntity dotoriTokenEntity = dotoriTokenRepository.findByUsersEntity(usersEntity);
+        dotoriTokenEntity.toBuilder()
+                .count(dotoriTokenEntity.getCount() - tokenGiftRequest.getTradeAmount())
+                .build();
+
+
+        DotoriTokenEntity receiverTokenEntity = dotoriTokenRepository.findByUsersEntity(getUsers(tokenGiftRequest.getReceiver_id()));
+        receiverTokenEntity.toBuilder().count(receiverTokenEntity.getCount() + tokenGiftRequest.getTradeAmount())
+                .build();
+
+        dotoriTokenRepository.save(receiverTokenEntity);
+
+        return dotoriTokenRepository.save(dotoriTokenEntity);
+    }
+
+    public int getTokenCount(CustomUserDetail customUserDetail) {
+        UsersEntity usersEntity = getUsers(customUserDetail.getId());
+        if (!usersEntity.getDotoriTokenEntity().isDeleted()) {
+            return usersEntity.getDotoriTokenEntity().getCount();
+        }else{
+            throw new DotoriTokenException(ExceptionCode.NOT_FOUND_DOTORI_TOKEN);
+        }
     }
 }

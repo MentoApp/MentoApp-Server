@@ -41,6 +41,9 @@ public enum ExceptionCode {
     PUT_OBJECT_EXCEPTION(CONFLICT, "Put Object Exception.", 707),
     IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "IO Exception on Image Delete.", 708),
 
+    //Dotori-Token Errors(600)
+    NOT_FOUND_DOTORI_TOKEN(CONFLICT, "Dotori token not found." , 600 ),
+
     // Comment-related Errors (710)
     NOT_FOUND_COMMENT(CONFLICT, "Can't Find Comment.", 710),
 
@@ -54,8 +57,7 @@ public enum ExceptionCode {
 
     // Registration-related Errors (403)
     INVALID_ENUM_PARAMETER(CONFLICT, "Invalid Enum Parameter", 404),
-    ACCESS_DENIED(UNAUTHORIZED,"access_denied" ,401 )
-    ;
+    ACCESS_DENIED(UNAUTHORIZED,"access_denied" ,401 );
 
     private final HttpStatus httpStatus;
     private final String message;
