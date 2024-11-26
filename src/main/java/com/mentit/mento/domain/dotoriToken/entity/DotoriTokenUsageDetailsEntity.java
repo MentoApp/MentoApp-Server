@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
+import java.util.List;
+
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -41,25 +43,15 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
     @JoinColumn(name = "dotori_token_id")
     private DotoriTokenEntity dotoriTokenEntity;
 
-    @OneToOne(mappedBy = "dotoriTokenUsageDetail")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
 
     @Column(nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    public DotoriTokenUsageDetails to() {
-        return  DotoriTokenUsageDetails.builder()
-                .dotoriTokenUsageDetailId(dotoriTokenUsageDetailId)
-                .tradeTypeEnum(tradeTypeEnum)
-                .tradeAmount(tradeAmount)
-                .presenter(presenter.to())
-                .receiver(receiver.to())
-                .dotoriTokenEntity(dotoriTokenEntity.to())
-                .boardEntity(boardEntity.to())
-                .isDeleted(isDeleted)
-                .build();
-    }
+
 
     public DotoriTokenUsageDetails toCreateUsage() {
         return  DotoriTokenUsageDetails.builder()

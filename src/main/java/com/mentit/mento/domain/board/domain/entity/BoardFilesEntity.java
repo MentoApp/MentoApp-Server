@@ -25,11 +25,4 @@ public class BoardFilesEntity {
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
 
-
-    public BoardFiles to() {
-        return BoardFiles.builder()
-                .boardFileId(boardFileId)
-                .boardEntity(boardEntity.to())
-                .build();
-    }
 }

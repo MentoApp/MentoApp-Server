@@ -32,12 +32,4 @@ public class BoardLikeEntity extends BaseEntity {
     @Builder.Default
     private Boolean liked =  Boolean.FALSE;
 
-    public BoardLike to(){
-        return BoardLike.builder()
-                .boardLikeId(boardLikeId)
-                .liked(liked)
-                .board(boardEntity.to())
-                .user(user.to())
-                .build();
-    }
 }

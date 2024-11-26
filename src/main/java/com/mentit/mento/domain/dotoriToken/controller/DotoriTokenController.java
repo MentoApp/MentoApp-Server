@@ -24,7 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/dotoriToken")
+@RequestMapping("/api/v1/dotori-token")
 @RequiredArgsConstructor
 public class DotoriTokenController {
 
@@ -39,7 +39,7 @@ public class DotoriTokenController {
             @ApiResponse(responseCode = "400", description = "정보 조회 실패",
                     content = {@Content(schema = @Schema(implementation = Exception.class))}),
     })
-    @GetMapping("/dotoriUsage")
+    @GetMapping("/dotori-usage")
     public Response<Page<DotoriUsageResponse>> find(
             @Parameter(description = "페이지 시작 번호(0부터 시작)")
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -67,13 +67,13 @@ public class DotoriTokenController {
     }
 
     @Operation(summary = "도토리 개수 조회" , description = "도토리 잔여 개수 조회")
-    @PostMapping("/get-count")
+    @GetMapping("/get-count")
     public Response<Integer> presentToken(
             @AuthenticationPrincipal CustomUserDetail customUserDetail
     ){
         int tokenCount = dotoriTokenService.getTokenCount(customUserDetail);
 
-        return Response.success(HttpStatus.OK,"토큰 선물 완료",tokenCount);
+        return Response.success(HttpStatus.OK,"잔여 개수 조회 성공",tokenCount);
     }
 
 }

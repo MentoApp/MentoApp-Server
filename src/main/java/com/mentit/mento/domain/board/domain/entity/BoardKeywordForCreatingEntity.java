@@ -23,11 +23,5 @@ public class BoardKeywordForCreatingEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private BoardEntity boardEntity;
 
-    public BoardKeywordForCreating to() {
-        return BoardKeywordForCreating.builder()
-                .boardKeywordId(boardKeywordId)
-                .boardKeyword(boardKeyword)
-                .boardEntity(boardEntity.to())
-                .build();
-    }
+
 }

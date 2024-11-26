@@ -48,9 +48,8 @@ public class BoardEntity extends BaseEntity {
     @Column
     private Long viewCount;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dotori_token_usage_detail_id")
-    private DotoriTokenUsageDetailsEntity dotoriTokenUsageDetail;
+    @OneToMany(mappedBy = "boardEntity")
+    private List<DotoriTokenUsageDetailsEntity> dotoriTokenUsageDetail;
 
     @OneToMany(mappedBy = "boardEntity", fetch = FetchType.EAGER)
     @Builder.Default
@@ -68,19 +67,5 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private List<CommentEntity> commentEntities = new ArrayList<>();
 
-    public Board to() {
-        return Board.builder()
-                .boardId(boardId)
-                .boardTypeEnum(boardTypeEnum)
-                .title(title)
-                .writer(writer)
-                .content(content)
-                .viewCount(viewCount)
-                .isDeleted(isDeleted)
-                .dotoriTokenUsageDetail(dotoriTokenUsageDetail.to())
-                .boardKeywordForCreatings(boardKeywordForCreatings.stream().map(BoardKeywordForCreatingEntity::to).toList())
-                .boardFiles(boardFileEntities.stream().map(BoardFilesEntity::to).toList())
-                .comments(commentEntities.stream().map(CommentEntity::to).toList())
-                .build();
-    }
+
 }

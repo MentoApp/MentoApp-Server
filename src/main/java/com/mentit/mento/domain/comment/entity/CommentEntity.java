@@ -31,12 +31,4 @@ public class CommentEntity extends BaseEntity {
 
     private String comment;
 
-    public Comment to() {
-        return Comment.builder()
-                .commentId(commentId)
-                .board(boardEntity.to())
-                .writer(writer.to())
-                .comment(comment)
-                .build();
-    }
 }

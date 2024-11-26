@@ -7,6 +7,7 @@ import lombok.Getter;
 @Data
 @Builder
 public class TokenGiftRequest {
+    private Long board_id;
     private Long present_id;
     private Long receiver_id;
     private int tradeAmount;
