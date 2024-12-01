@@ -16,7 +16,9 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .maxAge(3600);
+                ;
             }
         };
     }
