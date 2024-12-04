@@ -19,8 +19,7 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
-        // Secure 속성 설정하지 않음
-        // SameSite 속성 설정을 위해 응답 헤더에 추가
+        cookie.setDomain("15.165.4.143");
         response.addHeader("Set-Cookie", String.format("%s=%s; Path=/; HttpOnly; Max-Age=%d; SameSite=None", name, value, maxAge));
         response.addCookie(cookie);
     }
@@ -30,7 +29,7 @@ public class CookieUtils {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        // Secure 속성 설정하지 않음
+        cookie.setDomain("15.165.4.143");
         response.addHeader("Set-Cookie", String.format("%s=; Path=/; HttpOnly; Max-Age=0; SameSite=None", keyName));
         response.addCookie(cookie);
     }
