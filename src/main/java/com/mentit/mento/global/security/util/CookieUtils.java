@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 import java.util.Arrays;
@@ -15,23 +17,34 @@ import java.util.Optional;
 public class CookieUtils {
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setMaxAge(maxAge);
-        cookie.setDomain("15.165.4.143");
-        response.addCookie(cookie);
+
+        // ResponseCookie를 생성
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .path("/")
+                .httpOnly(true)
+                .secure(false) // HTTPS 환경에서는 true로 설정
+                .maxAge(maxAge) // 만료 시간 설정
+                .domain("15.165.4.143") // 도메인 설정
+                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .build();
+
+        // 응답 헤더에 쿠키 추가
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     public void deleteCookie(HttpServletResponse response, String keyName) {
-        Cookie cookie = new Cookie(keyName, null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        cookie.setSecure(false);
-        cookie.setHttpOnly(true);
-        cookie.setDomain("15.165.4.143");
-        response.addCookie(cookie);
+        // ResponseCookie를 생성 (만료 시간 0으로 설정)
+        ResponseCookie cookie = ResponseCookie.from(keyName, "")
+                .path("/")
+                .httpOnly(true)
+                .secure(false) // HTTPS 환경에서는 true로 설정
+                .maxAge(0) // 쿠키 만료
+                .domain("15.165.4.143") // 도메인 설정
+                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .build();
+
+        // 응답 헤더에 쿠키 추가
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     public String getRefreshToken(HttpServletRequest request) {
