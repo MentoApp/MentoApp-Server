@@ -66,7 +66,7 @@ public class AuthController
     @DeleteMapping("/social/me")
     public Response<Void> deleteSocialMember(
             @AuthenticationPrincipal CustomUserDetail user,
-            HttpServletResponse response  // HttpServletResponse 추가
+            HttpServletResponse response
 
     ) {
         authService.deleteSocialMember(user.getId());

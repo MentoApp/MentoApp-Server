@@ -12,6 +12,7 @@ import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.servlet.http.Cookie;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class AuthService {
         return jwtService.reissueTokenByRefreshToken(refreshToken);
     }
 
+    @Transactional
     public void deleteSocialMember(Long uuid) {
         UsersEntity findUser = getUsers(uuid);
 

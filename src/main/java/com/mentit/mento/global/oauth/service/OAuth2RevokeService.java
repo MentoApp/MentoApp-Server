@@ -50,7 +50,8 @@ public class OAuth2RevokeService {
     }
 
     private void sendRevokeRequest(String url, HttpEntity<Object> httpEntity) {
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+        log.info("탈퇴시 url={}",url);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
         log.info("회원 탈퇴 상태코드: {}", responseEntity.getStatusCode());
         log.info("회원 탈퇴 결과: {}", responseEntity.getBody());
     }
