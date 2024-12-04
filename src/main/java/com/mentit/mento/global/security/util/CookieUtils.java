@@ -21,7 +21,6 @@ public class CookieUtils {
         cookie.setSecure(false);
         cookie.setMaxAge(maxAge);
         cookie.setDomain("15.165.4.143");
-        response.addHeader("Set-Cookie", String.format("%s=%s; Path=/; HttpOnly; Max-Age=%d; SameSite=None", name, value, maxAge));
         response.addCookie(cookie);
     }
 
@@ -32,7 +31,6 @@ public class CookieUtils {
         cookie.setSecure(false);
         cookie.setHttpOnly(true);
         cookie.setDomain("15.165.4.143");
-        response.addHeader("Set-Cookie", String.format("%s=; Path=/; HttpOnly; Max-Age=0; SameSite=None", keyName));
         response.addCookie(cookie);
     }
 
