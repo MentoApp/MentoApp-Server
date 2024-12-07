@@ -25,7 +25,7 @@ public class CookieUtils {
                 .secure(false) // HTTPS 환경에서는 true로 설정
                 .maxAge(maxAge) // 만료 시간 설정
                 .domain("15.165.4.143") // 도메인 설정
-                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .sameSite("Lax") // SameSite 설정 (CORS 지원을 위해 None)
                 .build();
 
         // 응답 헤더에 쿠키 추가
@@ -40,7 +40,7 @@ public class CookieUtils {
                 .secure(false) // HTTPS 환경에서는 true로 설정
                 .maxAge(0) // 쿠키 만료
                 .domain("15.165.4.143") // 도메인 설정
-                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .sameSite("Lax") // SameSite 설정 (CORS 지원을 위해 None)
                 .build();
 
         // 응답 헤더에 쿠키 추가
