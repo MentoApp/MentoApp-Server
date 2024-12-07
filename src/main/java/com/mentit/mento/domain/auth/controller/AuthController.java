@@ -45,9 +45,10 @@ public class AuthController
             HttpServletRequest request
     ) {
 
-        String refreshToken = cookieUtils.getRefreshToken(request);
+//        String refreshToken = cookieUtils.getRefreshToken(request);
+        String refreshToken = request.getHeader("refreshToken");
         JwtToken newToken = authService.reissueToken(refreshToken);
-        cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
+//        cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
         redisService.saveAccessToken(newToken.getAccessToken(), userDetail.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", newToken.getAccessToken());

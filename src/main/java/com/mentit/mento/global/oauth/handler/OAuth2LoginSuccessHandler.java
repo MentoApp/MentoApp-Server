@@ -58,11 +58,12 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         redisService.saveAccessToken(accessToken,userDetail.getId());
 
-        cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
+//        cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
 
         // 토큰을 URL 파라미터로 추가
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("accessToken", accessToken)
+                .queryParam("refreshToken", refreshToken)
                 .toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

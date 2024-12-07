@@ -52,15 +52,15 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         log.info("Access token resolved successfully");
 
-        // refreshToken 가져오기
-        String refreshToken = resolveRefreshTokenFromCookie(request);
-        if (refreshToken == null) {
-            log.warn("Refresh token not found in the request cookies");
-            handleJwtException(response, new JwtException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN));
-            return;
-        }
-
-        log.info("Refresh token resolved successfully");
+        //TODO 이후 도메인 일치하게 생성한 후 CORS 처리하기
+//        String refreshToken = resolveRefreshTokenFromCookie(request);
+//        if (refreshToken == null) {
+//            log.warn("Refresh token not found in the request cookies");
+//            handleJwtException(response, new JwtException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN));
+//            return;
+//        }
+//
+//        log.info("Refresh token resolved successfully");
 
         try {
             if (jwtService.validateToken(token)) {
