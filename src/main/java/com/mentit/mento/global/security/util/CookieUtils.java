@@ -24,7 +24,8 @@ public class CookieUtils {
                 .httpOnly(true)
                 .secure(false) // HTTPS 환경에서는 true로 설정
                 .maxAge(maxAge) // 만료 시간 설정
-                .sameSite("Lax") // SameSite 설정 (CORS 지원을 위해 None)
+                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .domain("backend.local")
                 .build();
 
         // 응답 헤더에 쿠키 추가
@@ -38,7 +39,8 @@ public class CookieUtils {
                 .httpOnly(true)
                 .secure(false) // HTTPS 환경에서는 true로 설정
                 .maxAge(0) // 쿠키 만료
-                .sameSite("Lax") // SameSite 설정 (CORS 지원을 위해 None)
+                .sameSite("None") // SameSite 설정 (CORS 지원을 위해 None)
+                .domain("backend.local")
                 .build();
 
         // 응답 헤더에 쿠키 추가
