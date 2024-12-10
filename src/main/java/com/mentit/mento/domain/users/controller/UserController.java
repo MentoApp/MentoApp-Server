@@ -47,11 +47,11 @@ public class UserController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @Valid @RequestPart(value = "signInUserRequest") SignInUser signInUser,
+            @Valid @RequestPart(value = "signInUserRequest") SignInUser signInUserRequest,
             @RequestPart(value = "profileImage") MultipartFile profileImage
     ) {
 
-        userCreateService.create(userDetail, signInUser, profileImage);
+        userCreateService.create(userDetail, signInUserRequest, profileImage);
 
         return Response.success(HttpStatus.OK, "회원가입 성공");
     }
