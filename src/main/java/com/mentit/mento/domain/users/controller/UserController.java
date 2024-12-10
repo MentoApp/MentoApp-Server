@@ -1,9 +1,10 @@
 package com.mentit.mento.domain.users.controller;
 
-import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
+import com.mentit.mento.domain.users.dto.request.TagListDTO;
 import com.mentit.mento.domain.users.service.UserCreateService;
 import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.global.redis.service.RedisService;
@@ -13,7 +14,6 @@ import com.mentit.mento.global.security.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
@@ -47,7 +47,7 @@ public class UserController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @Valid @RequestPart(value = "signInRequest") SignInUser signInUser,
+            @Valid @RequestPart(value = "signInUserRequest") SignInUser signInUser,
             @RequestPart(value = "profileImage") MultipartFile profileImage
     ) {
 
@@ -115,15 +115,23 @@ public class UserController {
         return Response.success(HttpStatus.OK, "조회 결과", flag + "");
     }
 
-    @Operation(summary = "내 추천 게시물 키워드 편집" , description = "기존의 게시물 키워드를 삭제하고 업데이트합니다.")
+    @Operation(summary = "내 추천 게시물 키워드 편집", description = "기존의 게시물 키워드를 삭제하고 업데이트합니다.")
     @PutMapping("/modify-boardKeyword")
     public Response<Void> modifyBoardKeyword(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @ModelAttribute List<String> modifyBoardKeyword
-            ){
-        userService.modifyBoardKeyword(userDetail,modifyBoardKeyword);
+    ) {
+        userService.modifyBoardKeyword(userDetail, modifyBoardKeyword);
 
         return Response.success(HttpStatus.OK, "키워드 갱신 완료");
+    }
+
+    @GetMapping("/tags")
+    public Response<TagListDTO> getTagLists(
+    ) {
+        TagListDTO tagListDTO = userService.getTagsLists();
+
+        return Response.success(HttpStatus.OK, "키워드 조회 완료", tagListDTO);
     }
 
 }

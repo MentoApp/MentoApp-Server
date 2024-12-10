@@ -5,12 +5,14 @@ import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.domain.entity.BoardKeywordEntity;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.domain.users.dto.request.TagListDTO;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserStatusTagService userStatusTagService;
     private final BoardKeywordService boardKeywordService;
+    private final JdbcTemplate jdbcTemplate;
 
     public boolean validateNickname(String nickname, CustomUserDetail userDetail) {
         UsersEntity findUserByUserDetail = getUsers(userDetail);
@@ -87,14 +90,22 @@ public class UserService {
 
         boardKeywordService.deleteExistingBoardKeywords(usersEntity);
         List<BoardKeywordEnum> boardKeywordEnums = modifyBoardKeyword.stream().map(
-                keyword -> {
-                    return BoardKeywordEnum.fromKoreanValue(keyword);
-                }
+                BoardKeywordEnum::fromKoreanValue
         ).toList();
         List<BoardKeywordEntity> userBoardKeyword = boardKeywordService.createUserBoardKeyword(boardKeywordEnums, usersEntity);
 
         usersEntity.setBoardKeywords(userBoardKeyword);
 
         userRepository.save(usersEntity);
+    }
+
+    public TagListDTO getTagsLists() {
+        List<String> userJobsKeywords = jdbcTemplate.queryForList("SELECT name FROM user_jobs_keywords_static_data", String.class);
+        List<String> myStatusTags = jdbcTemplate.queryForList("SELECT name FROM my_status_tag_static_data", String.class);
+        List<String> myCareerTags = jdbcTemplate.queryForList("SELECT name FROM my_career_tags_static_data", String.class);
+        List<String> corporateTags = jdbcTemplate.queryForList("SELECT name FROM coporate_tags_static_data", String.class);
+        List<String> boardKeywords = jdbcTemplate.queryForList("SELECT name FROM board_keyword_static_data", String.class);
+
+        return new TagListDTO(userJobsKeywords, myStatusTags, myCareerTags, corporateTags, boardKeywords);
     }
 }
