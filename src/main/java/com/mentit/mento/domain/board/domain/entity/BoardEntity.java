@@ -29,6 +29,7 @@ public class BoardEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_id")
     private Long boardId;
 
     @Column(nullable = false)
