@@ -122,10 +122,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .phoneNumber(phoneNumber)
                 .authType(authType)
                 .gender(gender)
-                .birthDay(birthDay)
-                .birthYear(birthYear)
+                .birthDay(birthDay != null ? birthDay : "")  // 기본값 설정
+                .birthYear(birthYear != null ? birthYear : "") // 기본값 설정
                 .password(encodedPassword)
                 .isNewUser(true)
+                .isDeleted(false)
                 .build();
 
         return userRepository.save(newUser);

@@ -55,10 +55,8 @@ public class UsersEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserGenderEnum gender;
 
-    @Column(nullable = false)
     private String birthYear;
 
-    @Column(nullable = false)
     private String birthDay;
 
     private String phoneNumber;
