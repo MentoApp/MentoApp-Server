@@ -24,7 +24,7 @@ public class SignInUser {
     private MyCareerTagsEnum personalHistory;
 
     @Schema(description = "회사의 형태", example = "대기업")
-    private CorporateFormEnum corporateFormEnum;
+    private CorporateFormEnum corporateForm;
 
     @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"대학생\", \"구직중\"]")
     private List<MyStatusTagsEnum> myStatus;
@@ -34,5 +34,5 @@ public class SignInUser {
     private String simpleIntroduce;
 
     @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"멘토 찾아요\", \"인사이트\"]")
-    private List<BoardKeywordEnum> boardKeywordEnums;
+    private List<BoardKeywordEnum> boardKeywords;
 }

@@ -6,22 +6,18 @@ import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
-import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.domain.users.service.port.UserStatusTagRepository;
-import com.mentit.mento.global.authToken.entity.RefreshToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
-import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -65,7 +60,7 @@ public class UserCreateService {
         UserStatusTagEntity userStatusTagEntity = userStatusTagService.create(signInRequest, usersEntity);
 
         //BoardKeyword 생성 및 저장
-        boardKeywordService.createUserBoardKeyword(signInRequest.getBoardKeywordEnums(), usersEntity);
+        boardKeywordService.createUserBoardKeyword(signInRequest.getBoardKeywords(), usersEntity);
 
         // DotoriToken 및 관련 상세 정보 생성 (토큰 서비스로 위임)
         dotoriTokenService.createDotoriToken(usersEntity);

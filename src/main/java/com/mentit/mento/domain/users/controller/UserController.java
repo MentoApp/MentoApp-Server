@@ -33,8 +33,6 @@ import java.util.List;
 public class UserController {
 
     private final UserCreateService userCreateService;
-    private final CookieUtils cookieUtils;
-    private final RedisService redisService;
     private final UserService userService;
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 true로 반환합니다.")

@@ -1,7 +1,6 @@
 package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.users.constant.CorporateFormEnum;
-import com.mentit.mento.domain.users.domain.UserStatusTag;
 import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
 import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
 import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
@@ -56,7 +55,7 @@ public class UserStatusTagService {
 
         // UserStatusTag 생성
         UserStatusTagEntity userStatusTag = UserStatusTagEntity.builder()
-                .corporateFormEnum(request.getCorporateFormEnum())
+                .corporateFormEnum(request.getCorporateForm())
                 .usersEntity(usersEntity)
                 .build();
 
