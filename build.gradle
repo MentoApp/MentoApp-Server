@@ -109,9 +109,9 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api" // java.lang.NoClassDefFoundError (javax.annotation.Entity) 대응 코드
 
     //batch
-// https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
-    implementation group: 'org.springframework.batch', name: 'spring-batch-core', version: '4.3.3'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
+//// https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
+//    implementation group: 'org.springframework.batch', name: 'spring-batch-core', version: '4.3.3'
+//    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
 
 
