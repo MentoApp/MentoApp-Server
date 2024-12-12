@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.board.controller;
 
-import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
 import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
+import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
 import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindMyBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;

@@ -1,9 +1,11 @@
 package com.mentit.mento.domain.board.domain.entity;
 
 import com.mentit.mento.domain.board.constant.BoardKeywordForCreatingEnum;
-import com.mentit.mento.domain.board.domain.BoardKeywordForCreating;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter

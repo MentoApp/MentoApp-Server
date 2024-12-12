@@ -10,7 +10,6 @@ import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
-import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

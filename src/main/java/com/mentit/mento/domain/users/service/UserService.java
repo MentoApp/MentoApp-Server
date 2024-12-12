@@ -100,11 +100,11 @@ public class UserService {
     }
 
     public TagListDTO getTagsLists() {
-        List<String> userJobsKeywords = jdbcTemplate.queryForList("SELECT name FROM user_jobs_keywords_static_data", String.class);
-        List<String> myStatusTags = jdbcTemplate.queryForList("SELECT name FROM my_status_tag_static_data", String.class);
-        List<String> myCareerTags = jdbcTemplate.queryForList("SELECT name FROM my_career_tags_static_data", String.class);
-        List<String> corporateTags = jdbcTemplate.queryForList("SELECT name FROM coporate_tags_static_data", String.class);
-        List<String> boardKeywords = jdbcTemplate.queryForList("SELECT name FROM board_keyword_static_data", String.class);
+        List<String> userJobsKeywords = jdbcTemplate.queryForList("SELECT name FROM mentoapp.user_jobs_keywords_static_data", String.class);
+        List<String> myStatusTags = jdbcTemplate.queryForList("SELECT name FROM mentoapp.my_status_tag_static_data", String.class);
+        List<String> myCareerTags = jdbcTemplate.queryForList("SELECT name FROM mentoapp.my_career_tags_static_data", String.class);
+        List<String> corporateTags = jdbcTemplate.queryForList("SELECT name FROM mentoapp.coporate_tags_static_data", String.class);
+        List<String> boardKeywords = jdbcTemplate.queryForList("SELECT name FROM mentoapp.board_keyword_static_data", String.class);
 
         return new TagListDTO(userJobsKeywords, myStatusTags, myCareerTags, corporateTags, boardKeywords);
     }

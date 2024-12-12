@@ -2,13 +2,10 @@ package com.mentit.mento.global.oauth.service;
 
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.constant.UserGenderEnum;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
-import com.mentit.mento.global.exception.ExceptionCode;
-import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.PasswordUtil;

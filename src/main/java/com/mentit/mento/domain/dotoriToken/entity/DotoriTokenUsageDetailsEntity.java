@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
-import java.util.List;
-
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor

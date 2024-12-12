@@ -1,7 +1,5 @@
 package com.mentit.mento.global.security.filter;
 
-import com.mentit.mento.global.authToken.entity.RefreshToken;
-import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.MentoAppException;
 import com.mentit.mento.global.exception.customException.JwtException;

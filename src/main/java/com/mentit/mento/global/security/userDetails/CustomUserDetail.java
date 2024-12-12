@@ -1,6 +1,5 @@
 package com.mentit.mento.global.security.userDetails;
 
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.global.security.util.PasswordUtil;
 import lombok.Getter;
@@ -9,7 +8,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter

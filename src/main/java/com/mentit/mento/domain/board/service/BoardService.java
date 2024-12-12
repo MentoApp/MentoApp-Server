@@ -1,14 +1,14 @@
 package com.mentit.mento.domain.board.service;
 
+import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
+import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
+import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindMyBoardResponse;
+import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;
+import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardKeywordForCreatingEntity;
-import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
-import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
-import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
-import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;
-import com.mentit.mento.domain.board.domain.dto.response.UserInfoInBoardResponse;
 import com.mentit.mento.domain.board.domain.entity.SavedBoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardFileRepository;
 import com.mentit.mento.domain.board.service.port.BoardKeywordForCreatingRepository;

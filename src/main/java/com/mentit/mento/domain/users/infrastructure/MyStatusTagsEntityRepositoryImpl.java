@@ -1,9 +1,6 @@
 package com.mentit.mento.domain.users.infrastructure;
 
-import com.mentit.mento.domain.users.domain.MyStatusTags;
-import com.mentit.mento.domain.users.domain.UserStatusTag;
 import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
-import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.infrastructure.jpaRepository.MyStatusTagsEntityJPARepository;
 import com.mentit.mento.domain.users.service.port.MyStatusTagsEntityRepository;
 import lombok.RequiredArgsConstructor;

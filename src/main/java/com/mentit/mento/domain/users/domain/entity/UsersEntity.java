@@ -4,7 +4,10 @@ import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
-import com.mentit.mento.domain.users.constant.*;
+import com.mentit.mento.domain.users.constant.AccountStatus;
+import com.mentit.mento.domain.users.constant.AuthType;
+import com.mentit.mento.domain.users.constant.UserGenderEnum;
+import com.mentit.mento.domain.users.constant.UserJobEnum;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.global.BaseEntity;
 import jakarta.persistence.*;
@@ -14,7 +17,10 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter

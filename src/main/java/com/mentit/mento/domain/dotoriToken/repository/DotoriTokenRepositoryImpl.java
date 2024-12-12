@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.dotoriToken.repository;
 
-import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenRepository;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;

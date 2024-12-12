@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.board.domain;
 
-import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.global.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;

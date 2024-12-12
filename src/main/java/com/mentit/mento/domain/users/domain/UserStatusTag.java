@@ -1,10 +1,7 @@
 package com.mentit.mento.domain.users.domain;
 
 import com.mentit.mento.domain.users.constant.CorporateFormEnum;
-import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
 import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
-import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
-import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import lombok.Builder;
 import lombok.Getter;
 

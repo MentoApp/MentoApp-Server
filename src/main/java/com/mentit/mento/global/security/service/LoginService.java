@@ -1,6 +1,5 @@
 package com.mentit.mento.global.security.service;
 
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.exception.ExceptionCode;

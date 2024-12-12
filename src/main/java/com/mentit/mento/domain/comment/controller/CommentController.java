@@ -1,8 +1,8 @@
 package com.mentit.mento.domain.comment.controller;
 
+import com.mentit.mento.domain.comment.dto.CommentsResponse;
 import com.mentit.mento.domain.comment.dto.request.CommentCreate;
 import com.mentit.mento.domain.comment.dto.request.CommentUpdate;
-import com.mentit.mento.domain.comment.dto.CommentsResponse;
 import com.mentit.mento.domain.comment.service.CommentService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;

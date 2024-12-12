@@ -2,7 +2,6 @@ package com.mentit.mento.domain.users.domain.entity;
 
 import com.mentit.mento.domain.users.constant.MyCareerTagsEnum;
 import com.mentit.mento.domain.users.domain.MyCareerTags;
-import com.mentit.mento.domain.users.domain.UserStatusTag;
 import jakarta.persistence.*;
 import lombok.*;
 

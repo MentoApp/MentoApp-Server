@@ -1,6 +1,5 @@
 package com.mentit.mento.domain.board.domain.entity;
 
-import com.mentit.mento.domain.board.domain.BoardFiles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

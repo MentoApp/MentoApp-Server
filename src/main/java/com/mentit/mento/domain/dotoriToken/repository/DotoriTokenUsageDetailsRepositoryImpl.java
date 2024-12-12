@@ -1,8 +1,6 @@
 package com.mentit.mento.domain.dotoriToken.repository;
 
-import com.mentit.mento.domain.dotoriToken.entity.DotoriToken;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
-import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetails;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.dotoriToken.service.port.DotoriTokenUsageDetailsRepository;
 import lombok.RequiredArgsConstructor;

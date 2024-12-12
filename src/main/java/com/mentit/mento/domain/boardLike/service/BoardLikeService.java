@@ -1,9 +1,9 @@
 package com.mentit.mento.domain.boardLike.service;
 
-import com.mentit.mento.domain.boardLike.domain.BoardLikeEntity;
-import com.mentit.mento.domain.boardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.service.port.BoardRepository;
+import com.mentit.mento.domain.boardLike.domain.BoardLikeEntity;
+import com.mentit.mento.domain.boardLike.service.port.BoardLikeRepository;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -13,8 +13,6 @@ import com.mentit.mento.global.redis.service.RedisLikeService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

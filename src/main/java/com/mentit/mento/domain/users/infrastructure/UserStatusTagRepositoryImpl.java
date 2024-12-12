@@ -1,7 +1,5 @@
 package com.mentit.mento.domain.users.infrastructure;
 
-import com.mentit.mento.domain.users.domain.UserStatusTag;
-import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.infrastructure.jpaRepository.UserStatusTagJPARepository;

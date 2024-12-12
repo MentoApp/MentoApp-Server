@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.users.domain.entity;
 
-import com.mentit.mento.domain.users.constant.*;
+import com.mentit.mento.domain.users.constant.CorporateFormEnum;
 import com.mentit.mento.domain.users.domain.UserStatusTag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

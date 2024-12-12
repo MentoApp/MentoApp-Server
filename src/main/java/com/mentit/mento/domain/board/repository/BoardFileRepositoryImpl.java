@@ -1,7 +1,5 @@
 package com.mentit.mento.domain.board.repository;
 
-import com.mentit.mento.domain.board.domain.Board;
-import com.mentit.mento.domain.board.domain.BoardFiles;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 import com.mentit.mento.domain.board.repository.jpaRepository.BoardFileJPARepository;
