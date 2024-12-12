@@ -121,7 +121,7 @@ public class UserStatusTagService {
                 .build();
 
 
-        CorporateFormEnum corporateFormEnum = request.getCorporateFormEnum() == null ? null : request.getCorporateFormEnum();
+        CorporateFormEnum corporateFormEnum = request.getCorporateForm() == null ? null : request.getCorporateForm();
 
         userStatusTagEntity = UserStatusTagEntity.builder()
                 .corporateFormEnum(corporateFormEnum)

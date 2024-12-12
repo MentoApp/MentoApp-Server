@@ -25,13 +25,13 @@ public class ModifyUserRequest {
     private MyCareerTagsEnum personalHistory;
 
     @Schema(description = "회사의 형태", example = "스타트업")
-    private CorporateFormEnum corporateFormEnum;
+    private CorporateFormEnum corporateForm;
 
     @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로이직러\", \"대학생\"]")
     private List<MyStatusTagsEnum> myStatus;
 
     @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"트렌드\", \"회사 생활\"]")
-    private List<BoardKeywordEnum> boardKeywordEnums;
+    private List<BoardKeywordEnum> boardKeywords;
 
     @Schema(description = "간단한 자기 소개", example = "안녕하세요, 백엔드 개발자 김영한입니다.")
     private String simpleIntroduce;

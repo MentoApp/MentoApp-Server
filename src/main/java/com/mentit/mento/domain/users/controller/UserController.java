@@ -119,7 +119,7 @@ public class UserController {
     @PutMapping("/modify-boardKeyword")
     public Response<Void> modifyBoardKeyword(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @ModelAttribute List<String> modifyBoardKeyword
+            @RequestBody List<String> modifyBoardKeyword
     ) {
         userService.modifyBoardKeyword(userDetail, modifyBoardKeyword);
 

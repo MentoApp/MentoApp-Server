@@ -98,7 +98,7 @@ public class UserCreateService {
         boardKeywordService.deleteExistingBoardKeywords(usersEntity);
 
         //새로운 게시판 키워드 생성
-        boardKeywordService.createUserBoardKeyword(modifyUserRequest.getBoardKeywordEnums(), usersEntity);
+        boardKeywordService.createUserBoardKeyword(modifyUserRequest.getBoardKeywords(), usersEntity);
 
         // 유저 정보 업데이트
         updateUser(usersEntity, modifyUserRequest, uploadedFile, userStatusTagEntity);
