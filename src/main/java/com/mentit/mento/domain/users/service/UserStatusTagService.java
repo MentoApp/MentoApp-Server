@@ -105,6 +105,7 @@ public class UserStatusTagService {
     @Transactional
     public UserStatusTagEntity update(@Valid ModifyUserRequest request, UsersEntity usersEntity) {
         log.info("userEntity.userstatusTag 삭제 유무 : {}", usersEntity.getUserStatusTagEntity()==null);
+        UserStatusTagEntity userStatusTagEntity = userStatusTagRepository.findByUsers(usersEntity).orElse(null);
 
         //내 상태 태그 생성
         List<MyStatusTagsEntity> myStatusTagsEntities = request.getMyStatus().stream()
