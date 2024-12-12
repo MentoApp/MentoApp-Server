@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "com.mentit.mento", // User 관련 JPA만 처리
+        basePackages = "com.mentit.mento",
         entityManagerFactoryRef = "entityManager",
         transactionManagerRef = "dataTransactionManager"
 )
@@ -31,7 +31,7 @@ public class DataDBConfig {
     public LocalContainerEntityManagerFactoryBean entityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataDBSource());
-        em.setPackagesToScan("com.mentit.mento"); // User 엔티티만 처리
+        em.setPackagesToScan("com.mentit.mento");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         HashMap<String,Object> properties = new HashMap<>();
