@@ -15,7 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.*;
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -32,54 +31,59 @@ public class UsersEntity extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "nickname")
     private String nickname;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "auth_type")
     private AuthType authType;
 
     @Builder.Default
-    private boolean isNewUser= Boolean.TRUE;
+    @Column(name = "is_new_user", nullable = false)
+    private boolean isNewUser = Boolean.TRUE;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "job")
     private UserJobEnum job;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
     private UserGenderEnum gender;
 
-    @Column(nullable = false)
+    @Column(name = "birth_year")
     private String birthYear;
 
-    @Column(nullable = false)
+    @Column(name = "birth_day")
     private String birthDay;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
+    @Column(name = "simple_introduce")
     private String simpleIntroduce;
 
+    @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "account_status", nullable = false)
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
-
-
-
-    public Users to(){
+    public Users to() {
         return Users.builder()
                 .userId(this.userId)
                 .name(this.name)
@@ -98,7 +102,6 @@ public class UsersEntity extends BaseEntity {
                 .profileImage(this.profileImage)
                 .accountStatus(this.accountStatus)
                 .build();
-
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -127,5 +130,4 @@ public class UsersEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "writer")
     private List<BoardEntity> boardEntities;
-
 }

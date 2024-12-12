@@ -34,7 +34,7 @@ public class DeleteOldUserJob {
     private final UserJPARepository userRepository;
 
     @Bean
-    public Job DeleteOldUserFirstJob() {
+    public Job deleteOldUserFirstJob() {
         return new JobBuilder("DeleteOldUserJob", jobRepository)
                 .start(deleteOldUserStep()) //step을 만들어 넣어야 하는 자리
                 .build();
@@ -58,7 +58,7 @@ public class DeleteOldUserJob {
                 .pageSize(10)
                 .methodName("findAll")
                 .repository(userRepository)
-                .sorts(Map.of("id", Sort.Direction.ASC))
+                .sorts(Map.of("userId", Sort.Direction.ASC))
                 .build();
 
     }
@@ -80,6 +80,7 @@ public class DeleteOldUserJob {
                     if (!user.isDeleted() && user.isNewUser()&&createdDate.isBefore(oneMonthAgo)) {
                         user.setDeleted(true);
                         user.setAccountStatus(AccountStatus.DELETED);
+
                     }
                     return user;
                 }
@@ -95,6 +96,7 @@ public class DeleteOldUserJob {
             for (Object item : items) {
                 if (item instanceof UsersEntity) {
                     userRepository.save((UsersEntity) item);
+                    userRepository.flush();
                 } else {
                     throw new IllegalArgumentException("Unsupported item type: " + item.getClass().getName());
                 }

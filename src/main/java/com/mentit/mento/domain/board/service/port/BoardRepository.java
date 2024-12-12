@@ -22,4 +22,6 @@ public interface BoardRepository {
     Page<BoardEntity> findByUsers(UsersEntity usersEntity, Pageable pageable);
 
     List<BoardEntity> findAllByUsers(Long usersId);
+
+    void flush();
 }

@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.users.controller;
 
-import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
-import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.dto.request.TagListDTO;
@@ -47,11 +47,11 @@ public class UserController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @Valid @RequestPart(value = "signInUserRequest") SignInUser signInUser,
+            @Valid @RequestPart(value = "signInUserRequest") SignInUserRequest signInUserRequest,
             @RequestPart(value = "profileImage") MultipartFile profileImage
     ) {
 
-        userCreateService.create(userDetail, signInUser, profileImage);
+        userCreateService.create(userDetail, signInUserRequest, profileImage);
 
         return Response.success(HttpStatus.OK, "회원가입 성공");
     }
@@ -66,7 +66,7 @@ public class UserController {
     @PatchMapping(value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUserRequest,
+            @Valid @RequestPart("modifyUserRequest") ModifyUserRequest modifyUserRequest,
             @RequestPart(value = "profileImage") @Nullable MultipartFile profileImage
     ) {
         userCreateService.modifyUser(customUserDetail, modifyUserRequest, profileImage);

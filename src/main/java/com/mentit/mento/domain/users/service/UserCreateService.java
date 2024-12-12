@@ -3,25 +3,21 @@ package com.mentit.mento.domain.users.service;
 import com.mentit.mento.domain.dotoriToken.service.DotoriTokenService;
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.domain.Users;
-import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
-import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
-import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.domain.users.service.port.UserStatusTagRepository;
-import com.mentit.mento.global.authToken.entity.RefreshToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
-import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,7 +43,7 @@ public class UserCreateService {
     private final BoardKeywordService boardKeywordService;
 
     @Transactional
-    public UsersEntity create(CustomUserDetail userDetail, SignInUser signInRequest, MultipartFile profileImage) {
+    public UsersEntity create(CustomUserDetail userDetail, SignInUserRequest signInRequest, MultipartFile profileImage) {
         UsersEntity usersEntity = getUsers(userDetail);
 
         if (usersEntity.getUserStatusTagEntity() != null) {
@@ -77,7 +72,7 @@ public class UserCreateService {
     }
 
     public UsersEntity modifyUser(CustomUserDetail customUserDetail,
-                           @Valid ModifyUser modifyUserRequest,
+                           @Valid ModifyUserRequest modifyUserRequest,
                            MultipartFile profileImage) {
         UsersEntity usersEntity = getUsers(customUserDetail);
 
@@ -128,19 +123,19 @@ public class UserCreateService {
         }
     }
 
-    private void updateUser(UsersEntity user, ModifyUser modifyUser, String uploadedFile, UserStatusTagEntity savedTag) {
+    private void updateUser(UsersEntity user, ModifyUserRequest modifyUserRequest, String uploadedFile, UserStatusTagEntity savedTag) {
         UsersEntity updatedUser = user.toBuilder()
-                .job(modifyUser.getJob())
-                .nickname(modifyUser.getNickname())
+                .job(modifyUserRequest.getJob())
+                .nickname(modifyUserRequest.getNickname())
                 .profileImage(uploadedFile)
-                .simpleIntroduce(modifyUser.getSimpleIntroduce())
+                .simpleIntroduce(modifyUserRequest.getSimpleIntroduce())
                 .userStatusTagEntity(savedTag)
                 .build();
 
         userRepository.save(updatedUser);
     }
 
-    private void updateUserInformation(UsersEntity user, SignInUser request, String uploadedFile, UserStatusTagEntity userStatusTag) {
+    private void updateUserInformation(UsersEntity user, SignInUserRequest request, String uploadedFile, UserStatusTagEntity userStatusTag) {
         user.setJob(request.getJob());
         user.setNickname(request.getNickname());
         user.setUserStatusTagEntity(userStatusTag);
@@ -156,16 +151,6 @@ public class UserCreateService {
         return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
-    }
-
-    private UsersEntity getUserById(Long id) {
-        refreshTokenRepository.getRefreshTokenByMemberId(id).orElseThrow(
-                () -> new MemberException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN)
-        );
-        return userRepository.findById(id).
-                orElseThrow(
-                        () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
-                );
     }
 
 

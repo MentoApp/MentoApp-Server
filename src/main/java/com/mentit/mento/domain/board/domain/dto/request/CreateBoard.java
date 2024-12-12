@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BoardCreate {
+public class CreateBoard {
     @Schema(description = "제목", example = "게시글 예시1")
     private String title;
     @Schema(description = "작성자(유저 닉네임)")

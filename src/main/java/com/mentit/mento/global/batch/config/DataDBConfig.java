@@ -1,51 +1,51 @@
-//package com.mentit.mento.global.batch.config;
-//
-//import org.springframework.boot.context.properties.ConfigurationProperties;
-//import org.springframework.boot.jdbc.DataSourceBuilder;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-//import org.springframework.orm.jpa.JpaTransactionManager;
-//import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-//import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-//import org.springframework.transaction.PlatformTransactionManager;
-//
-//import javax.sql.DataSource;
-//import java.util.HashMap;
-//
-//@Configuration
-//@EnableJpaRepositories(
-//        basePackages = "com.mentit.mento",
-//        entityManagerFactoryRef = "entityManager",
-//        transactionManagerRef = "dataTransactionManager"
-//)
-//public class DataDBConfig {
-//
-//    @Bean
-//    @ConfigurationProperties(prefix = "spring.datasource-data")
-//    public DataSource dataDBSource() {
-//        return DataSourceBuilder.create().build();
-//    }
-//
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean entityManager() {
-//        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-//        em.setDataSource(dataDBSource());
-//        em.setPackagesToScan("com.mentit.mento");
-//        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-//
-//        HashMap<String,Object> properties = new HashMap<>();
-//        properties.put("hibernate.hbm2ddl.auto", "update");
-//        properties.put("hibernate.show_sql", "true");
-//        em.setJpaPropertyMap(properties);
-//
-//        return em;
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager dataTransactionManager() {
-//        JpaTransactionManager transactionManager = new JpaTransactionManager();
-//        transactionManager.setEntityManagerFactory(entityManager().getObject());
-//        return transactionManager;
-//    }
-//}
+package com.mentit.mento.global.batch.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
+import java.util.HashMap;
+
+@Configuration
+@EnableJpaRepositories(
+        basePackages = "com.mentit.mento", // User 관련 JPA만 처리
+        entityManagerFactoryRef = "entityManager",
+        transactionManagerRef = "dataTransactionManager"
+)
+public class DataDBConfig {
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource-data")
+    public DataSource dataDBSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManager() {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataDBSource());
+        em.setPackagesToScan("com.mentit.mento"); // User 엔티티만 처리
+        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+
+        HashMap<String,Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.show_sql", "true");
+        em.setJpaPropertyMap(properties);
+
+        return em;
+    }
+
+    @Bean
+    public PlatformTransactionManager dataTransactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManager().getObject());
+        return transactionManager;
+    }
+}
