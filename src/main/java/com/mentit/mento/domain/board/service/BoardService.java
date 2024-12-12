@@ -83,7 +83,7 @@ public class BoardService {
         DotoriTokenEntity updatedDotoriToken = dotoriToken
                 .toBuilder()
                 .count(createBoard
-                        .getBoardTypeEnum()
+                        .getBoardType()
                         .getKoreanValue()
                         .equals("IT 일상") ? dotoriToken.getCount() : dotoriToken.getCount() + 5)
                 .build();
@@ -426,7 +426,7 @@ public class BoardService {
                 .title(createBoard.getTitle())
                 .content(createBoard.getContent())
                 .writer(usersEntity)
-                .boardTypeEnum(createBoard.getBoardTypeEnum())
+                .boardTypeEnum(createBoard.getBoardType())
                 .viewCount(1L)
                 .build();
 
@@ -437,7 +437,7 @@ public class BoardService {
         BoardEntity createdBoard = curBoard.toBuilder()
                 .title(boardUpdate.getTitle())
                 .content(boardUpdate.getContent())
-                .boardTypeEnum(boardUpdate.getBoardTypeEnum())
+                .boardTypeEnum(boardUpdate.getBoardType())
                 .viewCount(1L)
                 .build();
 

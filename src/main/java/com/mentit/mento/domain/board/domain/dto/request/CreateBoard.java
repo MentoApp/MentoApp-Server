@@ -18,5 +18,5 @@ public class CreateBoard {
     @Schema(description = "게시글 키워드", example = "[\"프론트엔드 개발\", \"취업/이직\"]")
     private List<BoardKeywordForCreatingEnum> keywords;
     @Schema(description = "게시글 유형" , example = "IT 일상")
-    private BoardTypeEnum boardTypeEnum;
+    private BoardTypeEnum boardType;
 }

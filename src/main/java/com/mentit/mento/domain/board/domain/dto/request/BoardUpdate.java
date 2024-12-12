@@ -19,5 +19,5 @@ public class BoardUpdate {
     @Schema(description = "게시글 키워드", example = "[\"백엔드 개발\", \"트렌드\"]")
     private List<BoardKeywordForCreatingEnum> keywords;
     @Schema(description = "게시글 유형" , example = "아티클")
-    private BoardTypeEnum boardTypeEnum;
+    private BoardTypeEnum boardType;
 }
