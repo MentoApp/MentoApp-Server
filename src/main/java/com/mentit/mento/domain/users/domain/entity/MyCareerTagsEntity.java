@@ -16,15 +16,15 @@ public class MyCareerTagsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "my_career_tags_id")
     private Long myCareerTagsId;
 
     @Enumerated(EnumType.STRING)
-    private MyCareerTagsEnum myCareerTagsEnum; // 상태 태그
+    @Column(name = "my_career_tags_enum")
+    private MyCareerTagsEnum myCareerTagsEnum;
 
-    @OneToOne(mappedBy = "myCareerTags") // 주인을 명확히 설정
-    private UserStatusTagEntity userStatusTagEntity; // UserStatusTag 참조
-
-
+    @OneToOne(mappedBy = "myCareerTags")
+    private UserStatusTagEntity userStatusTagEntity;
 
     public MyCareerTags to() {
         return MyCareerTags.builder()

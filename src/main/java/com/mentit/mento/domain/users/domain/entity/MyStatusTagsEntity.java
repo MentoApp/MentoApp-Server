@@ -16,14 +16,16 @@ public class MyStatusTagsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "my_status_tag_id")
     private Long myStatusTagId;
 
     @Enumerated(EnumType.STRING)
-    private MyStatusTagsEnum myStatusTagEnum; // 상태 태그
+    @Column(name = "my_status_tag_enum")
+    private MyStatusTagsEnum myStatusTagEnum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_status_tag_id")
-    private UserStatusTagEntity userStatusTagEntity; // 연관 관계를 설정하는 필드
+    private UserStatusTagEntity userStatusTagEntity;
 
     public MyStatusTags to() {
         return MyStatusTags.builder()
@@ -32,6 +34,4 @@ public class MyStatusTagsEntity {
                 .myStatusTag(myStatusTagEnum)
                 .build();
     }
-
-
 }

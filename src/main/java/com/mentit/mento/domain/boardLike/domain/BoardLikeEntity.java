@@ -19,6 +19,7 @@ public class BoardLikeEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_like_id")
     private Long boardLikeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +30,8 @@ public class BoardLikeEntity extends BaseEntity {
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
 
+    @Column(name = "liked")
     @Builder.Default
-    private Boolean liked =  Boolean.FALSE;
+    private Boolean liked = Boolean.FALSE;
 
 }

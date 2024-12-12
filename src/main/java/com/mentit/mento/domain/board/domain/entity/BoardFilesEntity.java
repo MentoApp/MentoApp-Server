@@ -16,8 +16,10 @@ public class BoardFilesEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_file_id")
     private Long boardFileId;
 
+    @Column(name = "board_file_name")
     private String boardFileName;
 
     @ManyToOne(fetch = FetchType.LAZY)

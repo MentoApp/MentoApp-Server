@@ -22,16 +22,19 @@ public class DotoriTokenEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "dotori_token_id")
     private Long dotoriTokenId;
 
-    @Min(value = 0L,message = "token은 음수가 될 수 없습니다.")
+    @Column(name = "count")
+    @Min(value = 0L, message = "token은 음수가 될 수 없습니다.")
     private int count;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
+    @JoinColumn(name = "user_id")
     private UsersEntity usersEntity;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 

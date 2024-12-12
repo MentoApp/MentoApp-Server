@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -20,23 +21,23 @@ public class UserStatusTagEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_status_tag_id")
     private Long userStatusTagId;
 
     @Enumerated(EnumType.STRING)
-    private CorporateFormEnum corporateFormEnum; // 회사형태 (단일 선택)
+    @Column(name = "corporate_form_enum")
+    private CorporateFormEnum corporateFormEnum;
 
     @OneToMany(mappedBy = "userStatusTagEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MyStatusTagsEntity> myStatus = new ArrayList<>();
 
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private MyCareerTagsEntity myCareerTags; // 연차
+    private MyCareerTagsEntity myCareerTags;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_user_id")
     private UsersEntity usersEntity;
-
 
     public UserStatusTag to() {
         return UserStatusTag.builder()

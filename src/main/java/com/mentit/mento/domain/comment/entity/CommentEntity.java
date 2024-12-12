@@ -19,6 +19,7 @@ public class CommentEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +30,7 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name = "user_id")
     private UsersEntity writer;
 
+    @Column(name = "comment")
     private String comment;
 
 }

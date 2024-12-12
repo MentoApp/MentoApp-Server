@@ -12,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Table(name = "savedBoard")
 public class SavedBoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "saved_board_id")
     private Long savedBoardId;
 
     @ManyToOne(fetch = FetchType.LAZY)

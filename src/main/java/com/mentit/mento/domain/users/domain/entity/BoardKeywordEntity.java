@@ -18,15 +18,16 @@ public class BoardKeywordEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_keyword_id")
     private Long boardKeywordId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "board_keyword_enum")
     private BoardKeywordEnum boardKeywordEnum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UsersEntity usersEntity;
-
 
     public BoardKeyword toModel() {
         return BoardKeyword.builder()

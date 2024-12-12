@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -28,7 +29,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = " update Users set is_deleted = true where user_id = ?")
+@SQLDelete(sql = " update users set is_deleted = true where user_id = ?")
 @SQLRestriction("is_deleted=false")
 public class UsersEntity extends BaseEntity {
 

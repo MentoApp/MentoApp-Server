@@ -31,21 +31,21 @@ public class BoardEntity extends BaseEntity {
     @Column(name = "board_id")
     private Long boardId;
 
-    @Column(nullable = false)
+    @Column(name = "board_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private BoardTypeEnum boardTypeEnum;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private UsersEntity writer;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column
+    @Column(name = "view_count")
     private Long viewCount;
 
     @OneToMany(mappedBy = "boardEntity")
@@ -55,17 +55,16 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private List<BoardKeywordForCreatingEntity> boardKeywordForCreatings = new ArrayList<>();
 
-    @Column(name="is_deleted",nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "boardEntity",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "boardEntity", fetch = FetchType.EAGER)
     @Builder.Default
     private List<BoardFilesEntity> boardFileEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "boardEntity")
     @Builder.Default
     private List<CommentEntity> commentEntities = new ArrayList<>();
-
 
 }

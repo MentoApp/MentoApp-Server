@@ -22,19 +22,22 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "dotori_token_usage_detail_id")
     private Long dotoriTokenUsageDetailId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "trade_type")
     private TradeTypeEnum tradeTypeEnum;
 
+    @Column(name = "trade_amount")
     private int tradeAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "presenter_id")  // 기부하는 유저
+    @JoinColumn(name = "presenter_id")
     private UsersEntity presenter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")   // 도토리를 받는 유저
+    @JoinColumn(name = "receiver_id")
     private UsersEntity receiver;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,14 +48,12 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-
-
     public DotoriTokenUsageDetails toCreateUsage() {
-        return  DotoriTokenUsageDetails.builder()
+        return DotoriTokenUsageDetails.builder()
                 .dotoriTokenUsageDetailId(dotoriTokenUsageDetailId)
                 .tradeTypeEnum(tradeTypeEnum)
                 .tradeAmount(tradeAmount)
