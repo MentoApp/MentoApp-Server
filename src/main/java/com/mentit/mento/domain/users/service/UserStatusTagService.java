@@ -55,7 +55,7 @@ public class UserStatusTagService {
 
         // UserStatusTag 생성
         UserStatusTagEntity userStatusTag = UserStatusTagEntity.builder()
-                .corporateFormEnum(request.getCorporateFormEnum())
+                .corporateFormEnum(request.getCorporateForm())
                 .usersEntity(usersEntity)
                 .build();
 
