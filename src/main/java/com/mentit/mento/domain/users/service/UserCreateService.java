@@ -60,7 +60,7 @@ public class UserCreateService {
         UserStatusTagEntity userStatusTagEntity = userStatusTagService.create(signInRequest, usersEntity);
 
         //BoardKeyword 생성 및 저장
-        boardKeywordService.createUserBoardKeyword(signInRequest.getBoardKeywordEnums(), usersEntity);
+        boardKeywordService.createUserBoardKeyword(signInRequest.getBoardKeywords(), usersEntity);
 
         // DotoriToken 및 관련 상세 정보 생성 (토큰 서비스로 위임)
         dotoriTokenService.createDotoriToken(usersEntity);

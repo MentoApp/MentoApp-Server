@@ -75,7 +75,7 @@ public class LogAspect {
     }
 
     // Service의 메서드를 포인트컷으로 지정
-    @Pointcut("within(com.mentit.mento..*Service)")
+    @Pointcut("within(com.mentit.mento.domain..*Service) || within(com.mentit.mento.global..*Service)")
     public void service() {}
 
     // Service 메서드 호출 전후 로깅
