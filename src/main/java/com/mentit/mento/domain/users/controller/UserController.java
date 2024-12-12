@@ -1,7 +1,7 @@
 package com.mentit.mento.domain.users.controller;
 
-import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
-import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserAccountResponse;
 import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.dto.request.TagListDTO;
@@ -33,6 +33,8 @@ import java.util.List;
 public class UserController {
 
     private final UserCreateService userCreateService;
+    private final CookieUtils cookieUtils;
+    private final RedisService redisService;
     private final UserService userService;
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 true로 반환합니다.")
@@ -45,7 +47,7 @@ public class UserController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @Valid @RequestPart(value = "signInUserRequest") SignInUser signInUserRequest,
+            @Valid @RequestPart(value = "signInUserRequest") SignInUserRequest signInUserRequest,
             @RequestPart(value = "profileImage") MultipartFile profileImage
     ) {
 
@@ -64,7 +66,7 @@ public class UserController {
     @PatchMapping(value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @Valid @RequestPart("modifyUserRequest") ModifyUser modifyUserRequest,
+            @Valid @RequestPart("modifyUserRequest") ModifyUserRequest modifyUserRequest,
             @RequestPart(value = "profileImage") @Nullable MultipartFile profileImage
     ) {
         userCreateService.modifyUser(customUserDetail, modifyUserRequest, profileImage);

@@ -12,6 +12,8 @@ import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.oauth.dto.OAuthAttributes;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.PasswordUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -90,20 +92,25 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return createCustomUserDetail(user, authType, memberAttribute, isNewUser.get());
     }
 
-    private void updateSocialAccessToken(UsersEntity user, String socialAccessToken) {
-        UsersEntity userEntity = userRepository.findById(user.getUserId()).orElseThrow(
-                () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
-        );
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    @Transactional
+    public void updateSocialAccessToken(UsersEntity userEntity, String socialAccessToken) {
         socialAccessTokenRepository.findByUser(userEntity).ifPresentOrElse(
                 existingToken -> {
                     log.info("Updating social access token for user: {}", userEntity.getUserId());
                     existingToken.updateSocialAccessToken(socialAccessToken);
-                    socialAccessTokenRepository.save(existingToken);
+
+                    // 영속 상태 보장
+                    entityManager.merge(existingToken);
                 },
                 () -> {
                     log.info("Creating new social access token for user: {}", userEntity.getUserId());
-                    socialAccessTokenRepository.save(SocialAccessToken.of(socialAccessToken, userEntity));
+                    SocialAccessToken newToken = SocialAccessToken.of(socialAccessToken, userEntity);
+
+                    // 영속 상태 보장
+                    entityManager.merge(newToken);
                 }
         );
     }

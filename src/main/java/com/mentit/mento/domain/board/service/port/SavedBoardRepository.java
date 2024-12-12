@@ -14,4 +14,7 @@ public interface SavedBoardRepository {
     void deleteByBoardAndUser(BoardEntity boardEntity, UsersEntity usersEntity);
 
     List<SavedBoardEntity> findAllByUsers(UsersEntity usersEntity);
+
+    void flush();
+
 }

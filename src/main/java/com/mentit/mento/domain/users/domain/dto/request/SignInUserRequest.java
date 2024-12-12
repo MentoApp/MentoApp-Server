@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class SignInUser {
+public class SignInUserRequest {
 
     @Schema(description = "사용자의 닉네임", example = "홍길동")
     @Pattern(regexp = "^[가-힣a-zA-Z0-9]+$", message = "닉네임은 한글, 영어, 숫자만 가능하며 공백과 특수문자는 사용할 수 없습니다.")

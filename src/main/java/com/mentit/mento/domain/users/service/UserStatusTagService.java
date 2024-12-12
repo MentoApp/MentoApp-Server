@@ -1,8 +1,8 @@
 package com.mentit.mento.domain.users.service;
 
 import com.mentit.mento.domain.users.constant.CorporateFormEnum;
-import com.mentit.mento.domain.users.domain.dto.request.ModifyUser;
-import com.mentit.mento.domain.users.domain.dto.request.SignInUser;
+import com.mentit.mento.domain.users.domain.dto.request.ModifyUserRequest;
+import com.mentit.mento.domain.users.domain.dto.request.SignInUserRequest;
 import com.mentit.mento.domain.users.domain.entity.MyCareerTagsEntity;
 import com.mentit.mento.domain.users.domain.entity.MyStatusTagsEntity;
 import com.mentit.mento.domain.users.domain.entity.UserStatusTagEntity;
@@ -35,7 +35,7 @@ public class UserStatusTagService {
     private final MyCareerTagsEntityRepository myCareerTagsEntityRepository;
 
     @Transactional
-    public UserStatusTagEntity create(SignInUser request, UsersEntity usersEntity) {
+    public UserStatusTagEntity create(SignInUserRequest request, UsersEntity usersEntity) {
         // MyStatusTags 생성 및 null 체크
         List<MyStatusTagsEntity> myStatusTags = request.getMyStatus() != null
                 ? request.getMyStatus().stream()
@@ -55,7 +55,7 @@ public class UserStatusTagService {
 
         // UserStatusTag 생성
         UserStatusTagEntity userStatusTag = UserStatusTagEntity.builder()
-                .corporateFormEnum(request.getCorporateForm())
+                .corporateFormEnum(request.getCorporateFormEnum())
                 .usersEntity(usersEntity)
                 .build();
 
@@ -103,7 +103,7 @@ public class UserStatusTagService {
     }
 
     @Transactional
-    public UserStatusTagEntity update(@Valid ModifyUser request, UsersEntity usersEntity) {
+    public UserStatusTagEntity update(@Valid ModifyUserRequest request, UsersEntity usersEntity) {
         log.info("userEntity.userstatusTag 삭제 유무 : {}", usersEntity.getUserStatusTagEntity()==null);
         UserStatusTagEntity userStatusTagEntity = userStatusTagRepository.findByUsers(usersEntity).orElse(null);
 

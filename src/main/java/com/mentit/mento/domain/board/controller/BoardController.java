@@ -1,6 +1,6 @@
 package com.mentit.mento.domain.board.controller;
 
-import com.mentit.mento.domain.board.domain.dto.request.BoardCreate;
+import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
 import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
 import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindMyBoardResponse;
@@ -32,10 +32,10 @@ public class BoardController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<FindBoardResponse> createBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @RequestPart BoardCreate boardCreate,
+            @RequestPart CreateBoard createBoard,
             @RequestPart(required = false) List<MultipartFile> images
             ){
-        FindBoardResponse findBoardResponse = boardService.createBoard(customUserDetail, boardCreate, images);
+        FindBoardResponse findBoardResponse = boardService.createBoard(customUserDetail, createBoard, images);
 
         return Response.success(HttpStatus.OK,"게시판 작성 성공",findBoardResponse);
     }
@@ -56,10 +56,10 @@ public class BoardController {
 
     //삭제
     @Operation(summary = "게시판 삭제")
-    @DeleteMapping("/{boardId}")
+    @DeleteMapping("/boardId")
     public Response<Void> deleteBoard(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
-            @PathVariable Long boardId
+            @RequestParam Long boardId
     ){
         boardService.deleteBoard(customUserDetail, boardId);
 
@@ -72,7 +72,7 @@ public class BoardController {
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @RequestParam Long boardId
     ){
-        FindBoardResponse findBoardResponse= boardService.findOneBoard(customUserDetail,boardId);
+        FindBoardResponse findBoardResponse= boardService.findOneBoard(boardId);
 
         return Response.success(HttpStatus.OK, "게시판 조회 성공",findBoardResponse);
     }

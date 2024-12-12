@@ -51,4 +51,9 @@ public class BoardRepositoryImpl implements BoardRepository {
     public List<BoardEntity> findAllByUsers(Long usersId) {
         return boardJPARepository.findAllByUsers(usersId);
     }
+
+    @Override
+    public void flush() {
+        boardJPARepository.flush();
+    }
 }

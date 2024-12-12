@@ -13,6 +13,8 @@ import com.mentit.mento.global.redis.service.RedisLikeService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

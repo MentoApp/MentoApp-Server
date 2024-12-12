@@ -4,7 +4,7 @@ import com.mentit.mento.domain.board.domain.dto.response.FindMyBoardResponse;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardFilesEntity;
 import com.mentit.mento.domain.board.domain.entity.BoardKeywordForCreatingEntity;
-import com.mentit.mento.domain.board.domain.dto.request.BoardCreate;
+import com.mentit.mento.domain.board.domain.dto.request.CreateBoard;
 import com.mentit.mento.domain.board.domain.dto.request.BoardUpdate;
 import com.mentit.mento.domain.board.domain.dto.response.FindBoardResponse;
 import com.mentit.mento.domain.board.domain.dto.response.FindSimilarBoardResponse;
@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,20 +60,20 @@ public class BoardService {
     private final SavedBoardRepository savedBoardRepository;
 
     @Transactional
-    public FindBoardResponse createBoard(CustomUserDetail customUserDetail, BoardCreate boardCreate, List<MultipartFile> images) {
+    public FindBoardResponse createBoard(CustomUserDetail customUserDetail, CreateBoard createBoard, List<MultipartFile> images) {
         //유저 정보 조회
         UsersEntity findUserByUserDetail = getUsers(customUserDetail);
 
         //게시판 작성자와 유저 닉네임이 일치하지 않으면 예외 발생
-        if (!findUserByUserDetail.getNickname().equals(boardCreate.getWriter())) {
+        if (!findUserByUserDetail.getNickname().equals(createBoard.getWriter())) {
             throw new MemberException(ExceptionCode.NICKNAME_NOT_MATCH);
         }
 
         //게시판 생성
-        BoardEntity boardEntity = createBoard(boardCreate, findUserByUserDetail);
+        BoardEntity boardEntity = createBoard(createBoard, findUserByUserDetail);
 
         //게시판생성용키워드 생성
-        List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList = getBoardKeywordForCreatingEntities(boardCreate, boardEntity);
+        List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList = getBoardKeywordForCreatingEntities(createBoard, boardEntity);
 
         List<BoardFilesEntity> boardFileEntities = getBoardFiles(images, boardEntity);
 
@@ -83,7 +82,7 @@ public class BoardService {
         DotoriTokenEntity dotoriToken = findUserByUserDetail.getDotoriTokenEntity();
         DotoriTokenEntity updatedDotoriToken = dotoriToken
                 .toBuilder()
-                .count(boardCreate
+                .count(createBoard
                         .getBoardTypeEnum()
                         .getKoreanValue()
                         .equals("IT 일상") ? dotoriToken.getCount() : dotoriToken.getCount() + 5)
@@ -91,9 +90,9 @@ public class BoardService {
 
         dotoriTokenRepository.save(updatedDotoriToken);
 
-        redisService.saveBoardKeywords(boardEntity.getBoardId(), boardCreate.getKeywords());
+        redisService.saveBoardKeywords(boardEntity.getBoardId(), createBoard.getKeywords());
 
-        return findOneBoard(customUserDetail, createdBoard.getBoardId());
+        return findOneBoard(createdBoard.getBoardId());
 
     }
 
@@ -126,7 +125,8 @@ public class BoardService {
 
         BoardEntity createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(boardEntity, boardFileEntities, boardKeywordForCreatingList);
 
-        return findOneBoard(customUserDetail, createdBoard.getBoardId());
+        boardRepository.flush();
+        return findOneBoard(createdBoard.getBoardId());
     }
 
     @Transactional
@@ -137,9 +137,7 @@ public class BoardService {
 
         List<BoardFilesEntity> boardFile = boardFileRepository.findAllByBoardEntity(findBoard);
         boardFile.forEach(
-                files -> {
-                    s3FileUtilImpl.deleteImageFromS3(files.getBoardFileName());
-                }
+                files -> s3FileUtilImpl.deleteImageFromS3(files.getBoardFileName())
         );
 
         redisService.deleteBoardKeywords(findBoard.getBoardId());
@@ -155,7 +153,7 @@ public class BoardService {
     }
 
     //게시판 단일 조회
-    public FindBoardResponse findOneBoard(CustomUserDetail customUserDetail, Long boardId) {
+    public FindBoardResponse findOneBoard( Long boardId) {
         BoardEntity findBoardByBoardId = boardRepository.findByBoardId(boardId).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_BOARD)
         );
@@ -232,7 +230,7 @@ public class BoardService {
 
         List<BoardEntity> matchedBoard = boardMatchCounts.stream().map(
                 boardMatchCount -> boardRepository.findByBoardId(boardMatchCount.boardId).orElseThrow(() -> new BoardException(ExceptionCode.NOT_FOUND_BOARD))
-        ).collect(Collectors.toList());
+        ).toList();
 
         return mapBoardsToResponse(matchedBoard);
 
@@ -262,7 +260,7 @@ public class BoardService {
                                     .build();
 
                         }
-                ).collect(Collectors.toList())).orElse(Collections.emptyList());
+                ).toList()).orElse(Collections.emptyList());
 
     }
     //내가쓴게시판
@@ -275,6 +273,7 @@ public class BoardService {
                 boardEntity ->{
                    return FindMyBoardResponse.builder()
                             .boardId(boardEntity.getBoardId())
+                           .writer(findUserByUserDetail.getNickname())
                             .title(boardEntity.getTitle())
                             .content(boardEntity.getContent())
                             .createdTime(boardEntity.getCreatedAt())
@@ -306,23 +305,29 @@ public class BoardService {
     }
 
     //게시판 저장 삭제
+    @Transactional
     public void deleteSavedBoard(CustomUserDetail customUserDetail, Long boardId) {
         UsersEntity usersEntity = getUsers(customUserDetail);
         BoardEntity boardEntity = boardRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
         savedBoardRepository.deleteByBoardAndUser(boardEntity,usersEntity);
+        savedBoardRepository.flush();
     }
 
     public Page<FindBoardResponse> findMySavedBoards(CustomUserDetail customUserDetail, Pageable pageable) {
         UsersEntity usersEntity = getUsers(customUserDetail);
-        List<BoardEntity> boardEntities = boardRepository.findAllByUsers(usersEntity.getUserId());
+        List<SavedBoardEntity> savedBoardEntities = savedBoardRepository.findAllByUsers(usersEntity);
+        List<BoardEntity> boardEntities = savedBoardEntities.stream().map(
+                sbe -> sbe.getBoardEntity()
+        ).toList();
         List<FindBoardResponse> findBoardResponses = boardEntities.stream().map(
                 boardEntity ->
                         FindBoardResponse.builder()
                                 .boardId(boardEntity.getBoardId())
                                 .title(boardEntity.getTitle())
                                 .writer(boardEntity.getWriter().getNickname())
+                                .content(boardEntity.getContent())
                                 .imageList(getImageList(boardEntity))
                                 .likeCount(redisLikeService.getLikeCount(boardEntity.getBoardId()))
                                 .viewCount(boardEntity.getViewCount())
@@ -373,7 +378,7 @@ public class BoardService {
                             .commentCount(commentCount)
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
     //TODO:: 게시판별 키워드를 레디스에 저장해서 조회하는것이 더 빠를듯
     private UserInfoInBoardResponse getUserInfoInBoardResponse(BoardEntity findBoardByBoardId) {
@@ -416,12 +421,12 @@ public class BoardService {
         return boardRepository.save(updatedSavedBoard);
     }
 
-    private BoardEntity createBoard(BoardCreate boardCreate, UsersEntity usersEntity) {
+    private BoardEntity createBoard(CreateBoard createBoard, UsersEntity usersEntity) {
         BoardEntity boardEntity = BoardEntity.builder()
-                .title(boardCreate.getTitle())
-                .content(boardCreate.getContent())
+                .title(createBoard.getTitle())
+                .content(createBoard.getContent())
                 .writer(usersEntity)
-                .boardTypeEnum(boardCreate.getBoardTypeEnum())
+                .boardTypeEnum(createBoard.getBoardTypeEnum())
                 .viewCount(1L)
                 .build();
 
@@ -439,12 +444,12 @@ public class BoardService {
         return boardRepository.save(createdBoard);
     }
 
-    private List<BoardKeywordForCreatingEntity> getBoardKeywordForCreatingEntities(BoardCreate boardCreate, BoardEntity boardEntity) {
+    private List<BoardKeywordForCreatingEntity> getBoardKeywordForCreatingEntities(CreateBoard createBoard, BoardEntity boardEntity) {
         List<BoardKeywordForCreatingEntity> boardKeywordForCreatingEntityList = new ArrayList<>();
 
-        if (boardCreate.getKeywords() != null) {
+        if (createBoard.getKeywords() != null) {
 
-            boardCreate.getKeywords().forEach(
+            createBoard.getKeywords().forEach(
                     keyword -> {
                         BoardKeywordForCreatingEntity savedBoardKeyword = BoardKeywordForCreatingEntity.builder()
                                 .boardEntity(boardEntity)

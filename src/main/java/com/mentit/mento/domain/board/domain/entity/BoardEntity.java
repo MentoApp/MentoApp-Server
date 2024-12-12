@@ -1,7 +1,6 @@
 package com.mentit.mento.domain.board.domain.entity;
 
 import com.mentit.mento.domain.board.constant.BoardTypeEnum;
-import com.mentit.mento.domain.board.domain.Board;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenUsageDetailsEntity;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
@@ -29,6 +28,7 @@ public class BoardEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_id")
     private Long boardId;
 
     @Column(nullable = false)
@@ -55,7 +55,7 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private List<BoardKeywordForCreatingEntity> boardKeywordForCreatings = new ArrayList<>();
 
-    @Column(nullable = false)
+    @Column(name="is_deleted",nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 

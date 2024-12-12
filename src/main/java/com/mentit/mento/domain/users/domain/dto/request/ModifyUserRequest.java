@@ -11,7 +11,7 @@ import java.util.List;
 
 @Builder
 @Data
-public class ModifyUser {
+public class ModifyUserRequest {
 
     @Schema(description = "사용자의 닉네임", example = "홍길동")
     @Pattern(regexp = "^[가-힣a-zA-Z0-9]+$", message = "닉네임은 한글, 영어, 숫자만 가능하며 공백과 특수문자는 사용할 수 없습니다.")
@@ -27,15 +27,8 @@ public class ModifyUser {
     @Schema(description = "회사의 형태", example = "스타트업")
     private CorporateFormEnum corporateFormEnum;
 
-//    @Schema(description = "사용자의 베이스 태그 리스트", example = "[\"부트캠프 수료자\", \"비전공자\"]")
-//    private List<BaseTag> baseTags;
-
     @Schema(description = "사용자의 현재 상태 태그 리스트", example = "[\"프로이직러\", \"대학생\"]")
     private List<MyStatusTagsEnum> myStatus;
-
-//    @Schema(description = "사용자의 현재 직무 상태 리스트", example = "[\"헬스케어\", \"모빌리티\"]")
-//    private List<CurrentJobStatus> currentJobStatus;
-
 
     @Schema(description = "사용자가 선택한 게시판 키워드 리스트", example = "[\"트렌드\", \"회사 생활\"]")
     private List<BoardKeywordEnum> boardKeywordEnums;

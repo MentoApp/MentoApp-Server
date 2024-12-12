@@ -29,4 +29,11 @@ public class SavedBoardRepositoryImpl implements SavedBoardRepository {
     public List<SavedBoardEntity> findAllByUsers(UsersEntity usersEntity) {
         return savedBoardJPARepository.findAllByUserEntity(usersEntity);
     }
+
+    @Override
+    public void flush() {
+        savedBoardJPARepository.flush();
+    }
+
+
 }
