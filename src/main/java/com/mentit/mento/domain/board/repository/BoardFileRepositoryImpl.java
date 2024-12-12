@@ -28,4 +28,9 @@ public class BoardFileRepositoryImpl implements BoardFileRepository {
     public List<BoardFilesEntity> findAllByBoardEntity(BoardEntity boardEntity) {
         return boardFileJPARepository.findAllByBoardEntity(boardEntity);
     }
+
+    @Override
+    public void flush() {
+        boardFileJPARepository.flush();
+    }
 }

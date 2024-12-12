@@ -28,12 +28,14 @@ import com.mentit.mento.global.redis.service.RedisLikeService;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +60,7 @@ public class BoardService {
     private final RedisService redisService;
     private final RedisTemplate<String, String> redisTemplate;
     private final SavedBoardRepository savedBoardRepository;
+    private final LocalContainerEntityManagerFactoryBean entityManager;
 
     @Transactional
     public FindBoardResponse createBoard(CustomUserDetail customUserDetail, CreateBoard createBoard, List<MultipartFile> images) {
@@ -125,7 +128,9 @@ public class BoardService {
 
         BoardEntity createdBoard = mappingBoardFileAndBoardKeywordInSavedBoard(boardEntity, boardFileEntities, boardKeywordForCreatingList);
 
-        boardRepository.flush();
+        boardKeywordForCreatingRepository.flush();
+        boardFileRepository.flush();
+
         return findOneBoard(createdBoard.getBoardId());
     }
 

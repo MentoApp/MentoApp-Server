@@ -7,4 +7,6 @@ public interface BoardKeywordForCreatingRepository {
     BoardKeywordForCreatingEntity save(BoardKeywordForCreatingEntity savedBoardKeyword);
 
     void deleteAllByBoard(BoardEntity findBoard);
+
+    void flush();
 }

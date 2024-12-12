@@ -21,4 +21,9 @@ public class BoardKeywordForCreatingRepositoryImpl implements BoardKeywordForCre
     public void deleteAllByBoard(BoardEntity boardEntity) {
         boardKeywordForCreatingJPARepository.deleteAllByBoardEntity(boardEntity);
     }
+
+    @Override
+    public void flush() {
+        boardKeywordForCreatingJPARepository.flush();
+    }
 }

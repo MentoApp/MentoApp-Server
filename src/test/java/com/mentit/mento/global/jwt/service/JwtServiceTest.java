@@ -2,6 +2,7 @@ package com.mentit.mento.global.jwt.service;
 
 
 import com.mentit.mento.domain.users.repository.UserRepository;
+import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
@@ -24,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JwtServiceTest {
 
@@ -32,7 +32,7 @@ class JwtServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private com.mentit.mento.domain.users.service.port.UserRepository userRepository;
 
     @MockBean
     private JwtService jwtService;

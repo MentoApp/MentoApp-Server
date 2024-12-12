@@ -11,4 +11,6 @@ public interface BoardFileRepository {
     void deleteAllByBoardEntity(BoardEntity boardEntity);
 
     List<BoardFilesEntity> findAllByBoardEntity(BoardEntity boardEntity);
+
+    void flush();
 }
