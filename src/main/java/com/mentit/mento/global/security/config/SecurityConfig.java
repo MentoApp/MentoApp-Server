@@ -1,11 +1,10 @@
 package com.mentit.mento.global.security.config;
 
-import com.mentit.mento.domain.users.infrastructure.UserRepositoryImpl;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.handler.OAuth2LoginSuccessHandler;
 import com.mentit.mento.global.oauth.service.CustomOAuth2UserService;
 import com.mentit.mento.global.redis.service.RedisService;
-import com.mentit.mento.global.security.filter.DuplicateLoginFilter;
+import com.mentit.mento.global.security.JwtAuthenticationFailEntryPoint;
 import com.mentit.mento.global.security.filter.JwtAuthenticationProcessingFilter;
 import com.mentit.mento.global.security.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -42,23 +41,23 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserRepositoryImpl userRepositoryImpl, RedisService redisService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService, JwtAuthenticationFailEntryPoint jwtAuthenticationFailEntryPoint) throws Exception {
         http
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors-> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .anyRequest().permitAll()
                 )
-                .oauth2Login(login -> login.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                        .successHandler(oAuth2LoginSuccessHandler)
+                .oauth2Login(login -> login.userInfoEndpoint(config ->
+                                        config.userService(customOAuth2UserService)
+                                )
+                                .successHandler(oAuth2LoginSuccessHandler)
                 )
-                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, userRepositoryImpl), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new DuplicateLoginFilter(jwtService, redisService), JwtAuthenticationProcessingFilter.class);
-
+                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, redisService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

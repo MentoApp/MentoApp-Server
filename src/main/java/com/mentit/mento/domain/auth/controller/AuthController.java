@@ -2,6 +2,8 @@ package com.mentit.mento.domain.auth.controller;
 
 import com.mentit.mento.domain.auth.service.AuthService;
 import com.mentit.mento.domain.users.service.UserCreateService;
+import com.mentit.mento.global.exception.ExceptionCode;
+import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
@@ -22,11 +24,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-public class AuthController
-{
+public class AuthController {
     private final UserCreateService userCreateService;
     private final CookieUtils cookieUtils;
     private final RedisService redisService;
@@ -36,7 +39,7 @@ public class AuthController
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "발급 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))})
-            })
+    })
     @GetMapping("/reissue-token")
     @Transactional
     public ResponseEntity<String> reissue(
@@ -96,5 +99,23 @@ public class AuthController
         cookieUtils.deleteCookie(response, "refreshToken");
 
         return Response.success(HttpStatus.OK, "로그아웃 성공");
+    }
+
+    @GetMapping("/authentication/failed")
+    public void authenticationFailed() {
+        throw new JwtException(ExceptionCode.INVALID_TOKEN);
+    }
+
+    @GetMapping("/login-callback")
+    public Response<HashMap> loginCallback(
+            @RequestParam(name = "accessToken") String accessToken,
+            @RequestParam(name = "refreshToken") String refreshToken,
+            @RequestParam(name = "isNewUser") String isNewUser
+    ) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("accessToken", accessToken);
+        map.put("refreshToken", refreshToken);
+        map.put("isNewUser", isNewUser);
+        return Response.success(HttpStatus.OK, "토큰 발급 성공",map );
     }
 }

@@ -23,7 +23,7 @@ public class FirstSchedule {
         this.jobRegistry = jobRegistry;
     }
 
-    @Scheduled(cron = "1 0 0 1 * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul")
     public void runFirstJob() throws Exception {
 
         log.info("유저 Batch 수행");

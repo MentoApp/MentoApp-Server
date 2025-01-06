@@ -46,10 +46,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         if (findUser.isNewUser()) {
             // 새로운 사용자라면 /add-information 페이지로 리디렉션
-            targetUrl = "http://localhost:5173/login/callback/auth?isNewUser=true";
+            targetUrl = "http://http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=true";
         } else {
             // 기존 사용자라면 메인 페이지로 리디렉션
-            targetUrl = "http://localhost:5173/login/callback/auth?isNewUser=false";
+            targetUrl = "http://http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=false";
         }
 
         String accessToken = jwtToken.getAccessToken();
@@ -57,8 +57,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String refreshToken = jwtToken.getRefreshToken();
 
         redisService.saveAccessToken(accessToken,userDetail.getId());
-
-//        cookieUtils.addCookie(response, "refreshToken", refreshToken, 24 * 60 * 60 * 7); // 7일 동안 유효한 쿠키
 
         // 토큰을 URL 파라미터로 추가
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
