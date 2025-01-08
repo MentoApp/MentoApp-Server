@@ -46,10 +46,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         if (findUser.isNewUser()) {
             // 새로운 사용자라면 /add-information 페이지로 리디렉션
-            targetUrl = "http://http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=true";
+            targetUrl = "http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=true";
         } else {
             // 기존 사용자라면 메인 페이지로 리디렉션
-            targetUrl = "http://http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=false";
+            targetUrl = "http://15.165.4.143/:8080/api/v1/auth/login-callback?isNewUser=false";
         }
 
         String accessToken = jwtToken.getAccessToken();
