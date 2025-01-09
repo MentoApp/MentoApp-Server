@@ -4,7 +4,6 @@ import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.handler.OAuth2LoginSuccessHandler;
 import com.mentit.mento.global.oauth.service.CustomOAuth2UserService;
 import com.mentit.mento.global.redis.service.RedisService;
-import com.mentit.mento.global.security.JwtAuthenticationFailEntryPoint;
 import com.mentit.mento.global.security.filter.JwtAuthenticationProcessingFilter;
 import com.mentit.mento.global.security.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService, JwtAuthenticationFailEntryPoint jwtAuthenticationFailEntryPoint) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService) throws Exception {
         http
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
