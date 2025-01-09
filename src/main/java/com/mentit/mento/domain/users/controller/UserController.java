@@ -38,12 +38,6 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 true로 반환합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "가입 성공!"),
-            @ApiResponse(responseCode = "401", description = "인증 문제 발생"),
-            @ApiResponse(responseCode = "803", description = "회원을 찾을 수 없음"),
-
-    })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
@@ -57,12 +51,6 @@ public class UserController {
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 기입")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 수정 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 문제 발생"),
-            @ApiResponse(responseCode = "803", description = "회원을 찾을 수 없음"),
-            @ApiResponse(responseCode = "810", description = "유저 태그를 찾을 수 없음"),
-    })
     @PatchMapping(value = "/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Void> modifyUser(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
@@ -75,12 +63,6 @@ public class UserController {
     }
 
     @Operation(summary = "회원 정보 조회", description = "회원 정보 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 조회 성공",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "정보 조회 실패",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
-    })
     @GetMapping("/myInfo")
     public Response<FindUserResponse> findMyInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
@@ -90,12 +72,6 @@ public class UserController {
     }
 
     @Operation(summary = "계정 정보 조회", description = "계정 정보 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "계정정보 조회 결과",
-                    content = {@Content(schema = @Schema(implementation = Response.class))}),
-            @ApiResponse(responseCode = "400", description = "계정정보 조회 실패",
-                    content = {@Content(schema = @Schema(implementation = Exception.class))}),
-    })
     @GetMapping("/myAccountInfo")
     public Response<FindUserAccountResponse> findMyAccountInfo(
             @AuthenticationPrincipal CustomUserDetail userDetail
@@ -125,7 +101,7 @@ public class UserController {
 
         return Response.success(HttpStatus.OK, "키워드 갱신 완료");
     }
-
+    @Operation(summary = "회원가입시 태그 데이터 반환", description = "회원 추가 정보 가입시 사용할 태그 데이터를 반환합니다.")
     @GetMapping("/tags")
     public Response<TagListDTO> getTagLists(
     ) {
