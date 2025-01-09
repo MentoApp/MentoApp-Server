@@ -63,16 +63,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String phoneNumber = memberAttribute.get("phoneNumber") != null ? (String) memberAttribute.get("phoneNumber") : null;
 
         AtomicBoolean isNewUser = new AtomicBoolean(false);
-        
+
         // 이메일로 기존 유저 찾기 전에 로그 추가
         log.info("Searching for user with email: {}", email);
-        
+
         Optional<UsersEntity> existingUserOptional = userRepository.findByEmail(email);
-        existingUserOptional.ifPresent(existingUser -> 
+        existingUserOptional.ifPresent(existingUser ->
             log.info("Found existing user with ID: {}", existingUser.getUserId())
         );
 
         UsersEntity user= null;
+        //유저의 계정 존재 유무 확인
         if (existingUserOptional.isPresent()) {
             user = existingUserOptional.get();
             log.info("Using existing user with ID: {}", user.getUserId());
