@@ -1,8 +1,12 @@
 package com.mentit.mento.domain.auth.service;
 
+import com.mentit.mento.domain.users.constant.AuthType;
+import com.mentit.mento.domain.users.constant.UserGenderEnum;
+import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.RefreshToken;
+import com.mentit.mento.global.authToken.entity.SocialAccessToken;
 import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
@@ -10,13 +14,16 @@ import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
+import com.mentit.mento.global.security.util.PasswordUtil;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.Cookie;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final JwtService jwtService;
@@ -24,6 +31,7 @@ public class AuthService {
     private final SocialAccessTokenRepository socialAccessTokenRepository;
     private final OAuth2RevokeService oAuth2RevokeService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EntityManager em;
 
     public JwtToken reissueToken(String refreshToken) {
         return jwtService.reissueTokenByRefreshToken(refreshToken);
@@ -45,6 +53,7 @@ public class AuthService {
         userRepository.delete(findUser);
     }
 
+    @Transactional
     public void logout(Long userId) {
 
         String refreshToken = getRefreshToken(userId);
@@ -58,6 +67,7 @@ public class AuthService {
         cookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 삭제
 
     }
+
 
     public String getRefreshToken(Long uuid) {
         RefreshToken refreshToken = refreshTokenRepository.getRefreshTokenByMemberId(uuid).orElseThrow(
@@ -81,4 +91,47 @@ public class AuthService {
         );
     }
 
+    /**
+     * 클라이언트단에서 유저 정보 반환 후 백엔드에서 유저 정보를 저장하는 비즈니스 로직
+     * 기존유저가 존재할 경우 RefreshToken값만 갱신, 존재하지 않는 경우 새로 UserEntity생성
+     * @param socialAccountInfoDto
+     * @return
+     */
+    @Transactional
+    public UsersEntity getOrCreateUserInfo(SocialAccountInfoDto socialAccountInfoDto) {
+        if (socialAccountInfoDto.getEmail() != null) {
+            // 기존 사용자를 이메일로 검색
+            return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(usersEntity -> {
+                // 사용자가 존재할 경우 소셜 액세스 토큰 업데이트
+                socialAccessTokenRepository.findByUser(usersEntity)
+                        .ifPresent(socialAccessToken ->
+                                socialAccessToken.updateSocialAccessToken(socialAccountInfoDto.getSocialAccessToken())
+                        );
+                return usersEntity; // 기존 사용자 반환
+            }).orElseGet(() -> {
+                // 사용자가 없을 경우 새 사용자 생성
+                UsersEntity createdUser = UsersEntity.builder()
+                        .email(socialAccountInfoDto.getEmail())
+                        .name(socialAccountInfoDto.getName())
+                        .authType(AuthType.of(socialAccountInfoDto.getAuthType()))
+                        .gender(UserGenderEnum.valueOf(socialAccountInfoDto.getGender()))
+                        .birthYear(socialAccountInfoDto.getBirthYear())
+                        .birthDay(socialAccountInfoDto.getBirthDay())
+                        .phoneNumber(socialAccountInfoDto.getPhoneNumber())
+                        .isNewUser(true)
+                        .password(PasswordUtil.generateRandomPassword())
+                        .build();
+
+                // 새 사용자와 연관된 소셜 액세스 토큰 저장
+                socialAccessTokenRepository.save(
+                        SocialAccessToken.of(socialAccountInfoDto.getSocialAccessToken(), createdUser)
+                );
+                // 새 사용자 저장
+                createdUser = userRepository.save(createdUser);
+                return createdUser; // 새 사용자 반환
+            });
+        }
+        em.flush();
+        return null;
+    }
 }
