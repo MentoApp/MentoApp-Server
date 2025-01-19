@@ -90,6 +90,29 @@ public class UsersEntity extends BaseEntity {
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
+    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private DotoriTokenEntity dotoriTokenEntity;
+
+    @OneToMany(mappedBy = "presenter")
+    @Builder.Default
+    private List<DotoriTokenUsageDetailsEntity> presentedDotoriTokens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    @Builder.Default
+    private List<DotoriTokenUsageDetailsEntity> receivedDotoriTokens = new ArrayList<>();
+
+    @OneToOne(mappedBy = "usersEntity")
+    private UserStatusTagEntity userStatusTagEntity;
+
+    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER)
+    private List<BoardKeywordEntity> boardKeywords;
+
+    @OneToMany(mappedBy = "writer")
+    private List<CommentEntity> commentEntity;
+
+    @OneToMany(mappedBy = "writer")
+    private List<BoardEntity> boardEntities;
+
     public Users to() {
         return Users.builder()
                 .userId(this.userId)
@@ -115,26 +138,4 @@ public class UsersEntity extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
-    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private DotoriTokenEntity dotoriTokenEntity;
-
-    @OneToMany(mappedBy = "presenter")
-    @Builder.Default
-    private List<DotoriTokenUsageDetailsEntity> presentedDotoriTokens = new ArrayList<>();
-
-    @OneToMany(mappedBy = "receiver")
-    @Builder.Default
-    private List<DotoriTokenUsageDetailsEntity> receivedDotoriTokens = new ArrayList<>();
-
-    @OneToOne(mappedBy = "usersEntity")
-    private UserStatusTagEntity userStatusTagEntity;
-
-    @OneToMany(mappedBy = "usersEntity", fetch = FetchType.EAGER)
-    private List<BoardKeywordEntity> boardKeywords;
-
-    @OneToMany(mappedBy = "writer")
-    private List<CommentEntity> commentEntity;
-
-    @OneToMany(mappedBy = "writer")
-    private List<BoardEntity> boardEntities;
 }

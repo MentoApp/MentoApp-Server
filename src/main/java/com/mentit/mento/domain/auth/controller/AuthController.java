@@ -1,10 +1,11 @@
 package com.mentit.mento.domain.auth.controller;
 
 import com.mentit.mento.domain.auth.service.AuthService;
+import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.UserCreateService;
-import com.mentit.mento.global.exception.ExceptionCode;
-import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
+import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -34,8 +35,9 @@ public class AuthController {
     private final CookieUtils cookieUtils;
     private final RedisService redisService;
     private final AuthService authService;
+    private final JwtService jwtService;
 
-    @Operation(summary = "토큰 재발급", description = "accessToken을 재발급")
+    @Operation(summary = "토큰 재발급", description = "RefreshToken을 통해 accessToken을 재발급받습니다. 헤더의 Authorization-Refresh에 RefreshToken을 담아 요청해주세요")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "발급 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))})
@@ -43,19 +45,14 @@ public class AuthController {
     @GetMapping("/reissue-token")
     @Transactional
     public ResponseEntity<String> reissue(
-            @AuthenticationPrincipal CustomUserDetail userDetail,
-            HttpServletResponse response,
-            HttpServletRequest request
-    ) {
+            @RequestHeader("Authorization-Refresh") String refreshToken) {
 
-//        String refreshToken = cookieUtils.getRefreshToken(request);
-        String refreshToken = request.getHeader("refreshToken");
         JwtToken newToken = authService.reissueToken(refreshToken);
-//        cookieUtils.addCookie(response, "refreshToken", newToken.getRefreshToken(), 24 * 60 * 60 * 7);
-        redisService.saveAccessToken(newToken.getAccessToken(), userDetail.getId());
+        Long userId = jwtService.getUserIdFromToken(newToken.getAccessToken());
+        redisService.saveAccessToken(newToken.getAccessToken(), userId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("accessToken", newToken.getAccessToken());
-        headers.add("refreshToken", newToken.getRefreshToken());
+        headers.add("Authorization-Access", newToken.getAccessToken());
+        headers.add("Authorization-Refresh", newToken.getRefreshToken());
 
         return ResponseEntity.status(HttpStatus.OK).headers(headers).build();
     }
@@ -91,7 +88,6 @@ public class AuthController {
             @AuthenticationPrincipal CustomUserDetail userDetail,
             HttpServletResponse response
     ) {
-
         // 로그아웃 처리
         authService.logout(userDetail.getId());
 
@@ -101,21 +97,23 @@ public class AuthController {
         return Response.success(HttpStatus.OK, "로그아웃 성공");
     }
 
-    @GetMapping("/authentication/failed")
-    public void authenticationFailed() {
-        throw new JwtException(ExceptionCode.INVALID_TOKEN);
-    }
-
-    @GetMapping("/login-callback")
-    public Response<HashMap> loginCallback(
-            @RequestParam(name = "accessToken") String accessToken,
-            @RequestParam(name = "refreshToken") String refreshToken,
-            @RequestParam(name = "isNewUser") String isNewUser
+    @Operation(summary = "회원 정보 등록 또는 업데이트", description = "소셜 로그인 후 프론트단에서 제공하는 유저의 정보로 유저 가입 또는 기존 정보를 업데이트 합니다." +
+            "전화번호 = 000-0000-000 , 성별은 M")
+    @PostMapping("/social/account-info")
+    public Response<Map<String, Boolean>> getSocialAccountInfo(
+            @RequestBody SocialAccountInfoDto socialAccountInfoDto,
+            HttpServletResponse resp
     ) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("accessToken", accessToken);
-        map.put("refreshToken", refreshToken);
-        map.put("isNewUser", isNewUser);
-        return Response.success(HttpStatus.OK, "토큰 발급 성공",map );
+        //유저 확인 또는 새로 생성
+        UsersEntity user = authService.getOrCreateUserInfo(socialAccountInfoDto);
+        //token 생성
+        JwtToken jwtToken = jwtService.generateToken(user);
+
+        resp.setHeader("Authorization-Access", "Bearer " + jwtToken.getAccessToken());
+        resp.setHeader("Authorization-Refresh", "Bearer " + jwtToken.getRefreshToken());
+
+        HashMap<String, Boolean> map = new HashMap<>();
+        map.put("isNewUser", user.isNewUser());
+        return Response.success(HttpStatus.OK, "토큰 발급 완료", map);
     }
 }

@@ -7,15 +7,9 @@ import com.mentit.mento.domain.users.domain.dto.response.FindUserResponse;
 import com.mentit.mento.domain.users.dto.request.TagListDTO;
 import com.mentit.mento.domain.users.service.UserCreateService;
 import com.mentit.mento.domain.users.service.UserService;
-import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import com.mentit.mento.global.security.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +27,6 @@ import java.util.List;
 public class UserController {
 
     private final UserCreateService userCreateService;
-    private final CookieUtils cookieUtils;
-    private final RedisService redisService;
     private final UserService userService;
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 true로 반환합니다.")

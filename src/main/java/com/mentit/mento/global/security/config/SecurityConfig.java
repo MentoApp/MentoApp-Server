@@ -51,11 +51,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .anyRequest().permitAll()
                 )
-                .oauth2Login(login -> login.userInfoEndpoint(config ->
-                                        config.userService(customOAuth2UserService)
-                                )
-                                .successHandler(oAuth2LoginSuccessHandler)
-                )
                 .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, redisService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
