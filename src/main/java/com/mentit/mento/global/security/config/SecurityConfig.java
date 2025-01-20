@@ -61,7 +61,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 프론트엔드 URL
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie", "Authorization-Access","Authorization-Refresh"));
         configuration.setAllowCredentials(true); // 인증 정보 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
