@@ -11,6 +11,7 @@ import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import com.mentit.mento.global.security.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -97,8 +98,27 @@ public class AuthController {
         return Response.success(HttpStatus.OK, "로그아웃 성공");
     }
 
-    @Operation(summary = "회원 정보 등록 또는 업데이트", description = "소셜 로그인 후 프론트단에서 제공하는 유저의 정보로 유저 가입 또는 기존 정보를 업데이트 합니다." +
-            "전화번호 = 000-0000-000 , 성별은 MALE/FEMALE , 생년은 YYYY , 생일은 MMDD 입니다. authType은 kakao 또는 naver로 기재해주시면 됩니다.")
+    @Operation(
+            summary = "회원 정보 등록 또는 업데이트",
+            description = "소셜 로그인 후 프론트단에서 제공하는 유저의 정보로 유저 가입 또는 기존 정보를 업데이트 합니다. " +
+                    "전화번호 = 000-0000-000 , 성별은 MALE/FEMALE , 생년은 YYYY , 생일은 MMDD 입니다. authType은 kakao 또는 naver로 기재해주시면 됩니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "토큰 발급 완료",
+                    content = @Content(mediaType = "application/json"),
+                    headers = {
+                            @Header(name = "Authorization-Access", description = "발급된 Access 토큰", schema = @Schema(type = "string")),
+                            @Header(name = "Authorization-Refresh", description = "발급된 Refresh 토큰", schema = @Schema(type = "string"))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @PostMapping("/social/account-info")
     public Response<Map<String, Boolean>> getSocialAccountInfo(
             @RequestBody SocialAccountInfoDto socialAccountInfoDto,
