@@ -8,6 +8,7 @@ import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.JwtException;
 import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
+import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -39,17 +40,19 @@ public class JwtService {
     private final long refreshTokenExpirationTime;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepositoryImpl userRepositoryImpl;
+    private final RedisService redisService;
 
     public JwtService(@Value("${jwt.secret}") String secretKey,
                       @Value("${jwt.token.access-token-expiration-time}") long accessTokenExpirationTime,
                       @Value("${jwt.token.refresh-token-expiration-time}") long refreshTokenExpirationTime,
-                      RefreshTokenRepository refreshTokenRepository, UserRepositoryImpl memberRepository) {
+                      RefreshTokenRepository refreshTokenRepository, UserRepositoryImpl memberRepository, RedisService redisService) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepositoryImpl = memberRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpirationTime = accessTokenExpirationTime;
         this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.redisService = redisService;
     }
 
     public JwtToken generateToken(Authentication authentication) {
@@ -58,6 +61,16 @@ public class JwtService {
                 .accessToken(generateAccessToken(authentication))
                 .refreshToken(generateRefreshToken(authentication))
                 .build();
+    }
+
+    public JwtToken generateToken(UsersEntity usersEntity) {
+        JwtToken jwtToken = JwtToken.builder()
+                .grantType("Bearer")
+                .accessToken(generateAccessToken(usersEntity))
+                .refreshToken(generateRefreshToken(usersEntity))
+                .build();
+        redisService.saveAccessToken(jwtToken.getAccessToken(), usersEntity.getUserId());
+        return jwtToken;
     }
 
     // 리프레시 토큰을 이용해 액세스 토큰을 재발급
@@ -98,7 +111,6 @@ public class JwtService {
         return new UsernamePasswordAuthenticationToken(userDetail, "", authorities);
     }
 
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -132,6 +144,22 @@ public class JwtService {
                 .compact();
     }
 
+    private String generateAccessToken(UsersEntity usersEntity) {
+
+        String authorities = usersEntity.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+        Date accessTokenExpiresIn = new Date(now + accessTokenExpirationTime);
+
+        return Jwts.builder()
+                .setSubject(usersEntity.getName())
+                .claim("id", usersEntity.getUserId())
+                .claim("auth", authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private String generateRefreshToken(Authentication authentication) {
         CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
 
@@ -154,6 +182,33 @@ public class JwtService {
                 () -> {
                     // 리프레시 토큰 DB 저장 (새로운 토큰)
                     refreshTokenRepository.save(RefreshToken.of(refreshToken, customUserDetail.getId()));
+                    log.info("새로운 토큰 생성 및 저장 완료");
+                }
+        );
+        return refreshToken;
+    }
+
+    private String generateRefreshToken(UsersEntity usersEntity) {
+
+        long now = (new Date()).getTime();
+        Date refreshTokenExpiresIn = new Date(now + refreshTokenExpirationTime);
+
+        String refreshToken = Jwts.builder()
+                .setExpiration(refreshTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        // 사용자 ID로 기존 리프레시 토큰이 있는지 확인
+        refreshTokenRepository.findByMemberId(usersEntity.getUserId()).ifPresentOrElse(
+                existingRefreshToken -> {
+                    // 리프레시 토큰이 존재한다면 업데이트
+                    existingRefreshToken.updateRefreshToken(refreshToken);
+                    log.info("토큰 업데이트 완료");
+                    refreshTokenRepository.save(existingRefreshToken);
+                },
+                () -> {
+                    // 리프레시 토큰 DB 저장 (새로운 토큰)
+                    refreshTokenRepository.save(RefreshToken.of(refreshToken, usersEntity.getUserId()));
                     log.info("새로운 토큰 생성 및 저장 완료");
                 }
         );
