@@ -57,7 +57,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).build();
     }
 
-    @Operation(summary = "소셜 회원 탈퇴", description = "소셜 회원은 재로그인을 통해 검증, 재발급 받은 액세스 토큰을 통해 서비스 탈퇴")
+    @Operation(summary = "소셜 회원 탈퇴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소셜 회원 탈퇴 성공",
                     content = {@Content(schema = @Schema(implementation = Response.class))}),
@@ -77,7 +77,7 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "로그아웃", description = "DB에 저장된 리프레쉬 토큰을 사용하여 로그아웃")
+    @Operation(summary = "로그아웃", description = "DB에 저장된 리프레쉬 토큰을 사용하여 로그아웃합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공",
                     content = {@Content(schema = @Schema(implementation = ResponseEntity.class))}),
@@ -98,7 +98,7 @@ public class AuthController {
     }
 
     @Operation(summary = "회원 정보 등록 또는 업데이트", description = "소셜 로그인 후 프론트단에서 제공하는 유저의 정보로 유저 가입 또는 기존 정보를 업데이트 합니다." +
-            "전화번호 = 000-0000-000 , 성별은 M")
+            "전화번호 = 000-0000-000 , 성별은 MALE/FEMALE , 생년은 YYYY , 생일은 MMDD 입니다. authType은 kakao 또는 naver로 기재해주시면 됩니다.")
     @PostMapping("/social/account-info")
     public Response<Map<String, Boolean>> getSocialAccountInfo(
             @RequestBody SocialAccountInfoDto socialAccountInfoDto,
