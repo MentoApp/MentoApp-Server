@@ -1,5 +1,6 @@
 package com.mentit.mento.domain.auth.controller;
 
+import com.mentit.mento.domain.auth.dto.SocialAccountInfoResponse;
 import com.mentit.mento.domain.auth.service.AuthService;
 import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
@@ -107,7 +108,12 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "200",
                     description = "토큰 발급 완료",
-                    content = @Content(mediaType = "application/json"),
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = SocialAccountInfoResponse.class
+                            )
+                    ),
                     headers = {
                             @Header(name = "Authorization-Access", description = "발급된 Access 토큰", schema = @Schema(type = "string")),
                             @Header(name = "Authorization-Refresh", description = "발급된 Refresh 토큰", schema = @Schema(type = "string"))
