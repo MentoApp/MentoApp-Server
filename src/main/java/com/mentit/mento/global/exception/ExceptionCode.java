@@ -9,7 +9,6 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum ExceptionCode {
-
     // 500 - 일반적인 예외
     NOT_HANDLED_EXCEPTION(INTERNAL_SERVER_ERROR, "처리되지 않은 예외가 발생했습니다.", 500),
     REDIS_CONNECTION_FAILURE(INTERNAL_SERVER_ERROR, "Redis에 연결할 수 없습니다.", 500),
@@ -30,6 +29,8 @@ public enum ExceptionCode {
     ALREADY_ENROLLED_ACCOUNT(CONFLICT, "이미 등록된 계정입니다.", 807),
     NICKNAME_NOT_MATCH(CONFLICT, "닉네임이 일치하지 않습니다.", 809),
     CANT_FIND_USERSTATUS(CONFLICT, "사용자 상태를 찾을 수 없습니다.", 810),
+    ALREADY_ENROLLED_ACCOUNT_KAKAO(CONFLICT,"카카오로 가입된 계정이 존재합니다." ,811 ),
+    ALREADY_ENROLLED_ACCOUNT_NAVER(CONFLICT,"네이버로 가입된 계정이 존재합니다." ,812 ),
 
     // 게시판 관련 에러 (700)
     NOT_FOUND_BOARD(CONFLICT, "게시글을 찾을 수 없습니다.", 700),
@@ -55,7 +56,7 @@ public enum ExceptionCode {
     NOT_FOUND_REFRESH_TOKEN(UNAUTHORIZED, "사용자의 리프레시 토큰을 찾을 수 없습니다.", 905),
     MALFORMED_TOKEN(UNAUTHORIZED, "손상된 토큰입니다.", 906),
 
-    // 등록 관련 에러 (403)
+    // 등록 관련 에러 (403),
     INVALID_ENUM_PARAMETER(CONFLICT, "잘못된 열거형 파라미터입니다.", 403),
     ACCESS_DENIED(UNAUTHORIZED, "접근이 거부되었습니다.", 401);
 
