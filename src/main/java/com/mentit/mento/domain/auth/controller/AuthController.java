@@ -120,9 +120,24 @@ public class AuthController {
                     }
             ),
             @ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청",
-                    content = @Content(mediaType = "application/json")
+                    responseCode = "811",
+                    description = "이미 카카오 계정으로 등록된 사용자입니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "{\"status\":\"CONFLICT\",\"message\":\"카카오로 가입된 계정이 존재합니다.\",\"code\":811}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "812",
+                    description = "이미 네이버 계정으로 등록된 사용자입니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "{\"status\":\"CONFLICT\",\"message\":\"네이버로 가입된 계정이 존재합니다.\",\"code\":812}"
+                            )
+                    )
             )
     })
     @PostMapping("/social/account-info")

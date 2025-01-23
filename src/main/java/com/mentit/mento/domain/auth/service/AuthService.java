@@ -18,8 +18,11 @@ import com.mentit.mento.global.security.util.PasswordUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -76,6 +79,7 @@ public class AuthService {
         return refreshToken.getRefreshToken();
     }
 
+
     private void revokeSocialAccessToken(UsersEntity findUser, String socialAccessToken) {
         switch (findUser.getAuthType()) {
             case MEMBER_KAKAO -> oAuth2RevokeService.revokeKakao(socialAccessToken);
@@ -100,6 +104,16 @@ public class AuthService {
     @Transactional
     public UsersEntity getOrCreateUserInfo(SocialAccountInfoDto socialAccountInfoDto) {
         if (socialAccountInfoDto.getEmail() != null) {
+            if(socialAccountInfoDto.getPhoneNumber() != null) {
+                Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumber(socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber());
+                if(usersEntity.isPresent()) {
+                    if(usersEntity.get().getAuthType() == AuthType.MEMBER_KAKAO) {
+                        throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_KAKAO);
+                    }else{
+                        throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_NAVER);
+                    }
+                }
+            }
             // 기존 사용자를 이메일로 검색
             return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(usersEntity -> {
                 // 사용자가 존재할 경우 소셜 액세스 토큰 업데이트
@@ -110,17 +124,7 @@ public class AuthService {
                 return usersEntity; // 기존 사용자 반환
             }).orElseGet(() -> {
                 // 사용자가 없을 경우 새 사용자 생성
-                UsersEntity createdUser = UsersEntity.builder()
-                        .email(socialAccountInfoDto.getEmail())
-                        .name(socialAccountInfoDto.getName())
-                        .authType(AuthType.of(socialAccountInfoDto.getAuthType()))
-                        .gender(UserGenderEnum.valueOf(socialAccountInfoDto.getGender()))
-                        .birthYear(socialAccountInfoDto.getBirthYear())
-                        .birthDay(socialAccountInfoDto.getBirthDay())
-                        .phoneNumber(socialAccountInfoDto.getPhoneNumber())
-                        .isNewUser(true)
-                        .password(PasswordUtil.generateRandomPassword())
-                        .build();
+                UsersEntity createdUser = UsersEntity.to(socialAccountInfoDto);
 
                 // 새 사용자와 연관된 소셜 액세스 토큰 저장
                 socialAccessTokenRepository.save(
@@ -131,7 +135,6 @@ public class AuthService {
                 return createdUser; // 새 사용자 반환
             });
         }
-        em.flush();
         return null;
     }
 }
