@@ -92,4 +92,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<UsersEntity> findAll(Pageable pageable) {
         return userJPARepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<UsersEntity> findByNameAndPhoneNumber(String name, String phoneNumber) {
+        return userJPARepository.findByNameAndPhoneNumber(name,phoneNumber);
+    }
 }

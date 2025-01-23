@@ -1,5 +1,6 @@
 package com.mentit.mento.domain.users.domain.entity;
 
+import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
 import com.mentit.mento.domain.board.domain.entity.BoardEntity;
 import com.mentit.mento.domain.comment.entity.CommentEntity;
 import com.mentit.mento.domain.dotoriToken.entity.DotoriTokenEntity;
@@ -10,6 +11,7 @@ import com.mentit.mento.domain.users.constant.UserGenderEnum;
 import com.mentit.mento.domain.users.constant.UserJobEnum;
 import com.mentit.mento.domain.users.domain.Users;
 import com.mentit.mento.global.BaseEntity;
+import com.mentit.mento.global.security.util.PasswordUtil;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -133,6 +135,22 @@ public class UsersEntity extends BaseEntity {
                 .accountStatus(this.accountStatus)
                 .build();
     }
+
+    public static UsersEntity to(SocialAccountInfoDto socialAccountInfoDto) {
+        return UsersEntity.builder()
+                .email(socialAccountInfoDto.getEmail())
+                .name(socialAccountInfoDto.getName())
+                .authType(AuthType.of(socialAccountInfoDto.getAuthType()))
+                .gender(UserGenderEnum.valueOf(socialAccountInfoDto.getGender()))
+                .birthYear(socialAccountInfoDto.getBirthYear())
+                .birthDay(socialAccountInfoDto.getBirthDay())
+                .phoneNumber(socialAccountInfoDto.getPhoneNumber())
+                .isNewUser(true)
+                .password(PasswordUtil.generateRandomPassword())
+                .build();
+    }
+
+
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));

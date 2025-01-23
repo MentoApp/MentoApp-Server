@@ -17,4 +17,6 @@ public interface UserJPARepository extends JpaRepository<UsersEntity, Long> {
 
     @Query("select u from UsersEntity u where u.userId= :userId")
     UsersEntity findByBoardEntities(Long userId);
+
+    Optional<UsersEntity> findByNameAndPhoneNumber(String name, String phoneNumber);
 }

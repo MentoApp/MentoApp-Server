@@ -46,10 +46,6 @@ public class UserCreateService {
     public UsersEntity create(CustomUserDetail userDetail, SignInUserRequest signInRequest, MultipartFile profileImage) {
         UsersEntity usersEntity = getUsers(userDetail);
 
-        if (usersEntity.getUserStatusTagEntity() != null) {
-            throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT);
-        }
-
         // 프로필 이미지 업로드
         String uploadedFile = null;
         if (profileImage != null) {

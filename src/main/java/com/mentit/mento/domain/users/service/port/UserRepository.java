@@ -35,4 +35,6 @@ public interface UserRepository extends PagingAndSortingRepository<UsersEntity, 
 
     @Override
     Page<UsersEntity> findAll(Pageable pageable);
+
+    Optional<UsersEntity> findByNameAndPhoneNumber(String name, String phoneNumber);
 }

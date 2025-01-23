@@ -1,5 +1,6 @@
 package com.mentit.mento.domain.users.domain.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
+@Schema(description = "회원 정보 조회 응답")
 public class FindUserResponse {
     private Long id;
     private String name;
@@ -21,11 +23,7 @@ public class FindUserResponse {
 
     private String personalHistory;
 
-//    private List<String> baseTags;
-
     private List<String> myStatus;
-
-//    private List<String> currentJobStatus;
 
     private String corporateForm;
 
