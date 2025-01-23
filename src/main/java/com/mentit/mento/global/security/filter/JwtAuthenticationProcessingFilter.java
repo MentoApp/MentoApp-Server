@@ -26,7 +26,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private final RedisService redisService;
 
     private static final List<String> EXCLUDE_URLS = List.of(
-            "/css", "/swagger", "/v3/api-docs", "/login", "/favicon", "/api/v1/auth/"
+            "/css", "/swagger", "/v3/api-docs", "/login", "/favicon", "/api/v1/auth/","/api/v1/user/"
     );
 
     @Override
