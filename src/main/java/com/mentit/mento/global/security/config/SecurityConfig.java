@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://dotorit.duckdns.org","https://dotorit.duckdns.org","http://localhost:8080")); // 프론트엔드 URL
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://dotorit.duckdns.org")); // 프론트엔드 URL
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie", "Authorization-Access","Authorization-Refresh"));
