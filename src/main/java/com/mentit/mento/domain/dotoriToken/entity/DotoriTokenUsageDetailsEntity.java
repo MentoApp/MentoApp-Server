@@ -51,17 +51,4 @@ public class DotoriTokenUsageDetailsEntity extends BaseEntity {
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
-
-    public DotoriTokenUsageDetails toCreateUsage() {
-        return DotoriTokenUsageDetails.builder()
-                .dotoriTokenUsageDetailId(dotoriTokenUsageDetailId)
-                .tradeTypeEnum(tradeTypeEnum)
-                .tradeAmount(tradeAmount)
-                .presenter(null)
-                .receiver(receiver.to())
-                .dotoriTokenEntity(dotoriTokenEntity.to())
-                .boardEntity(null)
-                .isDeleted(isDeleted)
-                .build();
-    }
 }
