@@ -31,7 +31,7 @@ public class UserController {
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 false로 반환합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Response<Void> createUser(
+    public Response<FindUserResponse> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @Valid @RequestPart(value = "signInUserRequest") SignInUserRequest signInUserRequest,
             @RequestPart(value = "profileImage") MultipartFile profileImage
@@ -39,7 +39,7 @@ public class UserController {
 
         userCreateService.create(userDetail, signInUserRequest, profileImage);
 
-        return Response.success(HttpStatus.OK, "회원가입 성공");
+        return Response.success(HttpStatus.OK, "회원가입 성공",userService.findMyInfo(userDetail));
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 기입")
@@ -73,10 +73,10 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
-    @GetMapping("/validate-nickname/{nickname}")
+    @GetMapping("/validate-nickname/nickname")
     public Response<String> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
-            @PathVariable String nickname
+            @RequestParam("nickname") String nickname
     ) {
         boolean flag = userService.validateNickname(nickname, userDetail);
 
