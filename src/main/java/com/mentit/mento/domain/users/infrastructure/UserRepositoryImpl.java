@@ -94,7 +94,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UsersEntity> findByNameAndPhoneNumber(String name, String phoneNumber) {
+    public Optional<UsersEntity> findByNameAndPhoneNumberAndBirthDayAndBirthYear(String name, String phoneNumber, String birthDay, String birthYear) {
         return userJPARepository.findByNameAndPhoneNumber(name,phoneNumber);
     }
 }

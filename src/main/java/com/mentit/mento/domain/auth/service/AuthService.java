@@ -1,8 +1,7 @@
 package com.mentit.mento.domain.auth.service;
 
-import com.mentit.mento.domain.users.constant.AuthType;
-import com.mentit.mento.domain.users.constant.UserGenderEnum;
 import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
+import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.RefreshToken;
@@ -14,11 +13,9 @@ import com.mentit.mento.global.exception.customException.MemberException;
 import com.mentit.mento.global.jwt.dto.JwtToken;
 import com.mentit.mento.global.jwt.service.JwtService;
 import com.mentit.mento.global.oauth.service.OAuth2RevokeService;
-import com.mentit.mento.global.security.util.PasswordUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,6 +95,7 @@ public class AuthService {
     /**
      * 클라이언트단에서 유저 정보 반환 후 백엔드에서 유저 정보를 저장하는 비즈니스 로직
      * 기존유저가 존재할 경우 RefreshToken값만 갱신, 존재하지 않는 경우 새로 UserEntity생성
+     *
      * @param socialAccountInfoDto
      * @return
      */
@@ -107,16 +105,17 @@ public class AuthService {
                 &&
                 socialAccountInfoDto.getPhoneNumber() != null
                 &&
-            socialAccountInfoDto.getBirthDay() != null && socialAccountInfoDto.getBirthYear() != null
+                socialAccountInfoDto.getBirthDay() != null && socialAccountInfoDto.getBirthYear() != null
         ) {
-                Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumber(socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber());
-                if(usersEntity.isPresent()) {
-                    if(usersEntity.get().getAuthType() == AuthType.MEMBER_KAKAO) {
-                        throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_KAKAO);
-                    }else{
-                        throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_NAVER);
-                    }
+            Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumberAndBirthDayAndBirthYear(
+                    socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber(),socialAccountInfoDto.getBirthDay(), socialAccountInfoDto.getBirthYear());
+            if (usersEntity.isPresent()) {
+                if (usersEntity.get().getAuthType() == AuthType.MEMBER_KAKAO) {
+                    throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_KAKAO);
+                } else {
+                    throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_NAVER);
                 }
+            }
             // 기존 사용자를 이메일로 검색
             return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(userEntity -> {
                 // 사용자가 존재할 경우 소셜 액세스 토큰 업데이트
