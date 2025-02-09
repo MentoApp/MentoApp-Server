@@ -103,8 +103,12 @@ public class AuthService {
      */
     @Transactional
     public UsersEntity getOrCreateUserInfo(SocialAccountInfoDto socialAccountInfoDto) {
-        if (socialAccountInfoDto.getEmail() != null) {
-            if(socialAccountInfoDto.getPhoneNumber() != null) {
+        if (socialAccountInfoDto.getName() != null
+                &&
+                socialAccountInfoDto.getPhoneNumber() != null
+                &&
+            socialAccountInfoDto.getBirthDay() != null && socialAccountInfoDto.getBirthYear() != null
+        ) {
                 Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumber(socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber());
                 if(usersEntity.isPresent()) {
                     if(usersEntity.get().getAuthType() == AuthType.MEMBER_KAKAO) {
@@ -113,15 +117,14 @@ public class AuthService {
                         throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_NAVER);
                     }
                 }
-            }
             // 기존 사용자를 이메일로 검색
-            return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(usersEntity -> {
+            return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(userEntity -> {
                 // 사용자가 존재할 경우 소셜 액세스 토큰 업데이트
-                socialAccessTokenRepository.findByUser(usersEntity)
+                socialAccessTokenRepository.findByUser(userEntity)
                         .ifPresent(socialAccessToken ->
                                 socialAccessToken.updateSocialAccessToken(socialAccountInfoDto.getSocialAccessToken())
                         );
-                return usersEntity; // 기존 사용자 반환
+                return userEntity; // 기존 사용자 반환
             }).orElseGet(() -> {
                 // 사용자가 없을 경우 새 사용자 생성
                 UsersEntity createdUser = UsersEntity.to(socialAccountInfoDto);
