@@ -93,9 +93,7 @@ public class AuthService {
     }
 
     /**
-     * 클라이언트단에서 유저 정보 반환 후 백엔드에서 유저 정보를 저장하는 비즈니스 로직
-     * 기존유저가 존재할 경우 RefreshToken값만 갱신, 존재하지 않는 경우 새로 UserEntity생성
-     *
+     * 들어오는 roleType이 kakao면 naver가 있는지 확인후 있으면 중복로그인 예외던지기, 아니면 정보 업데이트나 가입하기
      * @param socialAccountInfoDto
      * @return
      */
@@ -109,14 +107,15 @@ public class AuthService {
         ) {
             Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumberAndBirthDayAndBirthYear(
                     socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber(),socialAccountInfoDto.getBirthDay(), socialAccountInfoDto.getBirthYear());
-            if (usersEntity.isPresent()) {
-                if (usersEntity.get().getAuthType() == AuthType.MEMBER_KAKAO) {
+            if (usersEntity.isPresent() && !socialAccountInfoDto.getAuthType().equals(usersEntity.get().getAuthType())) {
+                if (usersEntity.get().getAuthType() == AuthType.MEMBER_NAVER) {
                     throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_KAKAO);
                 } else {
                     throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_NAVER);
                 }
             }
-            // 기존 사용자를 이메일로 검색
+        }
+        // 기존 사용자를 이메일로 검색
             return userRepository.findByEmail(socialAccountInfoDto.getEmail()).map(userEntity -> {
                 // 사용자가 존재할 경우 소셜 액세스 토큰 업데이트
                 socialAccessTokenRepository.findByUser(userEntity)
@@ -136,7 +135,5 @@ public class AuthService {
                 createdUser = userRepository.save(createdUser);
                 return createdUser; // 새 사용자 반환
             });
-        }
-        return null;
     }
 }

@@ -39,7 +39,6 @@ jobs:
           cd ./src/main/resources
           touch ./application-dev.yml
           echo "${{ secrets.YML_DEV }}" > ./application-dev.yml
-          cat ./application-dev.yml  # 디버그용 출력
         shell: bash
 
       # gradlew 실행 권한 부여
