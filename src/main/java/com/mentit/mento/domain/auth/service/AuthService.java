@@ -99,15 +99,12 @@ public class AuthService {
      */
     @Transactional
     public UsersEntity getOrCreateUserInfo(SocialAccountInfoDto socialAccountInfoDto) {
-        if (socialAccountInfoDto.getName() != null
-                &&
-                socialAccountInfoDto.getPhoneNumber() != null
-                &&
-                socialAccountInfoDto.getBirthDay() != null && socialAccountInfoDto.getBirthYear() != null
+        if (socialAccountInfoDto.getName() != null && socialAccountInfoDto.getPhoneNumber() != null
+                && socialAccountInfoDto.getBirthDay() != null && socialAccountInfoDto.getBirthYear() != null
         ) {
             Optional<UsersEntity> usersEntity = userRepository.findByNameAndPhoneNumberAndBirthDayAndBirthYear(
                     socialAccountInfoDto.getName(), socialAccountInfoDto.getPhoneNumber(),socialAccountInfoDto.getBirthDay(), socialAccountInfoDto.getBirthYear());
-            if (usersEntity.isPresent() && !socialAccountInfoDto.getAuthType().equals(usersEntity.get().getAuthType())) {
+            if (usersEntity.isPresent() && !usersEntity.get().isNewUser() && !socialAccountInfoDto.getAuthType().equals(usersEntity.get().getAuthType())) {
                 if (usersEntity.get().getAuthType() == AuthType.MEMBER_NAVER) {
                     throw new MemberException(ExceptionCode.ALREADY_ENROLLED_ACCOUNT_KAKAO);
                 } else {
