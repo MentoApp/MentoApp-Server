@@ -9,6 +9,7 @@ import com.mentit.mento.domain.users.dto.request.TagListDTO;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
+import com.mentit.mento.global.jwt.service.JwtUtil;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +28,7 @@ public class UserService {
     private final UserStatusTagService userStatusTagService;
     private final BoardKeywordService boardKeywordService;
     private final JdbcTemplate jdbcTemplate;
+    private final JwtUtil jwtUtil;
 
     public boolean validateNickname(String nickname, CustomUserDetail userDetail) {
         UsersEntity findUserByUserDetail = getUsers(userDetail);
@@ -79,7 +82,7 @@ public class UserService {
                 .build();
     }
 
-    private UsersEntity getUsers(CustomUserDetail userDetail) {
+     UsersEntity getUsers(CustomUserDetail userDetail) {
         return userRepository.findById(userDetail.getId()).orElseThrow(
                 () -> new MemberException(ExceptionCode.NOT_FOUND_MEMBER)
         );
@@ -107,5 +110,13 @@ public class UserService {
         List<String> boardKeywords = jdbcTemplate.queryForList("SELECT name FROM mentoapp.board_keyword_static_data order by display_order", String.class);
 
         return new TagListDTO(userJobsKeywords, myStatusTags, myCareerTags, corporateTags, boardKeywords);
+    }
+
+    @Transactional
+    public void updateUserTokenStatus(UsersEntity user, String accessToken) {
+        LocalDateTime issuedTimeFromToken = jwtUtil.getIssuedTimeFromToken(accessToken);
+        user.updateIssuedTokenTime(issuedTimeFromToken);
+
+        userRepository.save(user);
     }
 }

@@ -1,9 +1,9 @@
 package com.mentit.mento.global.security.config;
 
-import com.mentit.mento.global.jwt.service.JwtService;
-import com.mentit.mento.global.oauth.handler.OAuth2LoginSuccessHandler;
-import com.mentit.mento.global.oauth.service.CustomOAuth2UserService;
+import com.mentit.mento.global.helper.UserHelper;
+import com.mentit.mento.global.jwt.service.JwtUtil;
 import com.mentit.mento.global.redis.service.RedisService;
+import com.mentit.mento.global.security.JwtAuthenticationFailEntryPoint;
 import com.mentit.mento.global.security.filter.JwtAuthenticationProcessingFilter;
 import com.mentit.mento.global.security.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +34,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final LoginService loginService;
-    private final JwtService jwtService;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
-
+    private final JwtUtil jwtUtil;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService, UserHelper userHelper) throws Exception {
         http
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -50,8 +47,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .anyRequest().permitAll()
-                )
-                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, redisService), UsernamePasswordAuthenticationFilter.class);
+                );
+
+        http
+                .exceptionHandling(exceptoin-> exceptoin.authenticationEntryPoint(new JwtAuthenticationFailEntryPoint()))
+                .addFilterBefore(new JwtAuthenticationProcessingFilter(jwtUtil, redisService,userHelper), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -60,7 +60,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://dotorit.duckdns.org")); // 프론트엔드 URL
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie", "Authorization-Access","Authorization-Refresh"));
         configuration.setAllowCredentials(true); // 인증 정보 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
