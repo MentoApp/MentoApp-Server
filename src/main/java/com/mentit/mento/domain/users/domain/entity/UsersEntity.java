@@ -19,6 +19,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,6 +93,9 @@ public class UsersEntity extends BaseEntity {
     @Builder.Default
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
+    @Column(name = "token_issued_at")
+    private LocalDateTime tokenIssuedAt;
+
     @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private DotoriTokenEntity dotoriTokenEntity;
 
@@ -156,4 +160,7 @@ public class UsersEntity extends BaseEntity {
         return Collections.singletonList(new SimpleGrantedAuthority(this.authType.name()));
     }
 
+    public void updateIssuedTokenTime(LocalDateTime issuedTimeFromToken) {
+        this.tokenIssuedAt = issuedTimeFromToken;
+    }
 }
