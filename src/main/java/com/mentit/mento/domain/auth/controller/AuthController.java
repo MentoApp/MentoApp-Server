@@ -10,7 +10,6 @@ import com.mentit.mento.global.jwt.service.JwtUtil;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.response.Response;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import com.mentit.mento.global.security.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,8 +31,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
-    private final CookieUtils cookieUtils;
     private final RedisService redisService;
     private final AuthService authService;
     private final JwtUtil jwtUtil;
@@ -113,7 +113,9 @@ public class AuthController {
             @RequestHeader("Authorization") String accessToken,
             HttpServletResponse resp
     ) {
+        log.info("accessToken= {} " , accessToken);
         accessToken = jwtUtil.subString(accessToken);
+        log.info("accessToken= {} " , accessToken);
         Long userId = jwtUtil.getUserIdFromToken(accessToken);
         String newAccessToken = jwtUtil.reissueToken(accessToken,userId);
         UsersEntity usersEntity = userHelper.getUsers(userId);
