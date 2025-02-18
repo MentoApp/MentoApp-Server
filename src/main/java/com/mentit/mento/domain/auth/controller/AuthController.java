@@ -113,11 +113,8 @@ public class AuthController {
             @RequestHeader("Authorization") String accessToken,
             HttpServletResponse resp
     ) {
-        log.info("accessToken= {} " , accessToken);
         accessToken = jwtUtil.subString(accessToken);
-        log.info("accessToken= {} " , accessToken);
         Long userId = jwtUtil.getUserIdFromToken(accessToken);
-        log.info("userId= {} " , userId);
         String newAccessToken = jwtUtil.reissueToken(accessToken);
         UsersEntity usersEntity = userHelper.getUsers(userId);
         userService.updateUserTokenStatus(usersEntity,newAccessToken);

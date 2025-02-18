@@ -63,7 +63,9 @@ public class JwtUtil {
         LocalDateTime issuedTimeFromToken = getIssuedTimeFromToken(accessToken);
         Long userId = getUserIdFromToken(accessToken);
         UsersEntity usersEntity = userHelper.getUsers(userId);
-        if (issuedTimeFromToken.isEqual(usersEntity.getTokenIssuedAt())) {
+        log.info("extracted Token IssuedTime = {} " , issuedTimeFromToken.toString());
+        log.info("userEntity IssuedTime = {} ", usersEntity.getUserStatusTagEntity());
+        if (issuedTimeFromToken.truncatedTo(ChronoUnit.SECONDS).isEqual(usersEntity.getTokenIssuedAt().truncatedTo(ChronoUnit.SECONDS))) {
             // 새로운 토큰 생성
             return generateToken(usersEntity);
         } else {
