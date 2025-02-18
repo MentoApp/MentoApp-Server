@@ -1,6 +1,8 @@
 package com.mentit.mento.global.redis.service;
 
 import com.mentit.mento.domain.board.constant.BoardKeywordForCreatingEnum;
+import com.mentit.mento.domain.users.domain.entity.UsersEntity;
+import com.mentit.mento.global.helper.UserHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,17 +15,18 @@ import java.util.stream.Collectors;
 public class RedisService {
 
     private final RedisTemplate<String,String> redisTemplate;
+    private final UserHelper userHelper;
 
-    public void saveAccessToken(String accessToken, Long id) {
-        System.out.println("수행됨");
-        String key = "userId: " + id;
-        System.out.println("id"+"="+id);
+    public void updateTokenStatus(UsersEntity usersEntity) {
 
-        redisTemplate.opsForValue().set(key, accessToken);
+        String key = "token-userId: " + usersEntity.getUserId();
+
+        redisTemplate.opsForValue().set(key, String.valueOf(usersEntity.getTokenIssuedAt()));
     }
 
-    public String getAccessToken(String userId) {
-        return redisTemplate.opsForValue().get("userId: " + userId);
+    public String getAccessToken(Long userId) {
+        UsersEntity usersEntity = userHelper.getUsers(userId);
+        return redisTemplate.opsForValue().get("token-userId: " + userId);
     }
 
     // Save keywords for a specific board

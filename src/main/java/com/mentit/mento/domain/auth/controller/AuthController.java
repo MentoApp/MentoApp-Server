@@ -91,6 +91,8 @@ public class AuthController {
         String accessToken = jwtUtil.generateToken(user);
         //token 발급시간 업데이트
         userService.updateUserTokenStatus(user,accessToken);
+        //토큰 캐싱
+        redisService.updateTokenStatus(user);
 
         resp.setHeader("Authorization", "Bearer " + accessToken);
 

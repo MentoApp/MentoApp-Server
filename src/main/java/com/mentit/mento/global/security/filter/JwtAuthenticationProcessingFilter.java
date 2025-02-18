@@ -74,6 +74,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                     Authentication authentication = jwtUtil.getAuthenticationFromAccessToken(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info("Authentication object created successfully for user: {}", authentication.getName());
+                    filterChain.doFilter(request, response);
                 }
             } catch (JwtException e) {
                 log.error(e.getMessage());
