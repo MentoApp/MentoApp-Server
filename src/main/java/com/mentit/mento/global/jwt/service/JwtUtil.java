@@ -58,10 +58,9 @@ public class JwtUtil {
     }
 
     @Transactional
-    public String reissueToken(String accessToken,
-                               Long userId
-    ) {
+    public String reissueToken(String accessToken) {
         LocalDateTime issuedTimeFromToken = getIssuedTimeFromToken(accessToken);
+        Long userId = getUserIdFromToken(accessToken);
         UsersEntity usersEntity = userHelper.getUsers(userId);
         log.info("extracted Token IssuedTime = {} " , issuedTimeFromToken.toString());
         log.info("userEntity IssuedTime = {} ", usersEntity.getUserStatusTagEntity());
