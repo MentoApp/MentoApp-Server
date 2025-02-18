@@ -25,7 +25,6 @@ public class RedisService {
     }
 
     public String getAccessToken(Long userId) {
-        UsersEntity usersEntity = userHelper.getUsers(userId);
         return redisTemplate.opsForValue().get("token-userId: " + userId);
     }
 
