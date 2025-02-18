@@ -63,6 +63,8 @@ public class JwtUtil {
     ) {
         LocalDateTime issuedTimeFromToken = getIssuedTimeFromToken(accessToken);
         UsersEntity usersEntity = userHelper.getUsers(userId);
+        log.info("extracted Token IssuedTime = {} " , issuedTimeFromToken.toString());
+        log.info("userEntity IssuedTime = {} ", usersEntity.getUserStatusTagEntity());
         if (issuedTimeFromToken.isEqual(usersEntity.getTokenIssuedAt())) {
             // 새로운 토큰 생성
             return generateToken(usersEntity);

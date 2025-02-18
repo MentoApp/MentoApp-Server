@@ -3,10 +3,8 @@ package com.mentit.mento.domain.auth.service;
 import com.mentit.mento.domain.auth.dto.SocialAccountInfoDto;
 import com.mentit.mento.domain.users.constant.AuthType;
 import com.mentit.mento.domain.users.domain.entity.UsersEntity;
-import com.mentit.mento.domain.users.service.UserService;
 import com.mentit.mento.domain.users.service.port.UserRepository;
 import com.mentit.mento.global.authToken.entity.SocialAccessToken;
-import com.mentit.mento.global.authToken.repository.RefreshTokenRepository;
 import com.mentit.mento.global.authToken.repository.SocialAccessTokenRepository;
 import com.mentit.mento.global.exception.ExceptionCode;
 import com.mentit.mento.global.exception.customException.MemberException;
@@ -26,9 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final SocialAccessTokenRepository socialAccessTokenRepository;
     private final OAuth2RevokeService oAuth2RevokeService;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
-    private final UserService userService;
 
     @Transactional
     public void deleteSocialMember(String BearerToken) {
