@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -64,7 +65,7 @@ public class JwtUtil {
         UsersEntity usersEntity = userHelper.getUsers(userId);
         log.info("extracted Token IssuedTime = {} " , issuedTimeFromToken.toString());
         log.info("userEntity IssuedTime = {} ", usersEntity.getUserStatusTagEntity());
-        if (issuedTimeFromToken.isEqual(usersEntity.getTokenIssuedAt())) {
+        if (issuedTimeFromToken.isEqual(usersEntity.getTokenIssuedAt().truncatedTo(ChronoUnit.SECONDS))) {
             // 새로운 토큰 생성
             return generateToken(usersEntity);
         } else {
