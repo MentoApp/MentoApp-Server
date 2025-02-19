@@ -30,7 +30,6 @@ public class BoardKeywordService {
                     .usersEntity(usersEntity)
                     .build();
         }).toList();
-
        return boardKeywordRepository.saveAll(list);
     }
 
