@@ -87,6 +87,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private boolean isExcludedPath(String requestURI) {
         log.info("{} 경로 매칭중", requestURI);
+        // 1. "api/"로 시작하지 않으면 필터 통과 (부분 포함 여부 검사)
+        if (!requestURI.startsWith("/api")) {
+            log.info("API 경로가 아니므로 필터 제외: {}", requestURI);
+            return true;
+        }
         boolean isExcluded = EXCLUDE_URLS.stream().anyMatch(requestURI::equalsIgnoreCase);
         log.info("Checking if request URI is excluded: {} -> {}", requestURI, isExcluded);
         return isExcluded;

@@ -31,7 +31,7 @@ public class UserController {
 
     @Operation(summary = "계정 추가 정보 가입", description = "게정 추가 정보를 가입하고 isNewUser를 false로 반환합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Response<FindUserResponse> createUser(
+    public Response<Void> createUser(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @Valid @RequestPart(value = "signInUserRequest") SignInUserRequest signInUserRequest,
             @RequestPart(value = "profileImage") MultipartFile profileImage
@@ -39,7 +39,7 @@ public class UserController {
 
         userCreateService.create(userDetail, signInUserRequest, profileImage);
 
-        return Response.success(HttpStatus.OK, "회원가입 성공",userService.findMyInfo(userDetail));
+        return Response.success(HttpStatus.OK, "회원가입 성공");
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보 기입")
@@ -93,6 +93,7 @@ public class UserController {
 
         return Response.success(HttpStatus.OK, "키워드 갱신 완료");
     }
+
     @Operation(summary = "회원가입시 태그 데이터 반환", description = "회원 추가 정보 가입시 사용할 태그 데이터를 반환합니다.")
     @GetMapping("/tags")
     public Response<TagListDTO> getTagLists(

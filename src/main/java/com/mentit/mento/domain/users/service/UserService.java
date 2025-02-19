@@ -63,6 +63,7 @@ public class UserService {
         UserStatusTagEntity userStatusTag = findUserByUserDetail.getUserStatusTagEntity();
 
         List<String> boardKeywordList = boardKeywordService.getBoardKeywords(findUserByUserDetail);
+        log.info(boardKeywordList.toString());
 
         List<String> myStatusTagsList = userStatusTagService.find(userStatusTag);
 
