@@ -88,7 +88,7 @@ public class S3FileUtilImpl implements S3FileUtilService{
             throw new S3Exception(ExceptionCode.NO_FILE_EXTENTION);
         }
         String extention = fileName.substring(dotPos + 1).toLowerCase();
-        List<String> allowedExtentionList = Arrays.asList("jpg", "jpeg", "png", "gif");
+        List<String> allowedExtentionList = Arrays.asList("jpg", "jpeg", "png", "gif","svg");
 
         if (!allowedExtentionList.contains(extention)) {
             throw new S3Exception(ExceptionCode.INVALID_FILE_EXTENTION);
