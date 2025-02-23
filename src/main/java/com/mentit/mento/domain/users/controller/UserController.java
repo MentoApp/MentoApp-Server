@@ -74,13 +74,13 @@ public class UserController {
 
     @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
     @GetMapping("/validate-nickname")
-    public Response<String> validateNickname(
+    public Response<Boolean> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam("nickname") String nickname
     ) {
         boolean flag = userService.validateNickname(nickname, userDetail);
 
-        return Response.success(HttpStatus.OK, "조회 결과", flag + "");
+        return Response.success(HttpStatus.OK, "조회 결과", flag);
     }
 
     @Operation(summary = "내 추천 게시물 키워드 편집", description = "기존의 게시물 키워드를 삭제하고 업데이트합니다.")
