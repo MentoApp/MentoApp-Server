@@ -73,7 +73,7 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
-    @GetMapping("/validate-nickname/nickname")
+    @GetMapping("/validate-nickname")
     public Response<String> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
             @RequestParam("nickname") String nickname
