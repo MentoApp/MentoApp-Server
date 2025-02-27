@@ -6,6 +6,7 @@ import com.mentit.mento.domain.users.domain.entity.UsersEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SavedBoardRepository {
@@ -17,4 +18,5 @@ public interface SavedBoardRepository {
 
     void flush();
 
+    Optional<SavedBoardEntity> findByBoardId(Long boardId);
 }

@@ -28,7 +28,6 @@ import com.mentit.mento.global.redis.service.RedisLikeService;
 import com.mentit.mento.global.redis.service.RedisService;
 import com.mentit.mento.global.s3.S3FileUtilImpl;
 import com.mentit.mento.global.security.userDetails.CustomUserDetail;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -299,6 +298,13 @@ public class BoardService {
         BoardEntity boardEntity = boardRepository.findByBoardId(boardId).orElseThrow(
                 () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
         );
+
+        SavedBoardEntity findSavedBoard = savedBoardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new BoardException(ExceptionCode.NOT_FOUND_BOARD)
+        );
+        if(findSavedBoard.getUserEntity().equals(usersEntity)) {
+            throw new BoardException(ExceptionCode.ALREADY_SAVED_BAORD);
+        }
 
         SavedBoardEntity savedBoardEntity = SavedBoardEntity.builder()
                 .userEntity(usersEntity)

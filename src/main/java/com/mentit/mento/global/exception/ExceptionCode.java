@@ -41,6 +41,8 @@ public enum ExceptionCode {
     IO_EXCEPTION_ON_IMAGE_UPLOAD(CONFLICT, "이미지 업로드 중 IO 예외가 발생했습니다.", 706),
     PUT_OBJECT_EXCEPTION(CONFLICT, "객체 업로드 중 예외가 발생했습니다.", 707),
     IO_EXCEPTION_ON_IMAGE_DELETE(CONFLICT, "이미지 삭제 중 IO 예외가 발생했습니다.", 708),
+    ALREADY_SAVED_BAORD(CONFLICT,"이미 저장된 게시글입니다.", 709),
+
 
     // 도토리 토큰 관련 에러 (600)
     NOT_FOUND_DOTORI_TOKEN(CONFLICT, "도토리 토큰을 찾을 수 없습니다.", 600),
@@ -58,7 +60,8 @@ public enum ExceptionCode {
 
     // 등록 관련 에러 (403),
     INVALID_ENUM_PARAMETER(CONFLICT, "잘못된 열거형 파라미터입니다.", 403),
-    ACCESS_DENIED(UNAUTHORIZED, "접근이 거부되었습니다.", 401);
+    ACCESS_DENIED(UNAUTHORIZED, "접근이 거부되었습니다.", 401),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
