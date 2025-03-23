@@ -96,7 +96,10 @@ public class UsersEntity extends BaseEntity {
     @Column(name = "token_issued_at")
     private LocalDateTime tokenIssuedAt;
 
-    @OneToOne(mappedBy = "usersEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @Column(name = "token_expired_date")
+    private LocalDateTime tokenExpiredDate;
+
+    @OneToOne(mappedBy = "usersEntity")
     private DotoriTokenEntity dotoriTokenEntity;
 
     @OneToMany(mappedBy = "presenter")

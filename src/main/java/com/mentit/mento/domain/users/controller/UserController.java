@@ -72,7 +72,7 @@ public class UserController {
         return Response.success(HttpStatus.OK, "계정 정보 조회 성공", findUserAccountResponse);
     }
 
-    @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
+    @Operation(summary = "닉네임 중복  검사", description = "닉네임 중복 조회(true : 가능 / false : 불가능), 내 닉네임을 내가 조회할 경우에도 true 반환")
     @GetMapping("/validate-nickname")
     public Response<Boolean> validateNickname(
             @AuthenticationPrincipal CustomUserDetail userDetail,
