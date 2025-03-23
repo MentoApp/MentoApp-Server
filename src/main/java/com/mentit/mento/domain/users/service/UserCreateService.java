@@ -136,7 +136,6 @@ public class UserCreateService {
         user.setProfileImage(uploadedFile);
         user.setSimpleIntroduce(request.getSimpleIntroduce());
         user.setNewUser(false);
-
         // 기존 객체를 수정하여 저장
         userRepository.save(user);
     }
